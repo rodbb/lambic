@@ -130,6 +130,15 @@ export default new Vuex.Store({
     },
     comments (state) {
       return state.comments
+    },
+    event (state, getters) {
+      return (id) => getters.events.find((e) => e.id === id)
+    },
+    presentation (state, getters) {
+      return (id) => getters.presentations.find((e) => e.id === id)
+    },
+    comment (state, getters) {
+      return (id) => getters.comments.find((e) => e.id === id)
     }
   },
   mutations: {
