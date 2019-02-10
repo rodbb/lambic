@@ -67,6 +67,7 @@
               no-resize
               name="comment-input"
               label="input comment"
+              v-model="comment"
             ></v-textarea>
           </v-card-text>
           <v-divider></v-divider>
@@ -74,14 +75,14 @@
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
-              @click="dialog = false"
+              @click="postCommnet"
             >
               submit
             </v-btn>
             <v-btn
               color="primary"
               flat
-              @click="dialog = false"
+              @click="closeComment"
             >
               cancel
             </v-btn>
@@ -104,7 +105,8 @@ export default {
   },
   data () {
     return {
-      dialog: false
+      dialog: false,
+      comment: ''
     }
   },
   computed: {
@@ -118,6 +120,16 @@ export default {
   filters: {
     dateTime (seconds) {
       return new Date(seconds * 1000).toLocaleString()
+    }
+  },
+  methods: {
+    postCommnet () {
+      this.$store.dispatch('appendComment', { comment: this.comment, presentationId: this.id })
+      this.closeComment()
+    },
+    closeComment () {
+      this.comment = ''
+      this.dialog = false
     }
   }
 }

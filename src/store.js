@@ -6,6 +6,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
+    user: {
+      name: 'tester'
+    },
     events: [
       {
         id: 'C5ebplhPZw1gz7K0GNc9',
@@ -143,9 +146,33 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-
+    setUser (state, payload) {
+      state.user = payload
+    },
+    appendComment (state, payload) {
+      state.comments.push(payload)
+    }
   },
   actions: {
-
+    setUser ({ commit }, userRef) {
+      commit('setUser', userRef)
+    },
+    appendComment ({ state, commit }, { comment, presentationId }) {
+      const chrs = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      const dt = new Date().getTime()
+      commit('appendComment', {
+        id: Array(20)
+          .fill(null)
+          .map(() => chrs[Math.floor(Math.random() * chrs.length)])
+          .join(''),
+        comment,
+        postedAt: {
+          seconds: Math.floor(dt / 1000),
+          nanoseconds: (dt % 1000) * 1000000
+        },
+        presentationId,
+        userRef: state.user
+      })
+    }
   }
 })
