@@ -32,6 +32,9 @@
             <p>{{ comment.comment }}</p>
           </v-card-text>
         </template>
+        <v-card-text v-if="presentation.comments.length === 0">
+          <p>まだコメントはありません。</p>
+        </v-card-text>
       </v-card>
 
       <v-btn
