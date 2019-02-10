@@ -5,7 +5,7 @@ import store from './store'
 import Vuetify from 'vuetify'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
-import './registerServiceWorker'
+// import './registerServiceWorker'
 
 Vue.use(Vuetify)
 Vue.config.productionTip = false
