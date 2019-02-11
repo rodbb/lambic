@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "rodbb-lambic-dev"
+    "production": "rodbb-lambic",
+    "developement": "rodbb-lambic-dev"
   }
 }
