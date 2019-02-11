@@ -64,6 +64,15 @@
 
         <v-card>
           <v-card-text>
+            <v-alert
+              outline
+              :value="errors.length > 0"
+              color="error"
+            >
+              <ul>
+                <li v-for="(err, i) in errors" :key="i">{{ err }}</li>
+              </ul>
+            </v-alert>
             <v-textarea
               outline
               autofocus
@@ -109,7 +118,8 @@ export default {
   data () {
     return {
       dialog: false,
-      comment: ''
+      comment: '',
+      errors: []
     }
   },
   computed: {
@@ -126,12 +136,31 @@ export default {
     }
   },
   methods: {
+    validateComment (c) {
+      return {
+        length: c.length <= 1000,
+        required: c.replace(/\s+$/mg, '').length > 0
+      }
+    },
     postCommnet () {
-      this.$store.dispatch('appendComment', { comment: this.comment, presentationId: this.id })
-      this.closeComment()
+      // eslint-disable-next-line no-irregular-whitespace
+      const rtrimRegex = /[ \t\f　]+$/mg
+      const com = this.comment.replace(rtrimRegex, '')
+      const res = this.validateComment(com)
+      if (Object.values(res).every((v) => v)) {
+        this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+        this.closeComment()
+      } else {
+        this.errors = [
+          !res.length ? 'コメントは1000文字までです' : null,
+          !res.required ? 'コメントを入力してください' : null
+        ]
+          .filter((e) => e != null)
+      }
     },
     closeComment () {
       this.comment = ''
+      this.errors = []
       this.dialog = false
     }
   }
