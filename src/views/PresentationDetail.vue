@@ -11,7 +11,7 @@
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
           <div class="grey--text mb-3">{{ presentation.presenter.name }}</div>
-          <p>{{ presentation.description }}</p>
+          <p class="pre">{{ presentation.description }}</p>
         </v-card-text>
       </v-card>
 
@@ -29,7 +29,7 @@
               <span>{{ comment.postedAt.seconds | dateTime }}
               </span>
             </v-layout>
-            <p>{{ comment.comment }}</p>
+            <p class="pre">{{ comment.comment }}</p>
           </v-card-text>
         </template>
         <v-card-text v-if="presentation.comments.length === 0">
@@ -166,3 +166,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.pre {
+  white-space: pre-wrap;
+}
+</style>
