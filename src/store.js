@@ -159,7 +159,7 @@ export default new Vuex.Store({
     },
     appendComment ({ state, commit }, { comment, presentationId }) {
       const chrs = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-      const dt = new Date().getTime()
+      const dt = new Date().getTime() // milliseconds
       commit('appendComment', {
         id: Array(20)
           .fill(null)

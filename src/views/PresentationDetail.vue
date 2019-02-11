@@ -132,7 +132,7 @@ export default {
   },
   filters: {
     dateTime (seconds) {
-      return new Date(seconds * 1000).toLocaleString()
+      return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
     }
   },
   methods: {
