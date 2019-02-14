@@ -22,12 +22,33 @@
 </template>
 
 <script>
+import firebase from 'firebase/app'
+import 'firebase/auth'
+
 export default {
   name: 'app',
   data () {
     return {
       permanent: false
     }
+  },
+  beforeCreate () {
+    firebase
+      .auth()
+      .onAuthStateChanged((user) => {
+        if (user) {
+          this.$store.dispatch('setUser', user)
+        }
+      })
+    this.$store.dispatch('initStore')
+  },
+  created () {
+    firebase
+      .auth()
+      .signInAnonymously()
+      .catch((e) => {
+        alert(e.message)
+      })
   }
 }
 </script>

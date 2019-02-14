@@ -1,6 +1,6 @@
 <template>
   <v-layout row class="pb-5">
-    <v-flex>
+    <v-flex v-if="presentation != null">
 
       <v-card>
         <v-card-text>
@@ -103,6 +103,7 @@
       </v-dialog>
 
     </v-flex>
+    <v-progress-linear v-else :indeterminate="presentation == null"></v-progress-linear>
   </v-layout>
 </template>
 
