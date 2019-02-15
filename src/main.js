@@ -7,10 +7,6 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
 // import './registerServiceWorker'
 
-import firebase from 'firebase/app'
-import FirebaseConfig from '../firebase-config.json'
-firebase.initializeApp(FirebaseConfig)
-
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 
