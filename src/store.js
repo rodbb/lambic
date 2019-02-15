@@ -7,7 +7,7 @@ import 'firebase/firestore'
 
 const firebaseApp = firebase.initializeApp(FirebaseConfig)
 const firestore = firebaseApp.firestore()
-firestore.settings({ timestampsInSnapshots: true })
+firestore.settings({})
 
 const users = firestore.collection('users')
 const events = firestore.collection('events')
