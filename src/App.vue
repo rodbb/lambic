@@ -1,13 +1,33 @@
 <template>
   <v-app>
     <v-navigation-drawer app fixed v-model="permanent">
-      <v-list>
-        <v-list-tile>
-          <v-list-tile-title class="title">
-            <router-link :to="{ name: 'home' }">Lambic</router-link>
-          </v-list-tile-title>
+      <v-toolbar flat>
+        <v-list class="py-0">
+          <v-list-tile :to="{ name: 'home' }">
+            <v-list-tile-title class="title">Lambic</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
+      <v-divider></v-divider>
+
+      <v-list dense class="pt-0">
+        <v-list-tile :href="href.issues">
+          <v-list-tile-action>
+            <v-icon>feedback</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>フィードバック</v-list-tile-title>
+          </v-list-tile-content>
         </v-list-tile>
         <v-divider></v-divider>
+        <v-list-tile v-for="p in presentations" :key="p.id">
+          <v-list-tile-content>
+            <v-list-tile-title>
+              <router-link :to="{ name: 'presentationDetail', params: { id: p.id }}">{{ p.title }}</router-link>
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar app color="light-green">
@@ -31,6 +51,13 @@ export default {
     return {
       permanent: false
     }
+  },
+  computed: {
+    href () {
+      return {
+        issues: process.env.VUE_APP_ISSUES_URL
+      }
+    },
   },
   beforeCreate () {
     firebase
