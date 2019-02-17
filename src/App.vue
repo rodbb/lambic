@@ -29,6 +29,8 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+
+      <qriously id="qrcode" class="pb-4" :value="href.here" :size="150"/>
     </v-navigation-drawer>
     <v-toolbar app color="light-green">
       <v-toolbar-side-icon @click="permanent = !permanent"></v-toolbar-side-icon>
@@ -55,6 +57,7 @@ export default {
   computed: {
     href () {
       return {
+        here: `${window.location.origin}/#${this.$route.path}`,
         issues: process.env.VUE_APP_ISSUES_URL
       }
     },
@@ -79,3 +82,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+#qrcode {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+</style>
