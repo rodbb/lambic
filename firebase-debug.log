@@ -1,0 +1,290 @@
+[debug] [2019-02-17T14:17:20.644Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:17:20.650Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase init
+[debug] [2019-02-17T14:17:20.650Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:17:20.650Z] Platform:      linux
+[debug] [2019-02-17T14:17:20.650Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:17:20.650Z] Time:          Sun Feb 17 2019 14:17:20 GMT+0000 (UTC)
+[debug] [2019-02-17T14:17:20.650Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-02-17T14:17:20.681Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-02-17T14:17:20.682Z] > attempting to authenticate via app default credentials
+[debug] [2019-02-17T14:17:20.720Z] ! auto-auth error: Could not load the default credentials. Browse to https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[debug] [2019-02-17T14:17:20.721Z] > no credentials could be found or automatically retrieved
+[error] 
+[error] Error: Command requires authentication, please run firebase login
+[debug] [2019-02-17T14:17:20.982Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+    at process.exit (internal/process.js:157:15)
+    at Timeout._onTimeout (/root/node_modules/firebase-tools/lib/errorOut.js:14:17)
+    at ontimeout (timers.js:498:11)
+    at tryOnTimeout (timers.js:323:5)
+    at Timer.listOnTimeout (timers.js:290:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2019-02-17T14:26:40.279Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:26:40.281Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase login
+[debug] [2019-02-17T14:26:40.281Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:26:40.282Z] Platform:      linux
+[debug] [2019-02-17T14:26:40.282Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:26:40.282Z] Time:          Sun Feb 17 2019 14:26:40 GMT+0000 (UTC)
+[debug] [2019-02-17T14:26:40.282Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+[info] Visit this URL on any device to log in:
+[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=553817997&redirect_uri=http%3A%2F%2Flocalhost%3A9005
+[info] 
+[info] Waiting for authentication...
+[debug] [2019-02-17T14:26:46.297Z] Unable to open URL: Error: Exited with code 3
+    at ChildProcess.cp.once.code (/root/node_modules/opn/index.js:84:13)
+    at Object.onceWrapper (events.js:317:30)
+    at emitTwo (events.js:126:13)
+    at ChildProcess.emit (events.js:214:7)
+    at maybeClose (internal/child_process.js:925:16)
+    at Socket.stream.socket.on (internal/child_process.js:346:11)
+    at emitOne (events.js:116:13)
+    at Socket.emit (events.js:211:7)
+    at Pipe._handle.close [as _onclose] (net.js:557:12)
+[debug] [2019-02-17T14:31:01.219Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:31:01.222Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase login
+[debug] [2019-02-17T14:31:01.222Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:31:01.222Z] Platform:      linux
+[debug] [2019-02-17T14:31:01.223Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:31:01.223Z] Time:          Sun Feb 17 2019 14:31:01 GMT+0000 (UTC)
+[debug] [2019-02-17T14:31:01.223Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+[info] Visit this URL on any device to log in:
+[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=914258251&redirect_uri=http%3A%2F%2Flocalhost%3A9005
+[info] 
+[info] Waiting for authentication...
+[debug] [2019-02-17T14:31:03.554Z] Unable to open URL: Error: Exited with code 3
+    at ChildProcess.cp.once.code (/root/node_modules/opn/index.js:84:13)
+    at Object.onceWrapper (events.js:317:30)
+    at emitTwo (events.js:126:13)
+    at ChildProcess.emit (events.js:214:7)
+    at maybeClose (internal/child_process.js:925:16)
+    at Socket.stream.socket.on (internal/child_process.js:346:11)
+    at emitOne (events.js:116:13)
+    at Socket.emit (events.js:211:7)
+    at Pipe._handle.close [as _onclose] (net.js:557:12)
+[debug] [2019-02-17T14:31:28.127Z] >>> HTTP REQUEST POST https://accounts.google.com/o/oauth2/token  
+
+[debug] [2019-02-17T14:31:28.380Z] <<< HTTP RESPONSE 200
+[info] 
+[info] ✔  Success! Logged in as headgcf.es@gmail.com
+[debug] [2019-02-17T14:31:28.651Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+[debug] [2019-02-17T14:32:24.371Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:32:24.373Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase init
+[debug] [2019-02-17T14:32:24.373Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:32:24.374Z] Platform:      linux
+[debug] [2019-02-17T14:32:24.374Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:32:24.374Z] Time:          Sun Feb 17 2019 14:32:24 GMT+0000 (UTC)
+[debug] [2019-02-17T14:32:24.374Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-02-17T14:32:24.395Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-02-17T14:32:24.396Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /usr/src/app
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing in an existing Firebase project directory
+
+[debug] [2019-02-17T14:33:30.324Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+[debug] [2019-02-17T14:34:48.974Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:34:48.976Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase init
+[debug] [2019-02-17T14:34:48.976Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:34:48.977Z] Platform:      linux
+[debug] [2019-02-17T14:34:48.977Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:34:48.977Z] Time:          Sun Feb 17 2019 14:34:48 GMT+0000 (UTC)
+[debug] [2019-02-17T14:34:48.977Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-02-17T14:34:48.991Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-02-17T14:34:48.991Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /usr/src/app
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing in an existing Firebase project directory
+
+[debug] [2019-02-17T14:41:20.638Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+[debug] [2019-02-17T14:46:22.784Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:46:22.787Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase init
+[debug] [2019-02-17T14:46:22.787Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:46:22.787Z] Platform:      linux
+[debug] [2019-02-17T14:46:22.787Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:46:22.787Z] Time:          Sun Feb 17 2019 14:46:22 GMT+0000 (UTC)
+[debug] [2019-02-17T14:46:22.787Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-02-17T14:46:22.806Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-02-17T14:46:22.806Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /usr/src/app
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing in an existing Firebase project directory
+
+[error] 
+[error] Error: Must select at least one feature. Use SPACEBAR to select features, or provide a feature with firebase init [feature_name]
+[debug] [2019-02-17T14:46:25.470Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+    at process.exit (internal/process.js:157:15)
+    at Timeout._onTimeout (/root/node_modules/firebase-tools/lib/errorOut.js:14:17)
+    at ontimeout (timers.js:498:11)
+    at tryOnTimeout (timers.js:323:5)
+    at Timer.listOnTimeout (timers.js:290:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2019-02-17T14:46:45.593Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:46:45.596Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase init lambic
+[debug] [2019-02-17T14:46:45.596Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:46:45.597Z] Platform:      linux
+[debug] [2019-02-17T14:46:45.597Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:46:45.597Z] Time:          Sun Feb 17 2019 14:46:45 GMT+0000 (UTC)
+[debug] [2019-02-17T14:46:45.597Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-02-17T14:46:45.613Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-02-17T14:46:45.614Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /usr/src/app
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing in an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2019-02-17T14:46:45.629Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-02-17T14:46:45.630Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-02-17T14:46:45.943Z] <<< HTTP RESPONSE 200
+[debug] [2019-02-17T14:46:45.966Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects?page_size=100  
+ 
+[debug] [2019-02-17T14:46:47.177Z] <<< HTTP RESPONSE 200
+[info] i  Using project rodbb-lambic-dev (rodbb-lambic-dev)
+[error] 
+[error] Error: lambic is not a valid feature. Must be one of database,firestore,functions,hosting,storage
+[debug] [2019-02-17T14:46:59.947Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+    at process.exit (internal/process.js:157:15)
+    at Timeout._onTimeout (/root/node_modules/firebase-tools/lib/errorOut.js:14:17)
+    at ontimeout (timers.js:498:11)
+    at tryOnTimeout (timers.js:323:5)
+    at Timer.listOnTimeout (timers.js:290:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2019-02-17T14:47:02.358Z] ----------------------------------------------------------------------
+[debug] [2019-02-17T14:47:02.360Z] Command:       /usr/local/bin/node /usr/src/app/node_modules/.bin/firebase init lambic
+[debug] [2019-02-17T14:47:02.360Z] CLI Version:   6.3.1
+[debug] [2019-02-17T14:47:02.360Z] Platform:      linux
+[debug] [2019-02-17T14:47:02.360Z] Node Version:  v8.11.3
+[debug] [2019-02-17T14:47:02.361Z] Time:          Sun Feb 17 2019 14:47:02 GMT+0000 (UTC)
+[debug] [2019-02-17T14:47:02.361Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-02-17T14:47:02.375Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-02-17T14:47:02.375Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /usr/src/app
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing in an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2019-02-17T14:47:02.389Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/rodbb-lambic-dev  
+ 
+[debug] [2019-02-17T14:47:03.212Z] <<< HTTP RESPONSE 200
+[info] i  Using project rodbb-lambic-dev (rodbb-lambic-dev)
+[error] 
+[error] Error: lambic is not a valid feature. Must be one of database,firestore,functions,hosting,storage
+[debug] [2019-02-17T14:47:03.682Z] Error: ETXTBSY: text file is busy, unlink '/usr/src/app/firebase-debug.log'
+    at Object.fs.unlinkSync (fs.js:1061:18)
+    at process.<anonymous> (/root/node_modules/firebase-tools/lib/bin/firebase.js:57:12)
+    at emitOne (events.js:121:20)
+    at process.emit (events.js:211:7)
+    at process.exit (internal/process.js:157:15)
+    at Timeout._onTimeout (/root/node_modules/firebase-tools/lib/errorOut.js:14:17)
+    at ontimeout (timers.js:498:11)
+    at tryOnTimeout (timers.js:323:5)
+    at Timer.listOnTimeout (timers.js:290:5)
+[error] 
+[error] Error: An unexpected error has occurred.
