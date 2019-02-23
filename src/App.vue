@@ -60,7 +60,7 @@ export default {
         here: `${window.location.origin}/#${this.$route.path}`,
         issues: process.env.VUE_APP_ISSUES_URL
       }
-    },
+    }
   },
   beforeCreate () {
     firebase
