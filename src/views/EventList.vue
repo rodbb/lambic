@@ -7,9 +7,10 @@
     </v-card>
 
     <v-list three-line class="mx-1">
+
       <template v-for="event in events">
 
-        <router-link to="events" :key="event.id" tag="div">
+        <router-link :to="{ path: 'event/' + event.id }" :key="event.id" tag="div">
           <v-list-title :key="event.id">
             <v-list-tile-content :key="event.id" class="mx-3 my-2">
               <div class="my-1">
