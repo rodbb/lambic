@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Vuetify from 'vuetify'
+import VueQriously from 'vue-qriously'
 import moment from 'moment'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
@@ -13,6 +14,7 @@ moment.lang('ja', {
 })
 
 Vue.use(Vuetify)
+Vue.use(VueQriously)
 Vue.config.productionTip = false
 
 new Vue({
