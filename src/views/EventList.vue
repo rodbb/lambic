@@ -6,33 +6,34 @@
       </v-card-title>
     </v-card>
 
-    <v-list three-line class="mx-1">
+    <v-card>
+      <v-list three-line>
 
-      <template v-for="event in events">
+        <template v-for="event in events">
 
-        <router-link :to="{ path: 'event/' + event.id }" :key="event.id" tag="div">
-          <v-list-title :key="event.id">
-            <v-list-tile-content :key="event.id" class="mx-3 my-2">
-              <div class="my-1">
-                {{ event.date.seconds | dateTime }}
-                <v-chip v-if="isFinished(event.date.seconds)" small light>終了しました</v-chip>
-                <v-chip v-else-if="isToday(event.date.seconds)" small color="green" text-color="white">本日開催</v-chip>
-              </div>
-              <v-list-tile-title class="my-1">
-                <h2>{{ event.title }}</h2>
-              </v-list-tile-title>
-              <v-list-tile-sub-title v-html="event.description" class="my-1"></v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-title>
-          <v-divider :key="event.id" class="mx-3"></v-divider>
-        </router-link>
+            <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }">
+              <v-list-tile-content>
+                <div>
+                  {{ event.date.seconds | dateTime }}
+                  <v-chip v-if="isFinished(event.date.seconds)" small light>終了しました</v-chip>
+                  <v-chip v-else-if="isToday(event.date.seconds)" small color="green" text-color="white">本日開催</v-chip>
+                </div>
+                <v-list-tile-title v-text="event.title" class="title">
+                </v-list-tile-title>
+                <v-list-tile-sub-title v-text="event.description">
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-divider :key="event.id" class="mx-2"></v-divider>
 
-      </template>
-    </v-list>
+        </template>
+      </v-list>
+    </v-card>
 
   </v-card>
 </template>
 <script>
+import moment from 'moment'
 export default {
   name: 'events',
   computed: {
@@ -44,17 +45,18 @@ export default {
     isFinished (seconds) {
       var nowDate = new Date()
       var eventDate = new Date(seconds * 1000 /* to milliseconds */)
-      return nowDate.getTime() > eventDate.getTime()
+      return moment(eventDate).isBefore(nowDate, 'day')
     },
     isToday (seconds) {
       var nowDate = new Date()
       var eventDate = new Date(seconds * 1000 /* to milliseconds */)
-      return nowDate.getTime() === eventDate.getTime()
+      return moment(eventDate).isSame(nowDate, 'day')
     }
   },
   filters: {
     dateTime (seconds) {
-      return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
+      var date = new Date(seconds * 1000 /* to milliseconds */)
+      return moment(date).format('YYYY/MM/DD（ddd）')
     }
   }
 }
