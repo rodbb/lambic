@@ -7,20 +7,20 @@
     </v-card>
 
     <v-card>
-      <v-list three-line>
+      <v-list two-line>
 
         <template v-for="event in events">
 
-            <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }">
+            <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }" class="my-2">
               <v-list-tile-content>
                 <div>
                   {{ event.date.seconds | dateTime }}
                   <v-chip v-if="isFinished(event.date.seconds)" small light>終了しました</v-chip>
                   <v-chip v-else-if="isToday(event.date.seconds)" small color="green" text-color="white">本日開催</v-chip>
                 </div>
-                <v-list-tile-title v-text="event.title" class="title">
-                </v-list-tile-title>
-                <v-list-tile-sub-title v-text="event.description">
+                <v-list-tile-title v-text="event.title" class="title"></v-list-tile-title>
+                <v-list-tile-sub-title>
+                  {{ event.description }}
                 </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -38,7 +38,14 @@ export default {
   name: 'events',
   computed: {
     events () {
-      return this.$store.getters.events
+      // 日付順にソート
+      const events = this.$store.getters.events
+      events.sort((a, b) => {
+        a = a['date']
+        b = b['date']
+        return a === b ? 0 : a > b ? -1 : 1
+      })
+      return events
     }
   },
   methods: {
