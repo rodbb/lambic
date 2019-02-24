@@ -1,36 +1,41 @@
 <template>
-  <v-card>
-    <v-card color="light-green">
-      <v-card-title>
-        <h1 class="headline white--text">イベント一覧</h1>
-      </v-card-title>
-    </v-card>
+  <v-layout row class="pb-5">
+    <v-flex v-if="events.length != 0">
+      <v-card>
 
-    <v-card>
-      <v-list two-line>
+        <v-card color="light-green">
+          <v-card-title>
+            <h1 class="headline white--text">イベント一覧</h1>
+          </v-card-title>
+        </v-card>
 
-        <template v-for="event in events">
+        <v-card>
+          <v-list two-line>
+            <template v-for="event in events">
 
-            <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }" class="my-2">
-              <v-list-tile-content>
-                <div>
-                  {{ event.date.seconds | dateTime }}
-                  <v-chip v-if="isFinished(event.date.seconds)" small light>終了しました</v-chip>
-                  <v-chip v-else-if="isToday(event.date.seconds)" small color="green" text-color="white">本日開催</v-chip>
-                </div>
-                <v-list-tile-title v-text="event.title" class="title"></v-list-tile-title>
-                <v-list-tile-sub-title>
-                  {{ event.description }}
-                </v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-            <v-divider :key="event.id" class="mx-2"></v-divider>
+                <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }" class="my-2">
+                  <v-list-tile-content>
+                    <div>
+                      {{ event.date.seconds | dateTime }}
+                      <v-chip v-if="isFinished(event.date.seconds)" small light>終了しました</v-chip>
+                      <v-chip v-else-if="isToday(event.date.seconds)" small color="green" text-color="white">本日開催</v-chip>
+                    </div>
+                    <v-list-tile-title v-text="event.title" class="title"></v-list-tile-title>
+                    <v-list-tile-sub-title>
+                      {{ event.description }}
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <v-divider :key="event.id" class="mx-2"></v-divider>
 
-        </template>
-      </v-list>
-    </v-card>
+            </template>
+          </v-list>
+        </v-card>
 
-  </v-card>
+      </v-card>
+    </v-flex>
+    <v-progress-linear v-else :indeterminate="events.length == 0"></v-progress-linear>
+  </v-layout>
 </template>
 <script>
 import moment from 'moment'
