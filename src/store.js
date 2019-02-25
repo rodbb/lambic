@@ -38,7 +38,7 @@ export default new Vuex.Store({
         .sort((a, b) => {
           const dsec = a.date.seconds - b.date.seconds
           const dnanosec = a.date.nanoseconds - b.date.nanoseconds
-          return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
+          return dsec === 0 ? (dnanosec < 0) - (dnanosec > 0) : (dsec < 0) - (dsec > 0)
         })
     },
     presentations (state, getters) {

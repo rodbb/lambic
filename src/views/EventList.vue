@@ -43,14 +43,7 @@ export default {
   name: 'events',
   computed: {
     events () {
-      // 日付順にソート
-      const events = this.$store.getters.events
-      events.sort((a, b) => {
-        a = a['date']
-        b = b['date']
-        return a === b ? 0 : a > b ? -1 : 1
-      })
-      return events
+      return this.$store.getters.events
     }
   },
   methods: {
