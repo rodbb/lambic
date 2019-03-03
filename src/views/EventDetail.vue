@@ -1,8 +1,8 @@
 <template>
 
-  <v-layout row>
+  <v-layout row wrap>
     <v-flex>
-      <v-card class="mb-2" color="light-green lighten-5">
+      <v-card class="mb-2" color="light-green lighten-4">
         <v-card-title primary-title>
           <div>
             <div class="grey--text mb-3">{{ event.date.seconds | dateTime }}</div>
@@ -17,17 +17,22 @@
       <v-card>
 
         <v-list two-line>
-          <template v-for="(item, index) in presentations">
+          <template v-for="presentation in event.presentations">
 
-            <v-divider :key="index"></v-divider>
-
-            <v-list-tile :key="item.title">
+            <v-list-tile :key="presentation.id" :to="{ path: '/presentations/' + presentation.id }">
 
               <v-list-tile-content>
-                <v-list-tile-title v-html="item.title"></v-list-tile-title>
-                <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
+                <v-list-tile-title class="title" v-text="presentation.title">
+                </v-list-tile-title>
+                <v-list-tile-sub-title v-text="'by ' + presentation.presenter.name">
+                </v-list-tile-sub-title>
+                <v-list-tile-sub-title v-text="presentation.description">
+                </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
+
+            <v-divider :key="presentation.id" class="mx-2 py-2"></v-divider>
+
           </template>
         </v-list>
       </v-card>
@@ -53,9 +58,6 @@ export default {
   computed: {
     event () {
       return this.$store.getters.event(this.id)
-    },
-    presentations () {
-      return this.$store.getters.presentations
     }
   },
   filters: {
