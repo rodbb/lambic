@@ -31,11 +31,21 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <v-divider :key="presentation.id" class="mx-2 py-2"></v-divider>
+            <v-divider :key="presentation.id" class="mx-2 my-2"></v-divider>
 
           </template>
         </v-list>
       </v-card>
+      <v-btn
+        fixed
+        fab
+        bottom
+        left
+        color="green"
+        :to="{ path: '/events' }"
+      >
+        <v-icon>arrow_back</v-icon>
+      </v-btn>
     </v-flex>
   </v-layout>
 </template>
