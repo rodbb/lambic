@@ -10,6 +10,7 @@ export default new Router({
   routes: [
     {
       path: '/',
+      redirect: '/events',
       name: 'home',
       component: Home
     },
