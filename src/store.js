@@ -36,6 +36,7 @@ export default new Vuex.Store({
           }
         })
         .sort((a, b) => {
+          // 開催日時の降順にソート
           const dsec = a.date.seconds - b.date.seconds
           const dnanosec = a.date.nanoseconds - b.date.nanoseconds
           return dsec === 0 ? (dnanosec < 0) - (dnanosec > 0) : (dsec < 0) - (dsec > 0)
@@ -55,6 +56,7 @@ export default new Vuex.Store({
     comments (state) {
       return state.comments
         .sort((a, b) => {
+          // 投稿日時の昇順にソート
           const dsec = a.postedAt.seconds - b.postedAt.seconds
           const dnanosec = a.postedAt.nanoseconds - b.postedAt.nanoseconds
           return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
