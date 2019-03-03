@@ -5,27 +5,13 @@
       <v-card class="mb-2" color="light-green lighten-5">
         <v-card-title primary-title>
           <div>
-            <div class="grey--text mb-2">{{ event.date }}</div>
+            <div class="grey--text mb-3">{{ event.date.seconds | dateTime }}</div>
             <div class="headline">{{ event.title }}</div>
           </div>
         </v-card-title>
-
-        <v-card-actions>
-          <v-btn icon @click="show = !show">
-            <v-icon>share</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="show = !show">
-            <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
-          </v-btn>
-       </v-card-actions>
-
-        <v-slide-y-transition>
-          <v-card-text v-show="show">
-            {{ event.description }}
-          </v-card-text>
-        </v-slide-y-transition>
-
+        <v-card-text>
+          {{ event.description }}
+        </v-card-text>
       </v-card>
 
       <v-card>
@@ -50,6 +36,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   name: 'eventDetail',
   props: {
@@ -69,6 +56,12 @@ export default {
     },
     presentations () {
       return this.$store.getters.presentations
+    }
+  },
+  filters: {
+    dateTime (seconds) {
+      var date = new Date(seconds * 1000 /* to milliseconds */)
+      return moment(date).format('YYYY/MM/DD（ddd）')
     }
   }
 }
