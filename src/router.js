@@ -9,8 +9,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/events',
-      name: 'home'
+      name: 'home',
+      redirect: '/events'
     },
     {
       path: '/events/:id',
