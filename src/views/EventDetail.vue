@@ -1,6 +1,6 @@
 <template>
 
-  <v-layout row wrap>
+  <v-layout row wrap class="pb-5">
     <v-flex>
       <v-card class="mb-2" color="light-green lighten-4">
         <v-card-title primary-title>
@@ -22,11 +22,14 @@
             <v-list-tile :key="presentation.id" :to="{ path: '/presentations/' + presentation.id }">
 
               <v-list-tile-content>
-                <v-list-tile-title class="title" v-text="presentation.title">
+                <v-list-tile-title class="title">
+                  {{ presentation.title }}
                 </v-list-tile-title>
-                <v-list-tile-sub-title v-text="'by ' + presentation.presenter.name">
+                <v-list-tile-sub-title>
+                  by {{ presentation.presenter.name }}
                 </v-list-tile-sub-title>
-                <v-list-tile-sub-title v-text="presentation.description">
+                <v-list-tile-sub-title>
+                  {{ presentation.description }}
                 </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
