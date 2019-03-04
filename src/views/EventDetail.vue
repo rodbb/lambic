@@ -34,7 +34,7 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <v-divider :key="presentation.id" class="mx-2 my-2"></v-divider>
+            <v-divider :key="presentation.id + '_divider'" class="mx-2 my-2"></v-divider>
 
           </template>
         </v-list>
