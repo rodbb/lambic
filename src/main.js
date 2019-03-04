@@ -9,7 +9,7 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
 // import './registerServiceWorker'
 
-moment.lang('ja', {
+moment.locale('ja', {
   weekdaysShort: ['日', '月', '火', '水', '木', '金', '土']
 })
 
