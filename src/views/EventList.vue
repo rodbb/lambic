@@ -17,10 +17,12 @@
                   <v-list-tile-content>
                     <div>
                       {{ event.date | dateFormat }}
-                      <v-chip v-if="event.isFinished()" small light>終了しました</v-chip>
-                      <v-chip v-else-if="event.isToday()" small color="green" text-color="white">本日開催</v-chip>
+                      <v-chip v-if="event.isFinished" small light>終了しました</v-chip>
+                      <v-chip v-else-if="event.isToday" small color="green" text-color="white">本日開催</v-chip>
                     </div>
-                    <v-list-tile-title v-text="event.title" class="title"></v-list-tile-title>
+                    <v-list-tile-title class="title">
+                      {{ event.title }}
+                    </v-list-tile-title>
                     <v-list-tile-sub-title>
                       {{ event.description }}
                     </v-list-tile-sub-title>
@@ -41,25 +43,17 @@
 import moment from 'moment'
 export default {
   name: 'events',
-  nowDate: function () {
-    return new Date()
-  },
   computed: {
     events () {
+      var nowDate = new Date()
       return this.$store.getters.events
         .map((pr) => {
+          var eventDate = new Date(pr.date.seconds * 1000 /* to milliseconds */)
           return {
             ...pr,
-            id: pr.id,
-            date: new Date(pr.date.seconds * 1000 /* to milliseconds */),
-            description: pr.description,
-            titile: pr.title,
-            isFinished: function () {
-              return moment(this.date).isBefore(this.nowDate, 'day')
-            },
-            isToday: function () {
-              return moment(this.date).isSame(this.nowDate, 'day')
-            }
+            date: eventDate,
+            isFinished: moment(eventDate).isBefore(nowDate, 'day'),
+            isToday: moment(eventDate).isSame(nowDate, 'day')
           }
         })
     }
