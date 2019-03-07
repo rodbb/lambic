@@ -45,7 +45,7 @@ export default {
   name: 'events',
   computed: {
     events () {
-      var nowDate = new Date()
+      const nowDate = new Date()
       return this.$store.getters.events
         .map((pr) => {
           var eventDate = new Date(pr.date.seconds * 1000 /* to milliseconds */)
