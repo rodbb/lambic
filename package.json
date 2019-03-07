@@ -11,6 +11,7 @@
   "dependencies": {
     "firebase": "^5.8.3",
     "material-design-icons-iconfont": "^4.0.4",
+    "moment": "^2.24.0",
     "register-service-worker": "^1.6.1",
     "vue": "^2.6.6",
     "vue-qriously": "^1.1.1",

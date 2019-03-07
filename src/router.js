@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
 
@@ -17,6 +18,11 @@ export default new Router({
       name: 'eventDetail',
       component: EventDetail,
       props: true
+    },
+    {
+      path: '/events',
+      name: 'eventList',
+      component: EventList
     },
     {
       path: '/presentations/:id',
