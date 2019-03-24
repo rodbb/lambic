@@ -14,7 +14,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card>
+      <v-card v-if="event.presentations != 0">
 
         <v-list two-line>
           <template v-for="presentation in event.presentations">
@@ -38,7 +38,15 @@
 
           </template>
         </v-list>
+
       </v-card>
+
+      <v-card v-else :indeterminate="event.presentations == 0">
+        <v-card-text>
+          まだ発表はありません。
+        </v-card-text>
+      </v-card>
+
       <v-btn
         fixed
         fab
