@@ -43,6 +43,7 @@
         bottom
         left
         color="green"
+        :to="prevLink"
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
@@ -129,6 +130,14 @@ export default {
     },
     event () {
       return this.$store.getters.event(this.presentation.eventId)
+    },
+    prevLink () {
+      return {
+        name: 'eventDetail',
+        params: {
+          id: this.presentation.eventId
+        }
+      }
     }
   },
   filters: {
