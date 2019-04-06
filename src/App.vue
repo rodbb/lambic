@@ -11,6 +11,20 @@
 
       <v-divider></v-divider>
 
+      <v-list two-line>
+        <v-list-tile>
+          <v-list-tile-avatar>
+            <v-icon x-large color="light-green">account_circle</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title>ゲストユーザ</v-list-tile-title>
+            <v-list-tile-sub-title>
+              <button type="button" @click="doLogin">ログイン</button>
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+
       <v-list dense class="pt-0">
         <v-list-tile :href="href.issues">
           <v-list-tile-action>
@@ -79,6 +93,17 @@ export default {
       .catch((e) => {
         alert(e.message)
       })
+  },
+  methods: {
+    // ログイン処理
+    doLogin () {
+      const provider = new firebase.auth.GoogleAuthProvider()
+      firebase.auth().signInWithPopup(provider)
+    },
+    // ログアウト処理
+    doLogout () {
+      firebase.auth().signOut()
+    }
   }
 }
 </script>
