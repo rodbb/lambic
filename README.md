@@ -15,22 +15,9 @@ Lambic
 * Firebase
 * firebase-tools
 
-## Usage
-
-以下URLにアクセスする。（ドメイン名はインストールしたサーバのもの）
-
-`https://xxxxx/`
-
 ## Install
 
 ### セットアップ
-
-セットアップには、firebase-tools が必要。
-
-```bash
-$ npm install -g firebase-tools
-$ firebase login
-```
 
 ```bash
 $ git clone git@github.com:rodbb/lambic.git
@@ -53,7 +40,8 @@ $ npm run build
 ### Firebase Hosting にデプロイ
 
 ```bash
-$ firebase deploy
+$ cd lambic
+$ npx firebase deploy
 ```
 
 ## Licence
