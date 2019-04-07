@@ -20,11 +20,15 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     user: null,
+    users: [],
     events: [],
     presentations: [],
     comments: []
   },
   getters: {
+    users (state, getters) {
+      return state.users
+    },
     events (state, getters) {
       return state.events
         .map((ev) => {
@@ -62,6 +66,9 @@ export default new Vuex.Store({
           return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
         })
     },
+    user (state, getters) {
+      return (id) => getters.users.find((e) => e.id === id)
+    },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
@@ -74,12 +81,13 @@ export default new Vuex.Store({
   },
   mutations: {
     setUser (state, payload) {
-      state.user = payload
+      state.user = this.getters.user(payload.id)
     },
     ...firebaseMutations
   },
   actions: {
     initStore: firebaseAction(({ bindFirebaseRef }) => {
+      bindFirebaseRef('users', users)
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)

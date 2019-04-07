@@ -11,8 +11,9 @@
 
       <v-divider></v-divider>
 
-      <v-list two-line>
-        <v-list-tile>
+      <v-list dense class="pt-0">
+
+        <v-list-tile class="my-2">
           <v-list-tile-avatar>
             <v-icon x-large color="light-green">account_circle</v-icon>
           </v-list-tile-avatar>
@@ -23,9 +24,9 @@
             </v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
-      </v-list>
 
-      <v-list dense class="pt-0">
+        <v-divider></v-divider>
+
         <v-list-tile :href="href.issues">
           <v-list-tile-action>
             <v-icon>feedback</v-icon>
@@ -74,6 +75,9 @@ export default {
         here: `${window.location.origin}/#${this.$route.path}`,
         issues: process.env.VUE_APP_ISSUES_URL
       }
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   beforeCreate () {
@@ -81,6 +85,7 @@ export default {
       .auth()
       .onAuthStateChanged((user) => {
         if (user) {
+          // ユーザ情報をセット
           this.$store.dispatch('setUser', user)
         }
       })
