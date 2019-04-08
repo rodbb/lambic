@@ -102,7 +102,7 @@ export default {
   methods: {
     // ログイン処理
     doLogin () {
-      const provider = new firebase.auth.GoogleAuthProvider()
+      const provider = new firebase.auth.GithubAuthProvider()
       firebase.auth().signInWithPopup(provider)
     },
     // ログアウト処理
