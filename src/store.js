@@ -92,11 +92,11 @@ export default new Vuex.Store({
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
-        .then((userInfo) => {
-          if (userInfo.exists) {
+        .then((authUserInfo) => {
+          if (authUserInfo.exists) {
             commit('setUser', {
-              id: userInfo.id,
-              name: userInfo.data().name
+              id: authUserInfo.id,
+              name: authUserInfo.data().name
             })
           } else {
             userDoc

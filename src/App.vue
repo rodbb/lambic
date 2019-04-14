@@ -124,7 +124,9 @@ export default {
     // ログアウト処理
     doLogout () {
       if (confirm('ログアウトしますか？')) {
-        firebase.auth().signOut()
+        firebase.auth().signOut().catch(function (error) {
+          console.log(error)
+        })
       }
     }
   }
