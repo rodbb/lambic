@@ -18,7 +18,7 @@
             <img v-bind:src="authUser.photoURL">
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>{{ authUser.displayName }}</v-list-tile-title>
+            <v-list-tile-title>{{ user.name }}</v-list-tile-title>
             <v-list-tile-sub-title>
               <button type="button" @click="doLogout">ログアウト</button>
             </v-list-tile-sub-title>
@@ -88,6 +88,9 @@ export default {
         here: `${window.location.origin}/#${this.$route.path}`,
         issues: process.env.VUE_APP_ISSUES_URL
       }
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   beforeCreate () {

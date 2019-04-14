@@ -19,16 +19,12 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    user: null,
-    users: [],
+    user: {},
     events: [],
     presentations: [],
     comments: []
   },
   getters: {
-    users (state, getters) {
-      return state.users
-    },
     events (state, getters) {
       return state.events
         .map((ev) => {
@@ -66,8 +62,8 @@ export default new Vuex.Store({
           return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
         })
     },
-    user (state, getters) {
-      return (id) => getters.users.find((e) => e.id === id)
+    user (state) {
+      return state.user
     },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
@@ -81,7 +77,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setUser (state, payload) {
-      state.user = this.getters.user(payload.id)
+      state.user = payload
     },
     ...firebaseMutations
   },
@@ -96,11 +92,11 @@ export default new Vuex.Store({
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
-        .then((user) => {
-          if (user.exists) {
+        .then((userInfo) => {
+          if (userInfo.exists) {
             commit('setUser', {
-              id: user.id,
-              name: user.name
+              id: userInfo.id,
+              name: userInfo.data().name
             })
           } else {
             userDoc
