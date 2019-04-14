@@ -19,10 +19,20 @@ Lambic
 
 ### セットアップ
 
+開発用に Firebase の個人プロジェクトを利用する場合は、事前にプロジェクトを作成しておく。
+
 ```bash
 $ git clone git@github.com:rodbb/lambic.git
+
 $ cd lambic
 $ npm install
+
+$ cd functions
+$ npm install
+
+# 使用するFirebaseプロジェクトの設定
+$ npx firebase login
+$ npx firebase use ${プロジェクトID}
 ```
 
 ### 開発用のコンパイルとホットリロード
@@ -39,8 +49,18 @@ $ npm run build
 
 ### Firebase Hosting にデプロイ
 
+コンパイル後に以下を実行
+
 ```bash
 $ cd lambic
+
+# プロジェクトIDを確認
+$ npx firebase list
+
+# デプロイするプロジェクトを変更する場合、使用するプロジェクトを指定
+$ npx firebase use ${プロジェクトID}
+
+# デプロイ
 $ npx firebase deploy
 ```
 
