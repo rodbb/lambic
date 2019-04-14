@@ -102,11 +102,6 @@ export default new Vuex.Store({
               id: user.id,
               name: user.name
             })
-          } else {
-            userDoc
-              .set({
-                name: auth.displayName || auth.isAnonymous ? 'anonymous' : ''
-              })
           }
         }).catch((error) => {
           console.log('Error getting document:', error)
