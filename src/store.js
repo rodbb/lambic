@@ -102,6 +102,11 @@ export default new Vuex.Store({
               id: user.id,
               name: user.name
             })
+          } else {
+            userDoc
+              .set({
+                name: auth.displayName
+              })
           }
         }).catch((error) => {
           console.log('Error getting document:', error)
