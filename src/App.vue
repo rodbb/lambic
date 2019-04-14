@@ -21,13 +21,6 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-divider></v-divider>
-        <v-list-tile v-for="p in presentations" :key="p.id">
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <router-link :to="{ name: 'presentationDetail', params: { id: p.id }}">{{ p.title }}</router-link>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
       </v-list>
 
       <qriously id="qrcode" class="pb-4" :value="href.here" :size="150"/>
