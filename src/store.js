@@ -103,6 +103,10 @@ export default new Vuex.Store({
               .set({
                 name: auth.displayName
               })
+            commit('setUser', {
+              id: auth.uid,
+              name: auth.displayName
+            })
           }
         }).catch((error) => {
           console.log('Error getting document:', error)
