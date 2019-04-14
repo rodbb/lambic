@@ -114,16 +114,7 @@ export default {
     // ログイン処理
     doLogin () {
       const provider = new firebase.auth.GithubAuthProvider()
-      firebase.auth().signInWithPopup(provider).then(function (result) {
-        const token = result.credential.accessToken
-        const authUser = result.user
-        if (authUser) {
-          this.authUser = authUser
-          console.log(token)
-        } else {
-          this.authUser = {}
-        }
-      }).catch(function (error) {
+      firebase.auth().signInWithPopup(provider).catch(function (error) {
         console.log(error)
       })
     },
