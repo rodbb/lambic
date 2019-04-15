@@ -96,16 +96,19 @@ export default new Vuex.Store({
           if (authUserInfo.exists) {
             commit('setUser', {
               id: authUserInfo.id,
-              name: authUserInfo.data().name
+              name: authUserInfo.data().name,
+              photoURL: authUserInfo.data().photoURL
             })
           } else {
             userDoc
               .set({
-                name: auth.displayName
+                name: auth.displayName,
+                photoURL: auth.photoURL
               })
             commit('setUser', {
               id: auth.uid,
-              name: auth.displayName
+              name: auth.displayName,
+              photoURL: auth.photoURL
             })
           }
         }).catch((error) => {
