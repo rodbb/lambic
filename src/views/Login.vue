@@ -58,15 +58,6 @@ export default {
         this.authUser = {}
       }
     })
-  },
-  methods: {
-    // ログイン処理
-    doLogin () {
-      const provider = new firebase.auth.GithubAuthProvider()
-      firebase.auth().signInWithPopup(provider).catch(function (error) {
-        console.log(error)
-      })
-    }
   }
 }
 </script>
