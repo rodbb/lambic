@@ -13,9 +13,9 @@
 
       <v-list dense class="pt-0">
 
-        <v-list-tile v-if="authUser.uid" class="my-2">
+        <v-list-tile v-if="user.id" class="my-2">
           <v-list-tile-avatar>
-            <img v-bind:src="authUser.photoURL">
+            <img v-bind:src="user.photoURL">
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>{{ user.name }}</v-list-tile-title>
@@ -32,7 +32,7 @@
           <v-list-tile-content>
             <v-list-tile-title>ゲストユーザ</v-list-tile-title>
             <v-list-tile-sub-title>
-              <button type="button" @click="doLogin">ログイン</button>
+              <button type="button" @click="goLogin">ログイン</button>
             </v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -114,12 +114,9 @@ export default {
     })
   },
   methods: {
-    // ログイン処理
-    doLogin () {
-      const provider = new firebase.auth.GithubAuthProvider()
-      firebase.auth().signInWithPopup(provider).catch(function (error) {
-        console.log(error)
-      })
+    // ログイン画面へ遷移
+    goLogin () {
+      this.$router.push({ path: '/login' })
     },
     // ログアウト処理
     doLogout () {
@@ -127,6 +124,7 @@ export default {
         firebase.auth().signOut().catch(function (error) {
           console.log(error)
         })
+        this.$store.dispatch('initializeUser')
       }
     }
   }

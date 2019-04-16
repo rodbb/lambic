@@ -18,12 +18,12 @@ export default {
     return {
       // FirebaseUIの設定値
       config: {
-        signInSuccessUrl: 'event',
+        signInSuccessUrl: '/',
         signInOptions: [
           // 表示する認証バナーリスト
           firebase.auth.GithubAuthProvider.PROVIDER_ID
         ],
-        tosUrl: '<your-tos-url>'
+        tosUrl: '' // 利用規約のURLを指定
       }
     }
   },

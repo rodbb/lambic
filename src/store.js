@@ -115,6 +115,9 @@ export default new Vuex.Store({
           console.log('Error getting document:', error)
         })
     },
+    initializeUser ({ commit }) {
+      commit('setUser', {})
+    },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
         comment,
