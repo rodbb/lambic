@@ -15,7 +15,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card>
+      <v-card v-if="presentation.isAllowComment">
         <v-card-title>
           <h1 class="headline">コメント一覧</h1>
         </v-card-title>
@@ -51,6 +51,7 @@
       <v-dialog
         v-model="dialog"
         width="500"
+        v-if="presentation.isAllowComment"
       >
         <v-btn
           slot="activator"
