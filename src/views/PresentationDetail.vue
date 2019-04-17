@@ -36,6 +36,11 @@
           <p>まだコメントはありません。</p>
         </v-card-text>
       </v-card>
+      <v-card v-else>
+        <v-card-title>
+          <div class="grey--text">この発表にはコメントできません。</div>
+        </v-card-title>
+      </v-card>
 
       <v-btn
         fixed
