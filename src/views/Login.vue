@@ -12,6 +12,7 @@
 <script>
 import firebase from 'firebase'
 import firebaseui from 'firebaseui-ja'
+import 'firebaseui-ja/dist/firebaseui.css'
 
 export default {
   data () {
