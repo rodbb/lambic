@@ -17,7 +17,7 @@ Lambic
 
 ## Usage
 
-以下URLにアクセスする。（ドメイン名はインストールしたサーバのもの）
+以下URLにアクセスする。
 
 `https://<project_id>.firebaseapp.com/`
 
