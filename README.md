@@ -19,7 +19,7 @@ Lambic
 
 以下URLにアクセスする。（ドメイン名はインストールしたサーバのもの）
 
-`https://xxxxx/`
+`https://<project_id>.firebaseapp.com/`
 
 ## Install
 
