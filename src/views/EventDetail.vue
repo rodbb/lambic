@@ -25,7 +25,7 @@
                 <v-list-tile-title class="title">
                   {{ presentation.title }}
                 </v-list-tile-title>
-                <v-list-tile-sub-title>
+                <v-list-tile-sub-title v-if="presentation.presenter">
                   by {{ presentation.presenter.name }}
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
