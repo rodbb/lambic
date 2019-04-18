@@ -71,7 +71,6 @@ export default {
   name: 'app',
   data () {
     return {
-      authUser: {},
       permanent: false
     }
   },
@@ -96,15 +95,6 @@ export default {
         }
       })
     this.$store.dispatch('initStore')
-  },
-  created () {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.authUser = user
-      } else {
-        this.authUser = {}
-      }
-    })
   },
   methods: {
     // ログイン画面へ遷移

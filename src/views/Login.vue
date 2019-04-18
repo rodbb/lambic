@@ -29,16 +29,8 @@ export default {
     }
   },
   mounted () {
-    let ui = firebaseui.auth.AuthUI.getInstance()
-    if (!ui) {
-      ui = new firebaseui.auth.AuthUI(firebase.auth())
-    }
+    const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth())
     ui.start('#firebaseui-auth-container', this.config)
-  },
-  computed: {
-    user () {
-      return this.$store.getters.user
-    }
   },
   beforeCreate () {
     firebase
@@ -49,16 +41,6 @@ export default {
           this.$store.dispatch('setUser', user)
         }
       })
-    this.$store.dispatch('initStore')
-  },
-  created () {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.authUser = user
-      } else {
-        this.authUser = {}
-      }
-    })
   }
 }
 </script>
