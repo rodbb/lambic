@@ -19,7 +19,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    user: {},
+    user: null,
     events: [],
     presentations: [],
     comments: []
@@ -116,7 +116,7 @@ export default new Vuex.Store({
         })
     },
     initializeUser ({ commit }) {
-      commit('setUser', {})
+      commit('setUser', null)
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
