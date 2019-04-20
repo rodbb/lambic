@@ -38,7 +38,7 @@ export default {
       .onAuthStateChanged((user) => {
         if (user) {
           // ユーザ情報をセット
-          this.$store.dispatch('setUser', user)
+          this.$store.dispatch('login', user)
         }
       })
   }

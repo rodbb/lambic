@@ -91,7 +91,7 @@ export default {
       .onAuthStateChanged((user) => {
         if (user) {
           // ユーザ情報をセット
-          this.$store.dispatch('setUser', user)
+          this.$store.dispatch('login', user)
         }
       })
     this.$store.dispatch('initStore')
@@ -107,7 +107,7 @@ export default {
         firebase.auth().signOut().catch(function (error) {
           console.log(error)
         })
-        this.$store.dispatch('initializeUser')
+        this.$store.dispatch('logout')
       }
     }
   }

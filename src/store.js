@@ -88,7 +88,7 @@ export default new Vuex.Store({
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
     }),
-    setUser ({ commit }, auth) {
+    login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
@@ -115,7 +115,7 @@ export default new Vuex.Store({
           console.log('Error getting document:', error)
         })
     },
-    initializeUser ({ commit }) {
+    logout ({ commit }) {
       commit('setUser', null)
     },
     appendComment ({ state }, { comment, presentationId }) {
