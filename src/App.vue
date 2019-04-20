@@ -12,6 +12,16 @@
       <v-divider></v-divider>
 
       <v-list dense class="pt-0">
+        <v-list-tile :to="{name: 'adminScreenList' }">
+          <v-list-tile-action>
+            <v-icon>cast</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>スクリーンの設定</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-divider></v-divider>
+
         <v-list-tile :href="href.issues">
           <v-list-tile-action>
             <v-icon>feedback</v-icon>
