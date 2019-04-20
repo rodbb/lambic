@@ -33,10 +33,10 @@
                 {{ comment.userRef.name }}
               </strong>
               <strong v-else class="title">
-                （削除されたユーザ）
+                {{ '（削除されたユーザ）' | truncate }}
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt.seconds | dateTime }}
+              <span>{{ comment.postedAt.seconds | moment }}
               </span>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
@@ -125,6 +125,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 export default {
   name: 'presentation',
   props: {
@@ -159,7 +160,17 @@ export default {
   filters: {
     dateTime (seconds) {
       return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
-    }
+    },
+    moment: function (date) {
+      return moment(date).format('YYYY/MM/DD HH:mm');
+    },
+    truncate: function(value) {
+      if(value.length <= 5) {
+        return value;
+      } else {
+        return value.substring(0, 5) + '...';
+      }
+    },
   },
   methods: {
     validateComment (c) {
