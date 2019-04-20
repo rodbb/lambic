@@ -41,7 +41,7 @@
               @click="selectPresentation"
               :key="presentation.id + '_list'"
               class="my-2">
-              <v-list-item-avatar :key="presentation.id + '_avatar'">
+              <v-list-tile-avatar :key="presentation.id + '_avatar'">
                 <v-icon v-if="presentation.id == screen.displayPresentationId"
                   x-large
                   color="orange lighten-1">
@@ -52,7 +52,7 @@
                   color="grey lighten-1">
                   cast
                 </v-icon>
-              </v-list-item-avatar>
+              </v-list-tile-avatar>
               <v-list-tile-content class="ml-2">
                 <v-list-tile-title class="title" :key="presentation.id + '_title'">
                   {{ presentation.title }}
