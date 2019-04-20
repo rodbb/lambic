@@ -37,6 +37,7 @@ export default {
     return {
       isLoadong: true,
       screenInfo: null,
+      unsubscribeScreenInfo: null,
       presentation: null,
       unsubscribePresentation: null
     }
@@ -55,7 +56,7 @@ export default {
   },
   created () {
     const firestore = firebase.firestore()
-    firestore.collection('screens')
+    this.unsubscribeScreenInfo = firestore.collection('screens')
       .doc(this.id)
       .onSnapshot((screenDoc) => {
         if (this.unsubscribePresentation !== null) {
@@ -71,7 +72,7 @@ export default {
           this.isLoadong = false
           return
         }
-        firestore.collection('presentations')
+        this.unsubscribePresentation = firestore.collection('presentations')
           .doc(this.screenInfo.displayPresentationId)
           .onSnapshot((doc) => {
             if (doc.exists) {
@@ -86,6 +87,11 @@ export default {
       }, (error) => {
         console.log('Error getting document:', error)
       })
+  },
+  beforeDestroy () {
+    if (this.unsubscribeScreenInfo !== null) {
+      this.unsubscribeScreenInfo()
+    }
   }
 }
 </script>
