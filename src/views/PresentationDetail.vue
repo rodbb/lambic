@@ -10,7 +10,12 @@
             <span>{{ event.date.seconds | dateTime }}</span>
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
-          <div class="grey--text mb-3">{{ presentation.presenter.name }}</div>
+          <div  v-if="presentation.presenter" class="grey--text mb-3">
+            {{ presentation.presenter.name }}
+          </div>
+          <div  v-else class="grey--text mb-3">
+            （発表者情報は削除されています）
+          </div>
           <p class="pre">{{ presentation.description }}</p>
         </v-card-text>
       </v-card>
@@ -24,7 +29,12 @@
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
               <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
-              <strong class="title">{{ comment.userRef.name }}</strong>
+              <strong v-if="comment.userRef" class="title">
+                {{ comment.userRef.name }}
+              </strong>
+              <strong v-else class="title">
+                （削除されたユーザ）
+              </strong>
               <v-spacer></v-spacer>
               <span>{{ comment.postedAt.seconds | dateTime }}
               </span>
