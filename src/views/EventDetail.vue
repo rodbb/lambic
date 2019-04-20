@@ -41,7 +41,7 @@
 
       </v-card>
 
-      <v-card v-if :indeterminate="event.presentations == 0">
+      <v-card v-else :indeterminate="event.presentations == 0">
         <v-card-text>
           まだ発表はありません。
         </v-card-text>

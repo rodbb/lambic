@@ -13,6 +13,7 @@ const users = firestore.collection('users')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
+const screens = firestore.collection('screens')
 
 Vue.use(Vuex)
 
@@ -22,7 +23,8 @@ export default new Vuex.Store({
     user: null,
     events: [],
     presentations: [],
-    comments: []
+    comments: [],
+    screens: []
   },
   getters: {
     events (state, getters) {
@@ -62,6 +64,9 @@ export default new Vuex.Store({
           return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
         })
     },
+    screens (state) {
+      return state.screens
+    },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
@@ -70,6 +75,9 @@ export default new Vuex.Store({
     },
     comment (state, getters) {
       return (id) => getters.comments.find((e) => e.id === id)
+    },
+    screen (state, getters) {
+      return (id) => getters.screens.find((e) => e.id === id)
     }
   },
   mutations: {
@@ -83,6 +91,7 @@ export default new Vuex.Store({
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
+      bindFirebaseRef('screens', screens)
     }),
     setUser ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)

@@ -32,9 +32,10 @@ export default new Router({
       props: true
     },
     {
-      path: '/admin/screens',
+      path: '/admin/screens/:id',
       name: 'adminScreenSetting',
-      component: AdminScreenSetting
+      component: AdminScreenSetting,
+      props: true
     }
   ],
   scrollBehavior (to, from, savedPosition) {
