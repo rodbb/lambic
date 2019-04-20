@@ -25,25 +25,32 @@
         </v-container>
       </v-card>
 
-      <v-card>
+      <v-card v-if="this.event">
         <v-list two-line>
           <template v-for="presentation in event.presentations">
-            <v-list-tile v-if="presentation.id" :key="'list-' + presentation.id" class="my-2">
+            <v-list-tile v-if="presentation.id" :key="presentation.id + '_list'" class="my-2">
 
-              <v-list-item-avatar :key="'avatar-' + presentation.id">
+              <v-list-item-avatar :key="presentation.id + '_avatar'">
                 <v-icon x-large color="grey lighten-1">cast</v-icon>
               </v-list-item-avatar>
 
-              <v-list-tile-title class="title ml-2" :key="'title-' + presentation.id">
+              <v-list-tile-title class="title ml-2" :key="presentation.id + '_title'">
                 {{ presentation.title }}
               </v-list-tile-title>
 
-              <v-list-tile-sub-title v-if="presentation.presenter" :key="'sub-title-' + presentation.id">
+              <v-list-tile-sub-title v-if="presentation.presenter" :key="presentation.id + '_subtitle'">
                 by {{ presentation.presenter.name }}
               </v-list-tile-sub-title>
 
-              <v-divider :key="'divider-' + presentation.id" class="mx-2"></v-divider>
             </v-list-tile>
+
+            <v-divider :key="presentation.id + '_divider'" class="mx-2 my-2"></v-divider>
+
+          </template>
+          <template v-if="event.presentations == 0">
+            <v-card-text>
+              まだ発表はありません。
+            </v-card-text>
           </template>
         </v-list>
       </v-card>
@@ -57,7 +64,7 @@ export default {
   data () {
     return {
       selectedEventId: null,
-      event: {}
+      event: null
     }
   },
   computed: {

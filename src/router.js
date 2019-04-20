@@ -32,7 +32,7 @@ export default new Router({
       props: true
     },
     {
-      path: '/screens',
+      path: '/admin/screens',
       name: 'adminScreenSetting',
       component: AdminScreenSetting
     }
