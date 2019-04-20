@@ -53,12 +53,14 @@
                   cast
                 </v-icon>
               </v-list-item-avatar>
-              <v-list-tile-title class="title ml-2" :key="presentation.id + '_title'">
-                {{ presentation.title }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title v-if="presentation.presenter" :key="presentation.id + '_subtitle'">
-                by {{ presentation.presenter.name }}
-              </v-list-tile-sub-title>
+              <v-list-tile-content class="ml-2">
+                <v-list-tile-title class="title" :key="presentation.id + '_title'">
+                  {{ presentation.title }}
+                </v-list-tile-title>
+                <v-list-tile-sub-title v-if="presentation.presenter" :key="presentation.id + '_subtitle'">
+                  by {{ presentation.presenter.name }}
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
             </v-list-tile>
             <v-divider :key="presentation.id + '_divider'" class="mx-2 my-2"></v-divider>
           </template>

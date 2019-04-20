@@ -14,7 +14,7 @@
 
           <template v-for="screen in screens">
             <v-list-tile
-              :to="{ path: screen.id }"
+              :to="{ path: 'screens/' + screen.id }"
               :key="screen.id + '_list'">
               <v-list-tile-title class="title ml-2" :key="screen.id + '_title'">
                 {{ screen.name }}
