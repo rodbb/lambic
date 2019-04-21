@@ -15,12 +15,6 @@ Lambic
 * Firebase
 * firebase-tools
 
-## Usage
-
-以下URLにアクセスする。
-
-`https://<project_id>.firebaseapp.com/`
-
 ## Install
 
 ### セットアップ
