@@ -54,7 +54,7 @@
         </template>
       </v-card>
 
-      <v-card>
+      <v-card v-if="presentation.isAllowComment !== false">
         <v-card-title>
           <h1 class="headline">コメント一覧</h1>
         </v-card-title>
@@ -80,6 +80,11 @@
           <p>まだコメントはありません。</p>
         </v-card-text>
       </v-card>
+      <v-card v-else>
+        <v-card-title>
+          <div class="grey--text">この発表にはコメントできません。</div>
+        </v-card-title>
+      </v-card>
 
       <v-btn
         fixed
@@ -95,6 +100,7 @@
       <v-dialog
         v-model="dialog"
         width="500"
+        v-if="presentation.isAllowComment !== false"
       >
         <v-btn
           slot="activator"
