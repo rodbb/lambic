@@ -15,7 +15,7 @@
       </v-container>
       <v-footer class="pa-3">
         <v-spacer></v-spacer>
-        <div>{{ screenName }}</div>
+        <div class="title">{{ screenName }}</div>
       </v-footer>
     </template>
   </v-app>
