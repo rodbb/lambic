@@ -33,12 +33,12 @@ export default new Router({
       props: true
     },
     {
-      path: '/admin/screens',
+      path: '/screens',
       name: 'adminScreenList',
       component: AdminScreenList
     },
     {
-      path: '/admin/screens/:id',
+      path: '/screens/:id',
       name: 'adminScreenSetting',
       component: AdminScreenSetting,
       props: true
