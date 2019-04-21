@@ -2,7 +2,7 @@
   <v-layout row class="pb-5">
     <v-flex>
 
-      <v-card class="mb-2">
+      <v-card class="mb-2 pb-2">
 
         <v-card-title>
           <div>
@@ -15,7 +15,6 @@
 
         <v-container grid-list-md class="py-0">
           <v-layout row wrap>
-
             <v-flex xs12 sm8>
               <v-select
               :items="events"
@@ -29,20 +28,53 @@
             </v-select>
             </v-flex>
           </v-layout>
+
+          <v-layout row wrap>
+            <v-flex xs12 sm3 xl1>
+              <v-card-title class="px-0 py-0">
+                <strong>表示中の発表：</strong>
+              </v-card-title>
+            </v-flex>
+            <v-flex xs12 sm9 xl11>
+
+              <template v-if="screen && screen.displayPresentationRef">
+                <v-card-title class="px-0 py-0" >
+                  <div class="text-truncate">
+                    {{ getEventTitle(screen.displayPresentationRef.eventId) }}
+                  </div>
+                  <div v-if="screen.displayPresentationRef" class="text-truncate">
+                    &nbsp;>&nbsp;{{ screen.displayPresentationRef.title }}
+                  </div>
+                  <div v-if="screen.displayPresentationRef.presenter" class="text-truncate">
+                    &nbsp;（{{ screen.displayPresentationRef.presenter.name }}）
+                  </div>
+                </v-card-title>
+              </template>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs12>
+              <v-card-actions class="px-0">
+                <v-btn small color="grey lighten-1" @click="initializeScreen()">
+                  表示を停止する
+                </v-btn>
+              </v-card-actions>
+            </v-flex>
+          </v-layout>
         </v-container>
       </v-card>
 
-      <v-card v-if="this.event">
+      <v-card v-if="this.selectedEvent">
         <v-list two-line>
 
-          <template v-for="presentation in event.presentations">
+          <template v-for="presentation in selectedEvent.presentations">
             <v-list-tile
               v-if="presentation.id"
-              @click="selectPresentation"
+              @click="selectPresentation(presentation)"
               :key="presentation.id + '_list'"
               class="my-2">
               <v-list-tile-avatar :key="presentation.id + '_avatar'">
-                <v-icon v-if="presentation.id == screen.displayPresentationId"
+                <v-icon v-if="presentation.id == screen.displayPresentationRef.id"
                   x-large
                   color="orange lighten-1">
                   cast_connected
@@ -65,7 +97,7 @@
             <v-divider :key="presentation.id + '_divider'" class="mx-2 my-2"></v-divider>
           </template>
 
-          <template v-if="event.presentations == 0">
+          <template v-if="selectedEvent.presentations == 0">
             <v-card-text>
               まだ発表はありません。
             </v-card-text>
@@ -88,8 +120,7 @@ export default {
   },
   data () {
     return {
-      selectedEventId: null,
-      event: null
+      selectedEvent: null
     }
   },
   computed: {
@@ -98,21 +129,37 @@ export default {
     },
     events () {
       return this.$store.getters.events
-    },
-    selectedEvent () {
-      return this.event
     }
   },
   methods: {
     setEventsPresentations (eventId) {
       if (!eventId) {
-        this.event = {}
+        this.selectedEvent = {}
       } else {
-        this.event = this.$store.getters.event(eventId)
+        this.selectedEvent = this.$store.getters.event(eventId)
       }
     },
-    selectPresentation () {
-      // TODO:表示中の発表をアップデート
+    selectPresentation (presentation) {
+      const msg = 'スクリーンの表示を「' +
+        presentation.title +
+        '」の情報に変更します。\n' +
+        'よろしいですか？'
+      if (confirm(msg)) {
+        // TODO:表示中の発表をアップデート
+      }
+    },
+    getEventTitle (eventId) {
+      const targetEvent = this.$store.getters.event(eventId)
+      if (targetEvent) {
+        return targetEvent.title
+      } else {
+        return ''
+      }
+    },
+    initializeScreen () {
+      if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
+        // TODO:スクリーンを初期化する処理を入れる
+      }
     }
   }
 }
