@@ -30,15 +30,13 @@
           </v-layout>
 
           <v-layout row wrap>
-            <v-flex xs12 sm3 xl1>
-              <v-card-title class="px-0 py-0">
-                <strong>表示中の発表：</strong>
-              </v-card-title>
-            </v-flex>
             <v-flex xs12 sm9 xl11>
 
               <template v-if="screen && screen.displayPresentationRef">
                 <v-card-title class="px-0 py-0" >
+                  <div>
+                    <strong>表示中の発表：</strong>
+                  </div>
                   <div class="text-truncate">
                     {{ getEventTitle(screen.displayPresentationRef.eventId) }}
                   </div>
