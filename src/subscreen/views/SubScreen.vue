@@ -37,9 +37,11 @@ export default {
     return {
       isLoadong: true,
       screenInfo: null,
-      unsubscribeScreenInfo: null,
       presentation: null,
-      unsubscribePresentation: null
+      unsubscribe: {
+        screenInfo: null,
+        presentation: null
+      }
     }
   },
   computed: {
@@ -56,41 +58,45 @@ export default {
   },
   created () {
     const firestore = firebase.firestore()
-    this.unsubscribeScreenInfo = firestore.collection('screens')
-      .doc(this.id)
-      .onSnapshot((screenDoc) => {
-        if (this.unsubscribePresentation !== null) {
-          this.unsubscribePresentation()
-          this.presentation = null
-        }
-        if (!screenDoc.exists) {
-          this.isLoadong = false
-          return
-        }
-        this.screenInfo = screenDoc.data()
-        if (this.screenInfo.displayPresentationId == null) {
-          this.isLoadong = false
-          return
-        }
-        this.unsubscribePresentation = firestore.collection('presentations')
-          .doc(this.screenInfo.displayPresentationId)
-          .onSnapshot((doc) => {
-            if (doc.exists) {
-              this.presentation = doc.data()
-            } else {
-              console.log('No such document!')
-            }
+    this.unsubscribe.screenInfo =
+      firestore.collection('screens')
+        .doc(this.id)
+        .onSnapshot((screenDoc) => {
+          if (this.unsubscribe.presentation !== null) {
+            this.unsubscribe.presentation()
+            this.presentation = null
+          }
+          if (!screenDoc.exists) {
             this.isLoadong = false
-          }, (error) => {
-            console.log('Error getting document:', error)
-          })
-      }, (error) => {
-        console.log('Error getting document:', error)
-      })
+            return
+          }
+          this.screenInfo = screenDoc.data()
+          if (this.screenInfo.displayPresentationId == null) {
+            this.isLoadong = false
+            return
+          }
+          this.unsubscribe.presentation =
+            firestore.collection('presentations')
+              .doc(this.screenInfo.displayPresentationId)
+              .onSnapshot((doc) => {
+                if (doc.exists) {
+                  this.presentation = doc.data()
+                } else {
+                  console.log('No such document!')
+                }
+                this.isLoadong = false
+              }, (error) => {
+                console.log('Error getting document:', error)
+              })
+        }, (error) => {
+          console.log('Error getting document:', error)
+        })
   },
   beforeDestroy () {
-    if (this.unsubscribeScreenInfo !== null) {
-      this.unsubscribeScreenInfo()
+    for (const unsubscribe of this.unsubscribe) {
+      if (unsubscribe !== null) {
+        unsubscribe()
+      }
     }
   }
 }
