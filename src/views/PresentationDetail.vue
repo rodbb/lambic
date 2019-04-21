@@ -20,6 +20,40 @@
         </v-card-text>
       </v-card>
 
+      <v-card  class="pb-3">
+        <template v-for="(stamp, index) in presentation.stamps">
+          <v-badge bottom overlap v-if="stamp.canUse !== false" :key="index">
+            <template v-slot:badge>
+              <span>{{ stampCount(stamp.id) }}</span>
+            </template>
+            <v-card-actions :key="index">
+              <v-btn
+                icon
+                :key="index"
+                @click="countUpStamp(stamp.id)"
+              >
+              {{ stamp.string }}
+              </v-btn>
+            </v-card-actions>
+          </v-badge>
+          <v-badge bottom overlap v-else color="grey" :key="index">
+            <template v-slot:badge>
+              <span>{{ stampCount(stamp.id) }}</span>
+            </template>
+            <v-card-actions :key="index">
+              <v-btn
+                icon
+                disabled
+                :key="index"
+                @click="countUpStamp(stamp.id)"
+              >
+              {{ stamp.string }}
+              </v-btn>
+            </v-card-actions>
+          </v-badge>
+        </template>
+      </v-card>
+
       <v-card>
         <v-card-title>
           <h1 class="headline">コメント一覧</h1>
@@ -182,6 +216,17 @@ export default {
       this.comment = ''
       this.errors = []
       this.dialog = false
+    },
+    stampCount (stampId) {
+      const presentation = this.$store.getters.presentation(this.id)
+      if (!presentation.hasOwnProperty('stampCounts')) {
+        return 0
+      }
+      const stampCount = presentation.stampCounts.find((c) => c.stampId === stampId)
+      return stampCount ? stampCount.count : 0
+    },
+    countUpStamp (stampId) {
+      this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
     }
   }
 }

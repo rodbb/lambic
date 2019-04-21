@@ -13,6 +13,7 @@ const users = firestore.collection('users')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
+const stamps = firestore.collection('stamps')
 
 Vue.use(Vuex)
 
@@ -22,7 +23,8 @@ export default new Vuex.Store({
     user: null,
     events: [],
     presentations: [],
-    comments: []
+    comments: [],
+    stamps: []
   },
   getters: {
     events (state, getters) {
@@ -49,7 +51,8 @@ export default new Vuex.Store({
             ...pr,
             id: pr.id,
             comments: getters.comments
-              .filter((cm) => cm.presentationId === pr.id)
+              .filter((cm) => cm.presentationId === pr.id),
+            stamps: getters.stamps
           }
         })
     },
@@ -61,6 +64,16 @@ export default new Vuex.Store({
           const dnanosec = a.postedAt.nanoseconds - b.postedAt.nanoseconds
           return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
         })
+    },
+    stamps (state, getters) {
+      return state.stamps
+        .map((st) => {
+          return {
+            ...st,
+            id: st.id
+          }
+        })
+        .sort((a, b) => a.order - b.order)
     },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
@@ -76,6 +89,9 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    countUpStamp (state, payload) {
+      state.presentations.find((e) => e.id === payload.presentationId).stampCounts = payload.stampCounts
+    },
     ...firebaseMutations
   },
   actions: {
@@ -83,6 +99,7 @@ export default new Vuex.Store({
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
+      bindFirebaseRef('stamps', stamps)
     }),
     setUser ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
@@ -111,6 +128,35 @@ export default new Vuex.Store({
         presentationId,
         userRef: users.doc(state.user.id)
       })
+    },
+    countUpStamp ({ commit }, { presentationId, stampId }) {
+      const presentationDoc = presentations.doc(presentationId)
+      presentationDoc
+        .get()
+        .then((presentation) => {
+          if (!presentation.exists) {
+            return
+          }
+          let stampCounts = presentation.get('stampCounts') || []
+          const idx = stampCounts.findIndex(stampCount => stampCount.stampId === stampId)
+          if (idx !== -1) {
+            stampCounts[idx].count++
+          } else {
+            stampCounts.push({
+              stampId: stampId,
+              count: 1
+            })
+          }
+          presentationDoc.update({
+            stampCounts: stampCounts
+          })
+          commit('countUpStamp', {
+            presentationId: presentationId,
+            stampCounts: stampCounts
+          })
+        }).catch((error) => {
+          console.log('Error getting document:', error)
+        })
     }
   }
 })
