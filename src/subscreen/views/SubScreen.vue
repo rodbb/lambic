@@ -120,7 +120,7 @@ export default {
       firestore.collection('screens')
         .doc(this.id)
         .onSnapshot((screenDoc) => {
-          if (this.unsubscribe.presentation !== null) {
+          if (this.unsubscribe.presentation != null) {
             this.unsubscribe.presentation()
             this.presentation = null
           }
@@ -129,13 +129,12 @@ export default {
             return
           }
           this.screenInfo = screenDoc.data()
-          if (this.screenInfo.displayPresentationId == null) {
+          if (this.screenInfo.displayPresentationRef == null) {
             this.isLoadong = false
             return
           }
           this.unsubscribe.presentation =
-            firestore.collection('presentations')
-              .doc(this.screenInfo.displayPresentationId)
+            this.screenInfo.displayPresentationRef
               .onSnapshot((doc) => {
                 if (doc.exists) {
                   this.presentation = doc.data()
@@ -143,8 +142,6 @@ export default {
                   console.log('No such document!')
                 }
                 this.isLoadong = false
-              }, (error) => {
-                console.log('Error getting document:', error)
               })
         }, (error) => {
           console.log('Error getting document:', error)
@@ -169,11 +166,11 @@ export default {
         })
   },
   beforeDestroy () {
-    for (const unsubscribe of this.unsubscribe) {
-      if (unsubscribe !== null) {
+    Object.values(this.unsubscribe)
+      .filter((e) => e != null)
+      .forEach((unsubscribe) => {
         unsubscribe()
-      }
-    }
+      })
   }
 }
 </script>
