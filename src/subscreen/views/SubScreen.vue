@@ -60,7 +60,8 @@ export default {
       stamps: [],
       unsubscribe: {
         screenInfo: null,
-        presentation: null
+        presentation: null,
+        stamps: null
       }
     }
   },
@@ -88,7 +89,7 @@ export default {
           count: 0
         }
       })
-      const blinkStmps = this.stamps.map((stmp) => {
+      const blinkStmps = this.stamps.map((stmp, idx) => {
         const maybeOldStmpCnt = oldCnt.find((cnt) => cnt.stampId === stmp.id)
         const maybeNewStmpCnt = newCnt.find((cnt) => cnt.stampId === stmp.id)
         if (maybeNewStmpCnt == null) {
@@ -98,20 +99,19 @@ export default {
           ? maybeOldStmpCnt.count
           : 0
         const newStmpCnt = maybeNewStmpCnt.count || 0
+        const isCntChanged = oldStmpCnt !== newStmpCnt
+        if (isCntChanged && stmp.blink && stmp.timer != null) {
+          clearTimeout(stmp.timer)
+        }
         return {
           ...stmp,
-          blink: oldStmpCnt !== newStmpCnt
+          blink: isCntChanged,
+          timer: isCntChanged
+            ? setTimeout(() => { this.stamps[idx].blink = false }, 500)
+            : null
         }
       })
       this.stamps = blinkStmps
-      setTimeout(() => {
-        this.stamps = blinkStmps.map((stmp) => {
-          return {
-            ...stmp,
-            blink: false
-          }
-        })
-      }, 500)
     }
   },
   created () {
@@ -157,6 +157,7 @@ export default {
               stamps.push({
                 id: doc.id,
                 blink: false,
+                timer: null,
                 ...d
               })
             })
