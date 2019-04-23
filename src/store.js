@@ -58,6 +58,7 @@ export default new Vuex.Store({
     },
     comments (state) {
       return state.comments
+        .slice()
         .sort((a, b) => {
           // 投稿日時の昇順にソート
           const dsec = a.postedAt.seconds - b.postedAt.seconds
