@@ -155,7 +155,12 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
-        // TODO:表示中の発表をアップデート
+        const screenInfo = this.$store.getters.screen(this.id)
+        this.$store.dispatch('updateScreen', {
+          screenId: this.id,
+          name: targetPresentation.name,
+          displayPresentationRef: targetPresentation.id
+        })
       }
     },
     /*
