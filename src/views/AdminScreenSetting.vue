@@ -122,14 +122,23 @@ export default {
     }
   },
   computed: {
+    /*
+     * スクリーン情報取得
+     */
     screen () {
       return this.$store.getters.screen(this.id)
     },
+    /*
+     * イベント情報取得
+     */
     events () {
       return this.$store.getters.events
     }
   },
   methods: {
+    /*
+     * プレゼンを表示するイベントをセットする
+     */
     setEventsPresentations (eventId) {
       if (!eventId) {
         this.selectedEvent = {}
@@ -137,15 +146,21 @@ export default {
         this.selectedEvent = this.$store.getters.event(eventId)
       }
     },
-    selectPresentation (presentation) {
+    /*
+     * スクリーンに表示するプレゼンをセット
+     */
+    selectPresentation (targetPresentation) {
       const msg = 'スクリーンの表示を「' +
-        presentation.title +
+        targetPresentation.title +
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
         // TODO:表示中の発表をアップデート
       }
     },
+    /*
+     * イベント名を取得
+     */
     getEventTitle (eventId) {
       const targetEvent = this.$store.getters.event(eventId)
       if (targetEvent) {
@@ -154,6 +169,9 @@ export default {
         return ''
       }
     },
+    /*
+     * スクリーンを初期化する
+     */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
         // TODO:スクリーンを初期化する処理を入れる
