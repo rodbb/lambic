@@ -9,7 +9,7 @@
             <div v-if="screen" class="grey--text">
               {{ screen.name }}
             </div>
-            <h3 class="headline mb-0">スクリーン管理</h3>
+            <h3 class="headline mb-0">スクリーンの管理</h3>
           </div>
         </v-card-title>
 
