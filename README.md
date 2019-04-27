@@ -1,70 +1,68 @@
-## Welcome to GitHub Pages
+Lambic
+==========
 
-You can use the [editor on GitHub](https://github.com/rodbb/lambic/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+ビアバッシュを醸すWebアプリ
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+## Description
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+社内勉強会であるビアバッシュを盛り上げるためのアプリケーション。
+発表の内容参照や、発表に対するレスポンスを行うことができる。
 
-```markdown
-Syntax highlighted code block
+## Requirement
 
-# Header 1
-## Header 2
-### Header 3
+* npm
+* Firebase
+* firebase-tools
 
-- Bulleted
-- List
+## Install
 
-1. Numbered
-2. List
+### セットアップ
 
-**Bold** and _Italic_ and `Code` text
+事前に Firebase のプロジェクトを作成しておく。
 
-[Link](url) and ![Image](src)
+```bash
+$ git clone git@github.com:rodbb/lambic.git
+
+$ cd lambic
+$ npm install
+
+# 使用するFirebaseプロジェクトの設定
+$ npx firebase login
+$ npx firebase use ${プロジェクトID}
+
+$ cd functions
+$ npm install
+
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### 開発用のコンパイルとホットリロード
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/rodbb/lambic/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
-
-## Project setup
-```
-npm install
+```bash
+$ npm run serve
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### 本番用のコンパイルとミニフィ
+
+```bash
+$ cd lambic
+$ npm run build
 ```
 
-### Compiles and minifies for production
-```
-npm run build
+### Firebase Hosting にデプロイ
+
+コンパイル後に以下を実行
+
+```bash
+$ cd lambic
+
+# デプロイするプロジェクトを変更する場合、使用するプロジェクトを指定
+$ npx firebase use ${プロジェクトID}
+
+# デプロイ
+$ npx firebase deploy
 ```
 
-### Run your tests
-```
-npm run test
-```
+## Licence
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[MIT](https://github.com/rodbb/lambic/blob/master/LICENSE)
