@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import moment from 'moment'
 export default {
   name: 'presentation',
   props: {
@@ -162,7 +162,7 @@ export default {
       return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
     },
     moment: function (date) {
-      return moment(date).format('YYYY/MM/DD HH:mm');
+      return moment(date).format('YYYY/MM/DD HH:mm')
     }
   },
   methods: {
