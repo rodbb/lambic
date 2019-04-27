@@ -7,7 +7,7 @@
           <v-layout align-center mb-3 class="grey--text">
             <span>{{ event.title }}</span>
             <v-spacer></v-spacer>
-            <span>{{ event.date.seconds | dateTime }}</span>
+            <span>{{ event.date.seconds | dateFormat }}</span>
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
           <div  v-if="presentation.presenter" class="grey--text mb-3">
@@ -36,7 +36,7 @@
                 （削除されたユーザ）
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt.seconds | moment }}
+              <span>{{ comment.postedAt.seconds | dateFormat }}
               </span>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
@@ -158,10 +158,7 @@ export default {
     }
   },
   filters: {
-    dateTime (seconds) {
-      return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
-    },
-    moment: function (date) {
+    dateFormat (date) {
       return moment(date).format('YYYY/MM/DD HH:mm')
     }
   },
