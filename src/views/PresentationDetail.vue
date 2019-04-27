@@ -159,7 +159,7 @@ export default {
   },
   filters: {
     dateFormat (date) {
-      return moment(date).format('YYYY/MM/DD HH:mm')
+      return moment(date, 'X').format('YYYY/MM/DD HH:mm')
     }
   },
   methods: {
