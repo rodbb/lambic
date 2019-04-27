@@ -135,6 +135,9 @@ export default new Vuex.Store({
         presentationId,
         userRef: users.doc(state.user.id)
       })
+    },
+    updateScreen ({ state }, screenInfo) {
+      console.log(screenInfo)
     }
   }
 })
