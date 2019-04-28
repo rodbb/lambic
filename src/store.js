@@ -66,6 +66,9 @@ export default new Vuex.Store({
           return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
         })
     },
+    user (state) {
+      return state.user
+    },
     stamps (state, getters) {
       return state.stamps
         .map((st) => {
@@ -97,30 +100,41 @@ export default new Vuex.Store({
   },
   actions: {
     initStore: firebaseAction(({ bindFirebaseRef }) => {
+      bindFirebaseRef('users', users)
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
       bindFirebaseRef('stamps', stamps)
     }),
-    setUser ({ commit }, auth) {
+    login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
-        .then((user) => {
-          if (user.exists) {
+        .then((authUserInfo) => {
+          if (authUserInfo.exists) {
             commit('setUser', {
-              id: user.id,
-              name: user.name
+              id: authUserInfo.id,
+              name: authUserInfo.data().name,
+              photoURL: authUserInfo.data().photoURL
             })
           } else {
             userDoc
               .set({
-                name: auth.displayName || auth.isAnonymous ? 'anonymous' : ''
+                name: auth.displayName,
+                photoURL: auth.photoURL
               })
+            commit('setUser', {
+              id: auth.uid,
+              name: auth.displayName,
+              photoURL: auth.photoURL
+            })
           }
         }).catch((error) => {
           console.log('Error getting document:', error)
         })
+    },
+    logout ({ commit }) {
+      commit('setUser', null)
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
