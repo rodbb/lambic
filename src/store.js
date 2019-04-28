@@ -136,8 +136,11 @@ export default new Vuex.Store({
         userRef: users.doc(state.user.id)
       })
     },
+    /*
+     * screenドキュメントを更新する
+     */
     updateScreen ({ state }, screenInfo) {
-      console.log(screenInfo)
+      screens.doc(screenInfo.id).set(screenInfo)
     }
   }
 })
