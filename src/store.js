@@ -140,6 +140,12 @@ export default new Vuex.Store({
      * screenドキュメントを更新する
      */
     updateScreen ({ state }, screenInfo) {
+      if (screenInfo.displayPresentationRef) {
+        // 参照値を取得してから更新
+        screenInfo.displayPresentationRef = presentations.doc(screenInfo.displayPresentationRef.id)
+      } else {
+        screenInfo.displayPresentationRef = null
+      }
       screens.doc(screenInfo.id).set(screenInfo)
     }
   }

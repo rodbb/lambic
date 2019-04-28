@@ -32,11 +32,11 @@
           <v-layout row wrap>
             <v-flex xs12 sm9 xl11>
 
-              <template v-if="screen && screen.displayPresentationRef">
-                <v-card-title class="px-0 py-0" >
-                  <div>
-                    <strong>表示中の発表：</strong>
-                  </div>
+              <v-card-title class="px-0 py-0" >
+                <div>
+                  <strong>表示中の発表：</strong>
+                </div>
+                <template v-if="screen && screen.displayPresentationRef">
                   <div class="text-truncate">
                     {{ getEventTitle(screen.displayPresentationRef.eventId) }}
                   </div>
@@ -46,8 +46,13 @@
                   <div v-if="screen.displayPresentationRef.presenter" class="text-truncate">
                     &nbsp;（{{ screen.displayPresentationRef.presenter.name }}）
                   </div>
-                </v-card-title>
-              </template>
+                </template>
+                <template v-else>
+                  <div>
+                    なし
+                  </div>
+                </template>
+              </v-card-title>
             </v-flex>
           </v-layout>
           <v-layout row wrap>
@@ -72,7 +77,7 @@
               :key="presentation.id + '_list'"
               class="my-2">
               <v-list-tile-avatar :key="presentation.id + '_avatar'">
-                <v-icon v-if="presentation.id == screen.displayPresentationRef.id"
+                <v-icon v-if="screen.displayPresentationRef && presentation.id == screen.displayPresentationRef.id"
                   x-large
                   color="orange lighten-1">
                   cast_connected
@@ -155,9 +160,10 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
+        const targetPresentationRef = this.$store.getters.presentation(targetPresentation.id)
         this.$store.dispatch('updateScreen', {
           id: this.id,
-          displayPresentationRef: targetPresentation
+          displayPresentationRef: targetPresentationRef
         })
       }
     },
@@ -177,7 +183,10 @@ export default {
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
-        // TODO:スクリーンを初期化する処理を入れる
+        this.$store.dispatch('updateScreen', {
+          id: this.id,
+          displayPresentationRef: null
+        })
       }
     }
   }
