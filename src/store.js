@@ -14,6 +14,7 @@ const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
 const stamps = firestore.collection('stamps')
+const stampCounts = firestore.collection('stampCounts')
 
 Vue.use(Vuex)
 
@@ -24,7 +25,8 @@ export default new Vuex.Store({
     events: [],
     presentations: [],
     comments: [],
-    stamps: []
+    stamps: [],
+    stampCounts: []
   },
   getters: {
     events (state, getters) {
@@ -79,6 +81,15 @@ export default new Vuex.Store({
         })
         .sort((a, b) => a.order - b.order)
     },
+    stampCounts (state, getters) {
+      return state.stampCounts
+        .map((sc) => {
+          return {
+            ...sc,
+            id: sc.id
+          }
+        })
+    },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
@@ -87,6 +98,10 @@ export default new Vuex.Store({
     },
     comment (state, getters) {
       return (id) => getters.comments.find((e) => e.id === id)
+    },
+    stampCount (state, getters) {
+      return (pId, sId) => getters.stampCounts
+        .find((e) => e.presentationId === pId && e.stampId === sId)
     }
   },
   mutations: {
@@ -105,6 +120,7 @@ export default new Vuex.Store({
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
       bindFirebaseRef('stamps', stamps)
+      bindFirebaseRef('stampCounts', stampCounts)
     }),
     login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
@@ -145,33 +161,25 @@ export default new Vuex.Store({
       })
     },
     countUpStamp ({ commit }, { presentationId, stampId }) {
-      const presentationDoc = presentations.doc(presentationId)
-      presentationDoc
-        .get()
-        .then((presentation) => {
-          if (!presentation.exists) {
-            return
-          }
-          let stampCounts = presentation.get('stampCounts') || []
-          const idx = stampCounts.findIndex(stampCount => stampCount.stampId === stampId)
-          if (idx !== -1) {
-            stampCounts[idx].count++
-          } else {
-            stampCounts.push({
-              stampId: stampId,
-              count: 1
-            })
-          }
-          presentationDoc.update({
-            stampCounts: stampCounts
-          })
-          commit('countUpStamp', {
-            presentationId: presentationId,
-            stampCounts: stampCounts
-          })
-        }).catch((error) => {
-          console.log('Error getting document:', error)
+      const stampCount = this.getters.stampCount(presentationId, stampId)
+      let promise = new Promise((resolve) => resolve(stampCount))
+      if (!stampCount) {
+        promise = stampCounts.add({
+          presentationId: presentationId,
+          stampId: stampId,
+          count: 0
         })
+      }
+      promise.then((added) => {
+        const stampCountDoc = stampCounts.doc(added.id)
+        stampCountDoc
+          .get()
+          .then(() => {
+            stampCountDoc.update({
+              count: firebase.firestore.FieldValue.increment(1)
+            })
+          })
+      })
     }
   }
 })

@@ -45,7 +45,6 @@
                 icon
                 disabled
                 :key="index"
-                @click="countUpStamp(stamp.id)"
               >
               {{ stamp.string }}
               </v-btn>
@@ -224,11 +223,7 @@ export default {
       this.dialog = false
     },
     stampCount (stampId) {
-      const presentation = this.$store.getters.presentation(this.id)
-      if (!presentation.hasOwnProperty('stampCounts')) {
-        return 0
-      }
-      const stampCount = presentation.stampCounts.find((c) => c.stampId === stampId)
+      const stampCount = this.$store.getters.stampCount(this.id, stampId)
       return stampCount ? stampCount.count : 0
     },
     countUpStamp (stampId) {
