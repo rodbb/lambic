@@ -30,7 +30,7 @@
             <v-layout align-center mb-3>
               <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
               <strong v-if="comment.userRef" class="title text-truncate">
-                {{comment.userRef.name}}
+                {{ comment.userRef.name }}
               </strong>
               <strong v-else class="text-truncate">
                 （削除されたユーザ）
