@@ -60,7 +60,7 @@ export default {
   },
   filters: {
     dateFormat (date) {
-      return moment(date).format('YYYY/MM/DD（ddd）')
+      return moment(date, 'X').format('YYYY/MM/DD（ddd）')
     }
   }
 }
