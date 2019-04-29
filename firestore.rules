@@ -1,6 +1,15 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
+    match /events/{document=**} {
+      allow read, write: if true;
+    }
+    match /comments/{document=**} {
+      allow read, write: if request.auth.uid != null;
+    }
+    match /presentations/{document=**} {
+      allow read, write: if true;
+    }
+    match /users/{document=**} {
       allow read, write: if request.auth.uid != null;
     }
   }
