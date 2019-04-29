@@ -173,6 +173,9 @@ export default {
       errors: []
     }
   },
+  created () {
+    this.$store.dispatch('watchStampCount', { presentationId: this.id })
+  },
   computed: {
     presentation () {
       return this.$store.getters.presentation(this.id)
@@ -223,8 +226,8 @@ export default {
       this.dialog = false
     },
     stampCount (stampId) {
-      const stampCount = this.$store.getters.stampCount(this.id, stampId)
-      return stampCount ? stampCount.count : 0
+      const countObj = this.$store.getters.count(stampId)
+      return countObj ? countObj.count : 0
     },
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
