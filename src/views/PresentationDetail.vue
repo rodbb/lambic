@@ -29,7 +29,7 @@
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
               <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
-              <strong v-if="comment.userRef" class="title text-truncate">
+              <strong v-if="comment.userRef" class="text-truncate">
                 {{ comment.userRef.name }}
               </strong>
               <strong v-else class="text-truncate">
