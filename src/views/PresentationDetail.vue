@@ -123,7 +123,7 @@
           </v-card-actions>
           <v-card-actions class="justify-center">
             <v-btn class="mt-3 mb-3"
-              color="warning"
+              color="success"
               :to="{ path: '/login' }"
             >
               ログインする
