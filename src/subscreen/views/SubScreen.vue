@@ -4,7 +4,7 @@
       <v-toolbar-title>{{ presentationTitle }}</v-toolbar-title>
     </v-toolbar>
     <v-progress-linear v-if="isLoadong" :indeterminate="isLoadong"></v-progress-linear>
-    <template v-else>
+    <v-content v-else>
       <v-container fluid>
         <v-layout
           row
@@ -32,11 +32,11 @@
           </template>
         </v-layout>
       </v-container>
-      <v-footer class="pa-3">
+      <v-footer class="pa-3" app>
         <v-spacer></v-spacer>
         <div class="title">{{ screenName }}</div>
       </v-footer>
-    </template>
+    </v-content>
   </v-app>
 </template>
 
