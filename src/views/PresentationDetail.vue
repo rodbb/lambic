@@ -28,7 +28,13 @@
           <v-divider :key="comment.id + '-divider'"></v-divider>
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
-              <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
+              <v-list-tile-avatar
+                v-if="comment.userRef !== null && comment.userRef.photoURL"
+                class="mr-3"
+              >
+                <img v-bind:src="comment.userRef.photoURL">
+              </v-list-tile-avatar>
+              <v-list-tile-avatar v-else color="grey" class="mr-3"></v-list-tile-avatar>
               <strong v-if="comment.userRef" class="title">
                 {{ comment.userRef.name }}
               </strong>
