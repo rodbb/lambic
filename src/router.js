@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './views/Login.vue'
+import EditLoginUser from './views/EditLoginUser.vue'
 import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
@@ -18,6 +19,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/loginUser',
+      name: 'editLoginUser',
+      component: EditLoginUser
     },
     {
       path: '/events/:id',
