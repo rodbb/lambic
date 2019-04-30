@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-toolbar>
-      <v-toolbar-title>{{ presentationTitle }}</v-toolbar-title>
+    <v-toolbar height="150">
+      <v-toolbar-title class="display-4">{{ presentationTitle }}</v-toolbar-title>
     </v-toolbar>
     <v-progress-linear v-if="isLoadong" :indeterminate="isLoadong"></v-progress-linear>
     <v-content v-else>
