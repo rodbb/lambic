@@ -13,7 +13,7 @@
               <v-list-tile v-for="screen in screens" :key="screen.id" :to="{ path: screen.id }">
                 <v-list-tile-content>
                   <v-list-tile-title class="title">
-                    {{ screen.name }}
+                    {{ screen.name || '（名称未設定の会場）' }}
                   </v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>

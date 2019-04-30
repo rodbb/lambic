@@ -74,7 +74,7 @@ export default {
     screenName () {
       return (this.screenInfo !== null && this.screenInfo.name)
         ? this.screenInfo.name
-        : ''
+        : '（名称未設定の会場）'
     }
   },
   watch: {
