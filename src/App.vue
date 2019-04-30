@@ -4,7 +4,15 @@
       <v-toolbar flat>
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
-            <v-list-tile-title class="title">Lambic</v-list-tile-title>
+            <v-avatar size="50">
+              <img :src="imagePath('lambic_logo_1\.png')">
+            </v-avatar>
+            <v-avatar size="150">
+              <img :src="imagePath('lambic_logo_2\.png')">
+            </v-avatar>
+            <v-avatar size="50">
+              <img :src="imagePath('lambic_logo_1\.png')">
+            </v-avatar>
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -109,6 +117,9 @@ export default {
         })
         this.$store.dispatch('logout')
       }
+    },
+    imagePath (fileName) {
+      return require('@/assets/' + fileName)
     }
   }
 }
@@ -121,5 +132,8 @@ export default {
     width: 100%;
     display: flex;
     justify-content: center;
+}
+img {
+    object-fit: contain;
 }
 </style>
