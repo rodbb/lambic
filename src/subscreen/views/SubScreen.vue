@@ -1,7 +1,10 @@
 <template>
   <v-app>
-    <v-toolbar height="150">
+    <v-toolbar height="150" extended>
       <v-toolbar-title class="display-4">{{ presentationTitle }}</v-toolbar-title>
+      <template v-slot:extension>
+        <div class="display-2 text-truncate">{{ presenterName }}</div>
+      </template>
     </v-toolbar>
     <v-progress-linear v-if="isLoadong" :indeterminate="isLoadong"></v-progress-linear>
     <v-content v-else>
@@ -71,6 +74,11 @@ export default {
         ? this.presentation.title
         : ''
     },
+    presenterName () {
+      return (this.presentation !== null && this.presentation.presenter != null)
+        ? this.presentation.presenter.name
+        : ''
+    },
     screenName () {
       return (this.screenInfo !== null && this.screenInfo.name)
         ? this.screenInfo.name
@@ -135,9 +143,14 @@ export default {
           }
           this.unsubscribe.presentation =
             this.screenInfo.displayPresentationRef
-              .onSnapshot((doc) => {
+              .onSnapshot(async (doc) => {
                 if (doc.exists) {
-                  this.presentation = doc.data()
+                  const presentation = doc.data()
+                  const presenter = await presentation.presenter.get()
+                  this.presentation = {
+                    ...presentation,
+                    presenter: presenter.exists ? presenter.data() : null
+                  }
                 } else {
                   console.log('No such document!')
                 }
