@@ -151,7 +151,7 @@ export default new Vuex.Store({
     },
     logout ({ commit }) {
       commit('setUser', null)
-      commit('permission', null)
+      commit('setPermission', null)
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
