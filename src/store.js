@@ -13,6 +13,7 @@ const users = firestore.collection('users')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
+const permissions = firestore.collection('permissions')
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     user: null,
+    permission: null,
     events: [],
     presentations: [],
     comments: []
@@ -66,6 +68,9 @@ export default new Vuex.Store({
     user (state) {
       return state.user
     },
+    permission (state) {
+      return state.permission
+    },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
@@ -80,6 +85,9 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    setPermission (state, payload) {
+      state.permission = payload
+    },
     ...firebaseMutations
   },
   actions: {
@@ -89,13 +97,13 @@ export default new Vuex.Store({
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
     }),
-    login ({ commit }, auth) {
+    login (context, auth) {
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
         .then((authUserInfo) => {
           if (authUserInfo.exists) {
-            commit('setUser', {
+            context.commit('setUser', {
               id: authUserInfo.id,
               name: authUserInfo.data().name,
               photoURL: authUserInfo.data().photoURL
@@ -106,18 +114,30 @@ export default new Vuex.Store({
                 name: auth.displayName,
                 photoURL: auth.photoURL
               })
-            commit('setUser', {
+            context.commit('setUser', {
               id: auth.uid,
               name: auth.displayName,
               photoURL: auth.photoURL
             })
           }
+          // 権限情報取得
+          permissions
+            .where('userId', '==', auth.uid)
+            .get()
+            .then(function (querySnapshot) {
+              if (!querySnapshot.empty) {
+                context.commit('setPermission', querySnapshot.docs[0].data())
+              } else {
+                context.commit('setPermission', null)
+              }
+            })
         }).catch((error) => {
           console.log('Error getting document:', error)
         })
     },
     logout ({ commit }) {
       commit('setUser', null)
+      commit('permission', null)
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
