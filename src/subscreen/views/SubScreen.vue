@@ -1,10 +1,13 @@
 <template>
   <v-app>
-    <v-toolbar>
-      <v-toolbar-title>{{ presentationTitle }}</v-toolbar-title>
+    <v-toolbar height="150" extended>
+      <v-toolbar-title class="display-4">{{ presentationTitle }}</v-toolbar-title>
+      <template v-slot:extension>
+        <div class="display-2 text-truncate">{{ presenterName }}</div>
+      </template>
     </v-toolbar>
     <v-progress-linear v-if="isLoadong" :indeterminate="isLoadong"></v-progress-linear>
-    <template v-else>
+    <v-content v-else>
       <v-container fluid>
         <v-layout
           row
@@ -32,11 +35,11 @@
           </template>
         </v-layout>
       </v-container>
-      <v-footer class="pa-3">
+      <v-footer class="pa-3" app>
         <v-spacer></v-spacer>
         <div class="title">{{ screenName }}</div>
       </v-footer>
-    </template>
+    </v-content>
   </v-app>
 </template>
 
@@ -71,10 +74,15 @@ export default {
         ? this.presentation.title
         : ''
     },
+    presenterName () {
+      return (this.presentation !== null && this.presentation.presenter != null)
+        ? this.presentation.presenter.name
+        : ''
+    },
     screenName () {
       return (this.screenInfo !== null && this.screenInfo.name)
         ? this.screenInfo.name
-        : ''
+        : '（名称未設定の会場）'
     }
   },
   watch: {
@@ -135,9 +143,14 @@ export default {
           }
           this.unsubscribe.presentation =
             this.screenInfo.displayPresentationRef
-              .onSnapshot((doc) => {
+              .onSnapshot(async (doc) => {
                 if (doc.exists) {
-                  this.presentation = doc.data()
+                  const presentation = doc.data()
+                  const presenter = await presentation.presenter.get()
+                  this.presentation = {
+                    ...presentation,
+                    presenter: presenter.exists ? presenter.data() : null
+                  }
                 } else {
                   console.log('No such document!')
                 }
