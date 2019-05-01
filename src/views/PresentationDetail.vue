@@ -123,14 +123,14 @@
           </v-card-actions>
           <v-card-actions class="justify-center">
             <v-btn class="mt-3 mb-3"
-              color="success"
+              color="light-green"
               :to="{ path: '/login' }"
             >
               ログインする
             </v-btn>
           </v-card-actions>
           <v-card-actions class="justify-center">
-            <p class="mb-3">ログインすると発表にコメントできます</p>
+            <p class="mb-3">ログインすると発表にコメントできます。</p>
           </v-card-actions>
         </v-card>
       </v-dialog>
