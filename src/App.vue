@@ -39,7 +39,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-tile v-if="permission && permission.isAdmin" :to="{name: 'adminScreenList' }">
+        <v-list-tile v-if="user && user.isAdmin" :to="{name: 'adminScreenList' }">
           <v-list-tile-action>
             <v-icon>cast</v-icon>
           </v-list-tile-action>
@@ -94,9 +94,6 @@ export default {
     },
     user () {
       return this.$store.getters.user
-    },
-    permission () {
-      return this.$store.getters.permission
     }
   },
   beforeCreate () {

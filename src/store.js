@@ -21,7 +21,6 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     user: null,
-    permission: null,
     events: [],
     presentations: [],
     comments: [],
@@ -72,9 +71,6 @@ export default new Vuex.Store({
     user (state) {
       return state.user
     },
-    permission (state) {
-      return state.permission
-    },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
@@ -98,9 +94,6 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
-    setPermission (state, payload) {
-      state.permission = payload
-    },
     ...firebaseMutations
   },
   actions: {
@@ -111,16 +104,17 @@ export default new Vuex.Store({
       bindFirebaseRef('comments', comments)
       bindFirebaseRef('screens', screens)
     }),
-    login (context, auth) {
+    login ({ commit, getters }, auth) {
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
         .then((authUserInfo) => {
           if (authUserInfo.exists) {
-            context.commit('setUser', {
+            commit('setUser', {
               id: authUserInfo.id,
               name: authUserInfo.data().name,
-              photoURL: authUserInfo.data().photoURL
+              photoURL: authUserInfo.data().photoURL,
+              isAdmin: false
             })
           } else {
             userDoc
@@ -128,10 +122,11 @@ export default new Vuex.Store({
                 name: auth.displayName,
                 photoURL: auth.photoURL
               })
-            context.commit('setUser', {
+            commit('setUser', {
               id: auth.uid,
               name: auth.displayName,
-              photoURL: auth.photoURL
+              photoURL: auth.photoURL,
+              isAdmin: false
             })
           }
           // 権限情報取得
@@ -140,9 +135,13 @@ export default new Vuex.Store({
             .get()
             .then(function (querySnapshot) {
               if (!querySnapshot.empty) {
-                context.commit('setPermission', querySnapshot.docs[0].data())
-              } else {
-                context.commit('setPermission', null)
+                const userInfo = getters.user
+                commit('setUser', {
+                  id: userInfo.id,
+                  name: userInfo.name,
+                  photoURL: userInfo.photoURL,
+                  isAdmin: querySnapshot.docs[0].data().isAdmin
+                })
               }
             })
         }).catch((error) => {
@@ -151,7 +150,6 @@ export default new Vuex.Store({
     },
     logout ({ commit }) {
       commit('setUser', null)
-      commit('setPermission', null)
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
