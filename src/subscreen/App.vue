@@ -12,12 +12,6 @@ export default {
   beforeCreate () {
     const firestore = firebase.firestore()
     firestore.settings({})
-    firebase
-      .auth()
-      .signInAnonymously()
-      .catch((e) => {
-        alert(e.message)
-      })
   }
 }
 </script>
