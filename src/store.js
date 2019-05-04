@@ -94,6 +94,12 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    /*
+     * userオブジェクトにisAdminフラグをセットする
+     */
+    setAdminPermission (state, payload) {
+      state.user.isAdmin = payload
+    },
     ...firebaseMutations
   },
   actions: {
@@ -130,20 +136,18 @@ export default new Vuex.Store({
             })
           }
           // 権限情報取得
-          permissions
-            .where('userId', '==', auth.uid)
-            .get()
-            .then(function (querySnapshot) {
-              if (!querySnapshot.empty) {
-                const userInfo = getters.user
-                commit('setUser', {
-                  id: userInfo.id,
-                  name: userInfo.name,
-                  photoURL: userInfo.photoURL,
-                  isAdmin: querySnapshot.docs[0].data().isAdmin
-                })
-              }
-            })
+          const userInfo = getters.user
+          // ユーザ情報取得済みの場合
+          if (userInfo !== null) {
+            permissions
+              .where('userId', '==', auth.uid)
+              .get()
+              .then(function (querySnapshot) {
+                if (!querySnapshot.empty) {
+                  commit('setAdminPermission', querySnapshot.docs[0].data().isAdmin)
+                }
+              })
+          }
         }).catch((error) => {
           console.log('Error getting document:', error)
         })
