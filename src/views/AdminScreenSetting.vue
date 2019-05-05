@@ -171,9 +171,11 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
+        const screenInfo = this.$store.getters.screen(this.id)
         const targetPresentationRef = this.$store.getters.presentationRef(targetPresentation.id)
         this.$store.dispatch('updateScreen', {
           id: this.id,
+          name: screenInfo.name,
           displayPresentationRef: targetPresentationRef
         })
       }
