@@ -116,13 +116,24 @@ export default new Vuex.Store({
         .get()
         .then((authUserInfo) => {
           if (authUserInfo.exists) {
+            // 登録済みユーザの場合
             commit('setUser', {
               id: authUserInfo.id,
               name: authUserInfo.data().name,
               photoURL: authUserInfo.data().photoURL,
               isAdmin: false
             })
+            // 権限情報の取得
+            permissions
+              .where('userId', '==', authUserInfo.id)
+              .get()
+              .then(function (querySnapshot) {
+                if (!querySnapshot.empty) {
+                  commit('setAdminPermission', querySnapshot.docs[0].data().isAdmin)
+                }
+              })
           } else {
+            // 未登録ユーザの場合
             userDoc
               .set({
                 name: auth.displayName,
@@ -134,19 +145,6 @@ export default new Vuex.Store({
               photoURL: auth.photoURL,
               isAdmin: false
             })
-          }
-          // 権限情報取得
-          const userInfo = getters.user
-          // ユーザ情報取得済みの場合
-          if (userInfo !== null) {
-            permissions
-              .where('userId', '==', auth.uid)
-              .get()
-              .then(function (querySnapshot) {
-                if (!querySnapshot.empty) {
-                  commit('setAdminPermission', querySnapshot.docs[0].data().isAdmin)
-                }
-              })
           }
         }).catch((error) => {
           console.log('Error getting document:', error)
