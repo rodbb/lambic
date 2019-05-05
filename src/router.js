@@ -6,6 +6,7 @@ import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
 import AdminScreenSetting from './views/AdminScreenSetting.vue'
 import AdminScreenList from './views/AdminScreenList.vue'
+import Error from './views/Error.vue'
 
 Vue.use(Router)
 
@@ -41,13 +42,24 @@ export default new Router({
     {
       path: '/screens',
       name: 'adminScreenList',
-      component: AdminScreenList
+      component: AdminScreenList,
+      meta: { needsAdmin: true }
     },
     {
       path: '/screens/:id',
       name: 'adminScreenSetting',
       component: AdminScreenSetting,
-      props: true
+      props: true,
+      meta: { needsAdmin: true }
+    },
+    {
+      path: '/error',
+      name: 'error',
+      component: Error
+    },
+    {
+      path: '/*',
+      redirect: '/error'
     }
   ],
   scrollBehavior (to, from, savedPosition) {
