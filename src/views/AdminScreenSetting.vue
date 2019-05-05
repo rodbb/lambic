@@ -194,8 +194,10 @@ export default {
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
+        const screenInfo = this.$store.getters.screen(this.id)
         this.$store.dispatch('updateScreen', {
-          id: this.id,
+          id: screenInfo.id,
+          name: screenInfo.name,
           displayPresentationRef: null
         })
       }
