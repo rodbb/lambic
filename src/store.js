@@ -104,7 +104,7 @@ export default new Vuex.Store({
       bindFirebaseRef('comments', comments)
       bindFirebaseRef('screens', screens)
     }),
-    login ({ commit, getters }, auth) {
+    login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
       userDoc
         .get()
