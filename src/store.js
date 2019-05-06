@@ -119,6 +119,14 @@ export default new Vuex.Store({
     logout ({ commit }) {
       commit('setUser', null)
     },
+    updateUserInfo ({ getters, commit }, newUserInfo) {
+      const oldUserInfo = getters.user
+      commit('setUser', {
+        id: oldUserInfo.id,
+        name: newUserInfo.name,
+        photoURL: oldUserInfo.photoURL
+      })
+    },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
         comment,

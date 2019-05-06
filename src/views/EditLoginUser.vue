@@ -1,5 +1,5 @@
 <template>
-  <v-layout v-if="user" row wrap class="pb-5">
+  <v-layout row wrap class="pb-5">
     <v-flex>
       <v-card>
         <v-card-title primary-title>
@@ -12,9 +12,9 @@
             </v-flex>
           </v-layout>
           <v-layout row>
-            <v-flex xs12 md6>
+            <v-flex xs12 md5>
               <v-text-field
-                v-bind:value="user.name"
+                v-model="name"
                 placeholder="ユーザ名を入力してください"
                 solo
               ></v-text-field>
@@ -22,7 +22,7 @@
           </v-layout>
           <v-layout row>
             <v-flex xs12 md6>
-              <v-btn color="green">更新する</v-btn>
+              <v-btn @click="updateUserInfo" color="green">更新する</v-btn>
             </v-flex>
           </v-layout>
         </v-container>
@@ -34,9 +34,19 @@
 <script>
 export default {
   name: 'editLoginUser',
+  data () {
+    return {
+      name: ''
+    }
+  },
   computed: {
     user () {
       return this.$store.getters.user
+    }
+  },
+  methods: {
+    updateUserInfo () {
+      this.$store.dispatch('updateUserInfo', { name: this.name })
     }
   }
 }
