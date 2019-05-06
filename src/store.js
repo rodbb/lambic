@@ -72,7 +72,7 @@ export default new Vuex.Store({
     user (state) {
       return state.user
     },
-    stamps (state, getters) {
+    stamps (state) {
       return state.stamps
         .map((st) => {
           return {
@@ -165,7 +165,8 @@ export default new Vuex.Store({
       })
     },
     watchStampCount ({ commit }, { presentationId }) {
-      // サブコレクションに対してbindFirebaseRefができないようなので自前で監視処理を実装
+      // サブコレクションに対するbindFirebaseRefの適用方法が不明なため、
+      // shardsの監視処理は自前で実装
       stampCounts
         .where('presentationId', '==', presentationId)
         .get()
@@ -193,40 +194,14 @@ export default new Vuex.Store({
     countUpStamp ({ commit }, { presentationId, stampId }) {
       const stampCount = this.getters.stampCounts
         .find((e) => e.presentationId === presentationId && e.stampId === stampId)
-      if (!stampCount) {
-        // 以下は初回にスタンプを押した場合の処理
-        // 課題：複数人が同時に押すと、ドキュメントが複数作成されてしまう
-        // →事前に作っておくことが一番簡単な対策...
-        //   補足：現時点ではshardsの監視も初期表示時に存在するものにしか対応していない
-        //   →とはいえ、こちらは対応することは可能
-        // const shardNum = 2
-        // stampCounts.add({
-        //   presentationId: presentationId,
-        //   stampId: stampId
-        // }).then((added) => {
-        //   var batch = firestore.batch()
-        //   // Initialize the counter document
-        //   batch.set(added, { shardNum: shardNum })
-        //   // Initialize each shard with count=0
-        //   for (let i = 0; i < shardNum; i++) {
-        //     let shardRef = added.collection('shards').doc(i.toString())
-        //     const count = shardNum === i ? 1 : 0
-        //     batch.set(shardRef, { count: count })
-        //   }
-        //   // Commit the write batch
-        //   batch.commit()
-        // })
-      } else {
+      if (stampCount) {
         const stampCountDoc = stampCounts.doc(stampCount.id)
         stampCountDoc
           .get()
           .then((scSnap) => {
             const shardIdx = Math.floor(Math.random() * scSnap.data().shardNum).toString()
-            const shardRef = stampCountDoc.collection('shards').doc(shardIdx)
-            shardRef.get().then(() => {
-              shardRef.update({
-                count: firebase.firestore.FieldValue.increment(1)
-              })
+            stampCountDoc.collection('shards').doc(shardIdx).update({
+              count: firebase.firestore.FieldValue.increment(1)
             })
           })
       }

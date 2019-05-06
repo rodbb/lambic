@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "8"
+  },
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
