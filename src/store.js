@@ -94,6 +94,9 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    setUserIsAdmin (state, payload) {
+      state.user.isAdmin = payload
+    },
     ...firebaseMutations
   },
   actions: {
@@ -117,11 +120,13 @@ export default new Vuex.Store({
               .get()
               .then(function (querySnapshot) {
                 const isAdmin = !querySnapshot.empty ? querySnapshot.docs[0].data().isAdmin : false
+                const permissionId = !querySnapshot.empty ? querySnapshot.docs[0].id : null
                 commit('setUser', {
                   id: authUserInfo.id,
                   name: authUserInfo.data().name,
                   photoURL: authUserInfo.data().photoURL,
-                  isAdmin: isAdmin
+                  isAdmin: isAdmin,
+                  permissionId: permissionId
                 })
               })
           } else {
@@ -144,6 +149,21 @@ export default new Vuex.Store({
     },
     logout ({ commit }) {
       commit('setUser', null)
+    },
+    /*
+     * ユーザの権限情報を更新する
+     */
+    updatePermission ({ commit }, permissionId) {
+      const permissionDoc = permissions.doc(permissionId)
+      permissionDoc
+        .get()
+        .then((permission) => {
+          if (permission.exists) {
+            commit('setUserIsAdmin', permission.data().isAdmin)
+          } else {
+            commit('setUserIsAdmin', false)
+          }
+        })
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
