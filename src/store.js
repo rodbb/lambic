@@ -116,17 +116,15 @@ export default new Vuex.Store({
             // 登録済みユーザの場合
             // 権限情報の取得
             permissions
-              .where('userId', '==', authUserInfo.id)
+              .doc(authUserInfo.id)
               .get()
-              .then(function (querySnapshot) {
-                const isAdmin = !querySnapshot.empty ? querySnapshot.docs[0].data().isAdmin : false
-                const permissionId = !querySnapshot.empty ? querySnapshot.docs[0].id : null
+              .then(function (permissionInfo) {
+                const isAdmin = permissionInfo.exists ? permissionInfo.data().isAdmin : false
                 commit('setUser', {
                   id: authUserInfo.id,
                   name: authUserInfo.data().name,
                   photoURL: authUserInfo.data().photoURL,
-                  isAdmin: isAdmin,
-                  permissionId: permissionId
+                  isAdmin: isAdmin
                 })
               })
           } else {
@@ -153,8 +151,8 @@ export default new Vuex.Store({
     /*
      * ユーザの権限情報を更新する
      */
-    updatePermission ({ commit }, permissionId) {
-      const permissionDoc = permissions.doc(permissionId)
+    updatePermission ({ commit }, userId) {
+      const permissionDoc = permissions.doc(userId)
       permissionDoc
         .get()
         .then((permission) => {

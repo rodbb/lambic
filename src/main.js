@@ -21,8 +21,8 @@ router.beforeEach((to, from, next) => {
   const user = store.getters.user
   // 権限情報の更新
   if (user !== null && user.isAdmin) {
-    // ドキュメント読み取り数削減のため、管理者のみ権限を確認する
-    store.dispatch('updatePermission', user.permissionId)
+    // ドキュメント読み取り数削減のため、管理者のみ権限を確認し、必要な場合更新する
+    store.dispatch('updatePermission', user.id)
   }
   // 権限による表示制御
   if (to.matched.some(record => record.meta.needsAdmin) &&
