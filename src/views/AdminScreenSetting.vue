@@ -171,12 +171,9 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
-        const screenInfo = this.$store.getters.screen(this.id)
-        const targetPresentationRef = this.$store.getters.presentationRef(targetPresentation.id)
         this.$store.dispatch('updateScreen', {
-          id: this.id,
-          name: screenInfo.name,
-          displayPresentationRef: targetPresentationRef
+          screenId: this.id,
+          presentationId: targetPresentation.id
         })
       }
     },
@@ -196,11 +193,9 @@ export default {
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
-        const screenInfo = this.$store.getters.screen(this.id)
         this.$store.dispatch('updateScreen', {
-          id: screenInfo.id,
-          name: screenInfo.name,
-          displayPresentationRef: null
+          screenId: this.id,
+          presentationId: null
         })
       }
     }
