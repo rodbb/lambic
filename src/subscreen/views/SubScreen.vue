@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-toolbar height="150" extended>
-      <v-toolbar-title class="display-4">{{ presentationTitle }}</v-toolbar-title>
+    <v-toolbar height="80" extended>
+      <v-toolbar-title class="display-3">{{ presentationTitle }}</v-toolbar-title>
       <template v-slot:extension>
         <div class="display-2 text-truncate">{{ presenterName }}</div>
       </template>
