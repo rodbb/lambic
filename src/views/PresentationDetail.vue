@@ -79,7 +79,7 @@
           <v-icon>create</v-icon>
         </v-btn>
 
-        <v-card v-if="$options.methods.isLogin()">
+        <v-card v-if="isLogin()">
           <v-card-text>
             <v-alert
               outline
@@ -118,20 +118,20 @@
           </v-card-actions>
         </v-card>
         <v-card v-else>
-          <v-card-actions class="justify-center">
+          <v-card-text class="text-xs-center">
             <p class="title mt-3">コメントしてみませんか？</p>
-          </v-card-actions>
+          </v-card-text>
           <v-card-actions class="justify-center">
-            <v-btn class="mt-3 mb-3"
+            <v-btn
               color="light-green"
               :to="{ path: '/login' }"
             >
               ログインする
             </v-btn>
           </v-card-actions>
-          <v-card-actions class="justify-center">
-            <p class="mb-3">ログインすると発表にコメントできます。</p>
-          </v-card-actions>
+          <v-card-text class="text-xs-center">
+            <p>ログインすると発表にコメントできます。</p>
+          </v-card-text>
         </v-card>
       </v-dialog>
 
@@ -208,7 +208,11 @@ export default {
       this.dialog = false
     },
     isLogin () {
-      return firebase.auth().currentUser
+      if (firebase.auth().currentUser) {
+        return true
+      } else {
+        return false
+      }
     }
   }
 }
