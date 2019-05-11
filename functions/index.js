@@ -10,7 +10,7 @@ db.settings({
 // シャードの数は最適な数がわからないので暫定の値
 //  少なすぎると再試行回数が増えて書き込みに時間がかかる
 //  多すぎると合計値の算出にコスト（時間・読み取り回数）がかかる
-const shardNum = 2
+const shardNum = 3
 
 exports.createStampCountsWithPresentations = functions.firestore
   .document("/presentations/{documentId}")

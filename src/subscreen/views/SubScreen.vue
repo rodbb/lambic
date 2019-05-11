@@ -46,6 +46,7 @@
 <script>
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import _ from 'lodash'
 
 export default {
   name: 'subscreen',
@@ -61,10 +62,12 @@ export default {
       screenInfo: null,
       presentation: null,
       stamps: [],
+      stampCounts: [],
       unsubscribe: {
         screenInfo: null,
         presentation: null,
-        stamps: null
+        stamps: null,
+        stampCounts: []
       }
     }
   },
@@ -86,20 +89,10 @@ export default {
     }
   },
   watch: {
-    presentation (newP, oldP) {
-      if (newP == null || oldP == null || newP.stampCounts == null) {
-        return
-      }
-      const newCnt = newP.stampCounts
-      const oldCnt = oldP.stampCounts || newCnt.map((p) => {
-        return {
-          ...p,
-          count: 0
-        }
-      })
-      const blinkStmps = this.stamps.map((stmp, idx) => {
-        const maybeOldStmpCnt = oldCnt.find((cnt) => cnt.stampId === stmp.id)
-        const maybeNewStmpCnt = newCnt.find((cnt) => cnt.stampId === stmp.id)
+    stampCounts (newSC, oldSC) {
+      this.stamps = this.stamps.map((stmp, idx) => {
+        const maybeOldStmpCnt = oldSC.find((cnt) => cnt.stampId === stmp.id)
+        const maybeNewStmpCnt = newSC.find((cnt) => cnt.stampId === stmp.id)
         if (maybeNewStmpCnt == null) {
           return stmp
         }
@@ -119,7 +112,6 @@ export default {
             : null
         }
       })
-      this.stamps = blinkStmps
     }
   },
   created () {
@@ -156,6 +148,34 @@ export default {
                 }
                 this.isLoadong = false
               })
+          const stampCounts = firestore.collection('stampCounts')
+          stampCounts
+            .where('presentationId', '==', this.screenInfo.displayPresentationRef.id)
+            .get()
+            .then((query) => {
+              query.docs.forEach((sc) => {
+                this.unsubscribe.stampCounts.push(stampCounts.doc(sc.id).collection('shards').onSnapshot(() => {
+                  stampCounts.doc(sc.id).collection('shards').get().then((snap) => {
+                    let totalCount = 0
+                    snap.forEach((doc) => {
+                      totalCount += doc.data().count
+                    })
+                    const stampId = sc.data().stampId
+                    const data = { stampId: stampId, count: totalCount }
+                    let stampCounts = _.cloneDeep(this.stampCounts)
+                    const idx = this.stampCounts.findIndex((c) => c.stampId === stampId)
+                    if (idx !== -1) {
+                      stampCounts.splice(idx, 1, data)
+                    } else {
+                      stampCounts.push(data)
+                    }
+                    this.stampCounts = stampCounts
+                  })
+                }))
+              })
+            }, (error) => {
+              console.log('Error getting collection:', error)
+            })
         }, (error) => {
           console.log('Error getting document:', error)
         })
@@ -183,7 +203,11 @@ export default {
     Object.values(this.unsubscribe)
       .filter((e) => e != null)
       .forEach((unsubscribe) => {
-        unsubscribe()
+        if (Array.isArray(unsubscribe)) {
+          unsubscribe.forEach((u) => u())
+        } else {
+          unsubscribe()
+        }
       })
   }
 }

@@ -111,9 +111,10 @@ export default new Vuex.Store({
     setCount (state, payload) {
       const idx = state.counts.findIndex((c) => c.stampId === payload.stampId)
       if (idx !== -1) {
-        state.counts.splice(idx, 1)
+        state.counts.splice(idx, 1, payload)
+      } else {
+        state.counts.push(payload)
       }
-      state.counts.push({ stampId: payload.stampId, count: payload.count })
     },
     ...firebaseMutations
   },
