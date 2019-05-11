@@ -16,7 +16,7 @@
                 <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }" class="my-2">
                   <v-list-tile-content>
                     <div>
-                      {{ event.date | dateFormat }}
+                      {{ event.date | convertToDate }}
                       <v-chip v-if="event.isFinished" small light>終了しました</v-chip>
                       <v-chip v-else-if="event.isToday" small color="green" text-color="white">本日開催</v-chip>
                     </div>
@@ -59,7 +59,7 @@ export default {
     }
   },
   filters: {
-    dateFormat (date) {
+    convertToDate (date) {
       return moment(date, 'X').format('YYYY/MM/DD（ddd）')
     }
   }
