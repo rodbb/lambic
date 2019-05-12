@@ -5,6 +5,16 @@
         <v-card-title primary-title>
           <div class="headline">アカウント情報</div>
         </v-card-title>
+        <v-alert
+          outline
+          transition="scale-transition"
+          :value="errors.length > 0"
+          color="error"
+        >
+          <ul>
+            <li v-for="(err, i) in errors" :key="i">{{ err }}</li>
+          </ul>
+        </v-alert>
         <v-container fluid>
           <v-layout row>
             <v-flex xs12>
@@ -36,17 +46,37 @@ export default {
   name: 'editLoginUser',
   data () {
     return {
-      name: ''
+      name: '',
+      errors: []
+    }
+  },
+  created () {
+    if (this.$store.getters.user) {
+      this.name = this.$store.getters.user.name
     }
   },
   computed: {
-    user () {
-      return this.$store.getters.user
-    }
   },
   methods: {
+    validateUserName (name) {
+      const maxLength = 50
+      return {
+        length: name.length <= maxLength,
+        required: name.replace(/\s+$/mg, '').length > 0
+      }
+    },
     updateUserInfo () {
-      this.$store.dispatch('updateUserInfo', { name: this.name })
+      const res = this.validateUserName(this.name)
+      if (Object.values(res).every((v) => v)) {
+        this.errors = []
+        this.$store.dispatch('updateUserInfo', this.name)
+      } else {
+        this.errors = [
+          !res.length ? 'ユーザ名は50文字以内にしてください。' : null,
+          !res.required ? 'ユーザ名を入力してください。' : null
+        ]
+          .filter((e) => e != null)
+      }
     }
   }
 }

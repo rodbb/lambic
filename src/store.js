@@ -80,6 +80,9 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    updateUserName (state, payload) {
+      state.user.name = payload
+    },
     ...firebaseMutations
   },
   actions: {
@@ -119,13 +122,14 @@ export default new Vuex.Store({
     logout ({ commit }) {
       commit('setUser', null)
     },
-    updateUserInfo ({ getters, commit }, newUserInfo) {
-      const oldUserInfo = getters.user
-      commit('setUser', {
-        id: oldUserInfo.id,
-        name: newUserInfo.name,
-        photoURL: oldUserInfo.photoURL
+    /*
+     * ユーザ情報を更新する
+     */
+    updateUserInfo ({ getters, commit }, newName) {
+      users.doc(getters.user.id).update({
+        name: newName
       })
+      commit('updateUserName', newName)
     },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
