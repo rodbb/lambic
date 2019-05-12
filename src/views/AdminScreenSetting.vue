@@ -193,10 +193,7 @@ export default {
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
-        this.$store.dispatch('updateScreen', {
-          screenId: this.id,
-          presentationId: null
-        })
+        this.$store.dispatch('unsetScreenPresentation', this.id)
       }
     }
   }

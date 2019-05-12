@@ -172,12 +172,19 @@ export default new Vuex.Store({
       })
     },
     /*
-     * screenドキュメントを更新する
+     * screenドキュメントの表示中プレゼンテーションを更新する
      */
     updateScreen ({ state }, { screenId, presentationId }) {
-      // TODO get screenInfo
       screens.doc(screenId).update({
         displayPresentationRef: presentations.doc(presentationId)
+      })
+    },
+    /*
+     * screenドキュメントの表示中プレゼンテーションを削除する
+     */
+    unsetScreenPresentation ({ state }, screenId) {
+      screens.doc(screenId).update({
+        displayPresentationRef: null
       })
     }
   }
