@@ -1,18 +1,10 @@
 <template>
   <v-app>
     <v-navigation-drawer app fixed v-model="permanent">
-      <v-toolbar flat>
+      <v-toolbar flat :to="{ name: 'home' }">
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
-            <v-avatar size="50">
-              <img :src="imagePath('lambic_logo_1\.png')">
-            </v-avatar>
-            <v-avatar size="150">
-              <img :src="imagePath('lambic_logo_2\.png')">
-            </v-avatar>
-            <v-avatar size="50">
-              <img :src="imagePath('lambic_logo_1\.png')">
-            </v-avatar>
+            <img :src="imagePath('logo4\.png')" id="logo">
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -135,5 +127,8 @@ export default {
 }
 img {
     object-fit: contain;
+}
+#logo {
+  width: 65%;
 }
 </style>
