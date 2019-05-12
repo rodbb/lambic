@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer app fixed v-model="permanent">
-      <v-toolbar flat :to="{ name: 'home' }">
+      <v-toolbar flat>
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
             <img :src="imagePath('logo4\.png')" id="logo">
@@ -129,6 +129,6 @@ img {
     object-fit: contain;
 }
 #logo {
-  width: 65%;
+    width: 65%;
 }
 </style>
