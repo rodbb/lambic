@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import firebase from 'firebase'
+import firebase from 'firebase/app'
 import firebaseui from 'firebaseui-ja'
 import 'firebaseui-ja/dist/firebaseui.css'
 
@@ -19,7 +19,7 @@ export default {
     return {
       // FirebaseUIの設定値
       config: {
-        signInSuccessUrl: '/',
+        signInSuccessUrl: '/#/',
         signInOptions: [
           // 表示する認証バナーリスト
           firebase.auth.GithubAuthProvider.PROVIDER_ID
