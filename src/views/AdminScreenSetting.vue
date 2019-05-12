@@ -171,7 +171,7 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
-        this.$store.dispatch('updateScreen', {
+        this.$store.dispatch('updateScreenPresentation', {
           screenId: this.id,
           presentationId: targetPresentation.id
         })

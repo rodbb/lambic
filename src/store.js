@@ -174,7 +174,7 @@ export default new Vuex.Store({
     /*
      * screenドキュメントの表示中プレゼンテーションを更新する
      */
-    updateScreen ({ state }, { screenId, presentationId }) {
+    updateScreenPresentation ({ state }, { screenId, presentationId }) {
       screens.doc(screenId).update({
         displayPresentationRef: presentations.doc(presentationId)
       })
