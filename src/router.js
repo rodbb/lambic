@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store'
 import Login from './views/Login.vue'
 import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
@@ -10,7 +11,7 @@ import Error from './views/Error.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -62,6 +63,10 @@ export default new Router({
       redirect: '/error'
     }
   ],
+
+  /*
+   * 画面表示変更時、スクロール位置を一番上にする
+   */
   scrollBehavior (to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
@@ -70,3 +75,26 @@ export default new Router({
     }
   }
 })
+
+/*
+ * ナビゲーションガード
+ * ルーティングの前処理を行う
+ */
+router.beforeEach((to, from, next) => {
+  const user = store.getters.user
+  // 権限情報の更新
+  if (user !== null && user.isAdmin) {
+    // ドキュメント読み取り数削減のため、管理者のみ権限を確認し、必要な場合更新する
+    store.dispatch('updatePermission', user.id)
+  }
+  // 権限による表示制御
+  if (to.matched.some(record => record.meta.needsAdmin) &&
+    (user === null || !user.isAdmin)) {
+    // 権限がない場合
+    next({ name: 'error' })
+  } else {
+    next()
+  }
+})
+
+export default router
