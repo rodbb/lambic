@@ -129,6 +129,6 @@ img {
     object-fit: contain;
 }
 #logo {
-    width: 65%;
+    height: 60%;
 }
 </style>
