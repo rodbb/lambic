@@ -79,7 +79,7 @@
           <v-icon>create</v-icon>
         </v-btn>
 
-        <v-card v-if="isLogin()">
+        <v-card v-if="user">
           <v-card-text>
             <v-alert
               outline
@@ -172,6 +172,9 @@ export default {
           id: this.presentation.eventId
         }
       }
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   filters: {
@@ -206,13 +209,6 @@ export default {
       this.comment = ''
       this.errors = []
       this.dialog = false
-    },
-    isLogin () {
-      if (firebase.auth().currentUser) {
-        return true
-      } else {
-        return false
-      }
     }
   }
 }
