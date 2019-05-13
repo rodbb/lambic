@@ -11,7 +11,7 @@
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
           <div  v-if="presentation.presenter" class="grey--text mb-3">
-            {{ presentation.presenter.name }}
+            by {{ presentation.presenter.name }}
           </div>
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
