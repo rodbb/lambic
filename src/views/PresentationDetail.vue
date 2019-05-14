@@ -24,7 +24,7 @@
         <template v-for="(stamp, index) in presentation.stamps">
           <v-badge bottom overlap v-if="stamp.canUse !== false" :key="index">
             <template v-slot:badge>
-              <span>{{ stampCount(stamp.id) }}</span>
+              <span>{{ getStampCount(stamp.id) }}</span>
             </template>
             <v-card-actions :key="index">
               <v-btn
@@ -38,7 +38,7 @@
           </v-badge>
           <v-badge bottom overlap v-else color="grey" :key="index">
             <template v-slot:badge>
-              <span>{{ stampCount(stamp.id) }}</span>
+              <span>{{ getStampCount(stamp.id) }}</span>
             </template>
             <v-card-actions :key="index">
               <v-btn
@@ -225,10 +225,19 @@ export default {
       this.errors = []
       this.dialog = false
     },
-    stampCount (stampId) {
+    /**
+     * スタンプのカウントを取得
+     * @param stampId
+     * @returns {number}
+     */
+    getStampCount (stampId) {
       const countObj = this.$store.getters.count(stampId)
       return countObj ? countObj.count : 0
     },
+    /**
+     * スタンプのカウントをインクリメント
+     * @param stampId
+     */
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
     }

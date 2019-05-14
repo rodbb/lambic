@@ -173,6 +173,7 @@ export default new Vuex.Store({
         .get()
         .then((query) => {
           query.docs.forEach((sc) => {
+            // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
             stampCounts.doc(sc.id).collection('shards').onSnapshot((querySnapshot) => {
               querySnapshot.docChanges().forEach((docChange) => {
                 if (docChange.type === 'added' || docChange.type === 'modified') {
@@ -200,6 +201,8 @@ export default new Vuex.Store({
         stampCountDoc
           .get()
           .then((scSnap) => {
+            // 1回/秒の更新制限を回避するため
+            // shardNum個あるshardsのうち、ランダムな1個のカウントをインクリメント
             const shardIdx = Math.floor(Math.random() * scSnap.data().shardNum).toString()
             stampCountDoc.collection('shards').doc(shardIdx).update({
               count: firebase.firestore.FieldValue.increment(1)

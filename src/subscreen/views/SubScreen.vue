@@ -89,6 +89,11 @@ export default {
     }
   },
   watch: {
+    /**
+     * スタンプのカウントを監視し、変更があれば該当スタンプを点滅させる
+     * @param newSC
+     * @param oldSC
+     */
     stampCounts (newSC, oldSC) {
       this.stamps = this.stamps.map((stmp, idx) => {
         const maybeOldStmpCnt = oldSC.find((cnt) => cnt.stampId === stmp.id)
@@ -115,7 +120,9 @@ export default {
     }
   },
   created () {
+    // 各ドキュメントの変更を監視するリスナを設定
     const firestore = firebase.firestore()
+    // screenのリスナを設定
     this.unsubscribe.screenInfo =
       firestore.collection('screens')
         .doc(this.id)
@@ -133,6 +140,7 @@ export default {
             this.isLoadong = false
             return
           }
+          // presentationのリスナを設定
           this.unsubscribe.presentation =
             this.screenInfo.displayPresentationRef
               .onSnapshot(async (doc) => {
@@ -148,6 +156,7 @@ export default {
                 }
                 this.isLoadong = false
               })
+          // shardsのリスナを設定
           const stampCounts = firestore.collection('stampCounts')
           stampCounts
             .where('presentationId', '==', this.screenInfo.displayPresentationRef.id)
@@ -162,6 +171,8 @@ export default {
                     })
                     const stampId = sc.data().stampId
                     const data = { stampId: stampId, count: totalCount }
+                    // clone配列に対して変更し、元配列を上書きする
+                    // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
                     let stampCounts = _.cloneDeep(this.stampCounts)
                     const idx = this.stampCounts.findIndex((c) => c.stampId === stampId)
                     if (idx !== -1) {
@@ -179,6 +190,7 @@ export default {
         }, (error) => {
           console.log('Error getting document:', error)
         })
+    // stampsのリスナを設定
     this.unsubscribe.stamps =
       firestore.collection('stamps')
         .orderBy('order')
@@ -200,6 +212,7 @@ export default {
         })
   },
   beforeDestroy () {
+    // 各リスナのデタッチ
     Object.values(this.unsubscribe)
       .filter((e) => e != null)
       .forEach((unsubscribe) => {

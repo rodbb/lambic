@@ -12,6 +12,8 @@ db.settings({
 //  多すぎると合計値の算出にコスト（時間・読み取り回数）がかかる
 const shardNum = 3
 
+// presentationsコレクションにドキュメントが新規追加された場合
+// stampsの数だけstampCountsにドキュメントを新規追加する
 exports.createStampCountsWithPresentations = functions.firestore
   .document("/presentations/{documentId}")
   .onCreate((snap) => {
@@ -19,7 +21,7 @@ exports.createStampCountsWithPresentations = functions.firestore
     return db.collection('stamps')
       .get()
       .then((stamps) => {
-        return Promise.all(stamps.docs.map((stamp) => 
+        return Promise.all(stamps.docs.map((stamp) =>
           db.collection('stampCounts').add({
             presentationId: snap.id,
             stampId: stamp.id,
@@ -30,6 +32,8 @@ exports.createStampCountsWithPresentations = functions.firestore
       .then(createAndInitializeShards)
   })
 
+// stampsコレクションにドキュメントが新規追加された場合
+// presentationsの数だけstampCountsにドキュメントを新規追加する
 exports.createStampCountsWithStamps = functions.firestore
   .document("/stamps/{documentId}")
   .onCreate((snap) => {
@@ -37,7 +41,7 @@ exports.createStampCountsWithStamps = functions.firestore
     return db.collection('presentations')
       .get()
       .then((presentations) => {
-        return Promise.all(presentations.docs.map((presentation) => 
+        return Promise.all(presentations.docs.map((presentation) =>
           db.collection('stampCounts').add({
             presentationId: presentation.id,
             stampId: snap.id,
@@ -48,6 +52,11 @@ exports.createStampCountsWithStamps = functions.firestore
       .then(createAndInitializeShards)
   })
 
+/**
+ * stampCountsにドキュメントを新規追加する実処理
+ * @param addedRefs
+ * @returns {Promise<void>}
+ */
 function createAndInitializeShards (addedRefs) {
   const batch = db.batch()
   addedRefs.forEach((addedRef) => {
