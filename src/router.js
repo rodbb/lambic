@@ -84,7 +84,10 @@ router.beforeEach((to, from, next) => {
   const user = store.getters.user
   // 権限情報の更新
   if (user !== null && user.isAdmin) {
-    // ドキュメント読み取り数削減のため、管理者のみ権限を確認し、必要な場合更新する
+    // 権限を更新する
+    // 権限の確認を全ての画面遷移時に行うと、ドキュメントの読取りが毎回発生し、
+    // 読取り回数が増加するため、
+    // ここで、管理者権限が必要なページへ遷移するときのみ権限を更新する
     store.dispatch('updatePermission', user.id)
   }
   // 権限による表示制御

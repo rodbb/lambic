@@ -82,12 +82,6 @@ export default new Vuex.Store({
     },
     screen (state, getters) {
       return (id) => getters.screens.find((e) => e.id === id)
-    },
-    /*
-     * Presentationドキュメントの参照値を返す
-     */
-    presentationRef (state, getters) {
-      return (id) => presentations.doc(id)
     }
   },
   mutations: {
