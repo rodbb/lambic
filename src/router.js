@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './views/Login.vue'
-import EditLoginUser from './views/EditLoginUser.vue'
+import MyPage from './views/MyPage.vue'
 import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
@@ -21,9 +21,9 @@ export default new Router({
       component: Login
     },
     {
-      path: '/loginUser',
-      name: 'editLoginUser',
-      component: EditLoginUser
+      path: '/myPage',
+      name: 'myPage',
+      component: MyPage
     },
     {
       path: '/events/:id',

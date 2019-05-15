@@ -13,7 +13,7 @@
 
       <v-list dense class="pt-0">
 
-        <v-list-tile v-if="user" :to="{ name: 'editLoginUser' }" class="my-2">
+        <v-list-tile v-if="user" :to="{ name: 'myPage' }" class="my-2">
           <v-list-tile-avatar>
             <img v-bind:src="user.photoURL">
           </v-list-tile-avatar>

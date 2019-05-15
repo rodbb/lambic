@@ -56,7 +56,7 @@
 
 <script>
 export default {
-  name: 'editLoginUser',
+  name: 'myPage',
   data () {
     return {
       name: '',
