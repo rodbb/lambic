@@ -82,18 +82,20 @@ const router = new Router({
  */
 router.beforeEach((to, from, next) => {
   const user = store.getters.user
-  // 権限情報の更新
   if (user !== null && user.isAdmin) {
     // 権限を更新する
-    // 権限の確認を全ての画面遷移時に行うと、ドキュメントの読取りが毎回発生し、
+    // 裏で管理者権限が剥奪されている可能性があるため、
+    // ページ遷移時に権限を更新する必要があるが、
+    // 全ての画面遷移時に更新を行うと、ドキュメントの読取りが毎回発生し、
     // 読取り回数が増加するため、
-    // ここで、管理者権限が必要なページへ遷移するときのみ権限を更新する
+    // ここで、管理者権限が必要なページへ遷移するときのみ権限を更新する。
     store.dispatch('updatePermission', user.id)
   }
+
   // 権限による表示制御
   if (to.matched.some(record => record.meta.needsAdmin) &&
     (user === null || !user.isAdmin)) {
-    // 権限がない場合
+    // 権限がない場合はエラーページへ遷移
     next({ name: 'error' })
   } else {
     next()
