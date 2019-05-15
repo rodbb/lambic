@@ -38,6 +38,18 @@
         </v-container>
       </v-card>
     </v-flex>
+    <v-snackbar
+      v-model="snackbar"
+      :bottom="top === 'bottom'"
+      :timeout=5000
+      :top="'top'"
+      color = green
+    >
+      更新しました。
+      <v-btn flat @click="snackbar = false">
+        <v-icon color="white">close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -47,7 +59,8 @@ export default {
   data () {
     return {
       name: '',
-      errors: []
+      errors: [],
+      snackbar: false
     }
   },
   created () {
@@ -70,6 +83,7 @@ export default {
       if (Object.values(res).every((v) => v)) {
         this.errors = []
         this.$store.dispatch('updateUserInfo', this.name)
+        this.snackbar = true
       } else {
         this.errors = [
           !res.length ? 'ユーザ名は50文字以内にしてください。' : null,
