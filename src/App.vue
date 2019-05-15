@@ -4,7 +4,7 @@
       <v-toolbar flat>
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
-            <img :src="imagePath('logo4\.png')" id="logo">
+            <img :src="imagePath('logo\.png')" id="logo">
           </v-list-tile>
         </v-list>
       </v-toolbar>
