@@ -30,11 +30,14 @@
             <v-layout align-center mb-3>
               <v-avatar
                 v-if="comment.userRef !== null && comment.userRef.photoURL"
-                class="mr-3"
+                size="28"
+                class="mr-1"
               >
                 <img v-bind:src="comment.userRef.photoURL">
               </v-avatar>
-              <v-avatar v-else color="grey" class="mr-3"></v-avatar>
+              <v-avatar v-else size="28" class="mr-1">
+                <v-icon size="28" color="gray">account_circle</v-icon>
+              </v-avatar>
               <strong v-if="comment.userRef" class="title">
                 {{ comment.userRef.name }}
               </strong>
