@@ -79,7 +79,7 @@
           <v-icon>create</v-icon>
         </v-btn>
 
-        <v-card>
+        <v-card v-if="user">
           <v-card-text>
             <v-alert
               outline
@@ -117,6 +117,22 @@
             </v-btn>
           </v-card-actions>
         </v-card>
+        <v-card v-else>
+          <v-card-text class="text-xs-center">
+            <p class="title mt-3">コメントしてみませんか？</p>
+          </v-card-text>
+          <v-card-actions class="justify-center">
+            <v-btn
+              color="light-green"
+              :to="{ path: '/login' }"
+            >
+              ログインする
+            </v-btn>
+          </v-card-actions>
+          <v-card-text class="text-xs-center">
+            <p>ログインすると発表にコメントできます。</p>
+          </v-card-text>
+        </v-card>
       </v-dialog>
 
     </v-flex>
@@ -125,6 +141,8 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   name: 'presentation',
   props: {
@@ -154,6 +172,9 @@ export default {
           id: this.presentation.eventId
         }
       }
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   filters: {
