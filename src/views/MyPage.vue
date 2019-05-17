@@ -26,7 +26,6 @@
               <v-text-field
                 v-model="name"
                 placeholder="ユーザ名を入力してください"
-                outline
                 single-line
               ></v-text-field>
             </v-flex>
