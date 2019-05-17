@@ -4,6 +4,7 @@ import { firebaseMutations, firebaseAction } from 'vuexfire'
 import firebase from 'firebase/app'
 import FirebaseConfig from '../firebase-config.json'
 import 'firebase/firestore'
+import moment from 'moment'
 
 const firebaseApp = firebase.initializeApp(FirebaseConfig)
 const firestore = firebaseApp.firestore()
@@ -31,15 +32,16 @@ export default new Vuex.Store({
           return {
             ...ev,
             id: ev.id,
+            date: ev.date.toDate(),
             presentations: getters.presentations
               .filter((pr) => pr.eventId === ev.id)
           }
         })
         .sort((a, b) => {
           // 開催日時の降順にソート
-          const dsec = a.date.seconds - b.date.seconds
-          const dnanosec = a.date.nanoseconds - b.date.nanoseconds
-          return dsec === 0 ? (dnanosec < 0) - (dnanosec > 0) : (dsec < 0) - (dsec > 0)
+          return !moment(a.date).isSame(b.date)
+            ? (moment(a.date).isAfter(b.date) ? -1 : 1)
+            : 0
         })
     },
     presentations (state, getters) {
@@ -55,12 +57,18 @@ export default new Vuex.Store({
     },
     comments (state) {
       return state.comments
-        .slice()
+        .map((cm) => {
+          return {
+            ...cm,
+            id: cm.id,
+            postedAt: cm.postedAt.toDate()
+          }
+        })
         .sort((a, b) => {
           // 投稿日時の昇順にソート
-          const dsec = a.postedAt.seconds - b.postedAt.seconds
-          const dnanosec = a.postedAt.nanoseconds - b.postedAt.nanoseconds
-          return dsec === 0 ? (dnanosec > 0) - (dnanosec < 0) : (dsec > 0) - (dsec < 0)
+          return !moment(a.postedAt).isSame(b.postedAt)
+            ? (moment(a.postedAt).isAfter(b.postedAt) ? 1 : -1)
+            : 0
         })
     },
     user (state) {

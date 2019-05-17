@@ -5,7 +5,7 @@
       <v-card class="mb-2" color="light-green lighten-4">
         <v-card-title primary-title>
           <div>
-            <div class="grey--text mb-3">{{ event.date.seconds | dateTime }}</div>
+            <div class="grey--text mb-3">{{ event.date | toDateString }}</div>
             <div class="headline">{{ event.title }}</div>
           </div>
         </v-card-title>
@@ -82,8 +82,7 @@ export default {
     }
   },
   filters: {
-    dateTime (seconds) {
-      var date = new Date(seconds * 1000 /* to milliseconds */)
+    toDateString (date) {
       return moment(date).format('YYYY/MM/DD（ddd）')
     }
   }
