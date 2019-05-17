@@ -7,7 +7,7 @@
           <v-layout align-center mb-3 class="grey--text">
             <span>{{ event.title }}</span>
             <v-spacer></v-spacer>
-            <span>{{ event.date | convertToDate }}</span>
+            <span>{{ event.date | toDateString }}</span>
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
           <div  v-if="presentation.presenter" class="grey--text mb-3">
@@ -36,7 +36,7 @@
                 （削除されたユーザ）
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt | convertToDateTime }}
+              <span>{{ comment.postedAt | toDateTimeString }}
               </span>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
@@ -158,10 +158,10 @@ export default {
     }
   },
   filters: {
-    convertToDate (date) {
+    toDateString (date) {
       return moment(date, 'X').format('YYYY/MM/DD（ddd）')
     },
-    convertToDateTime (date) {
+    toDateTimeString (date) {
       return moment(date, 'X').format('YYYY/MM/DD HH:mm')
     }
   },
