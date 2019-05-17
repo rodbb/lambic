@@ -7,11 +7,11 @@
           <v-layout align-center mb-3 class="grey--text">
             <span>{{ event.title }}</span>
             <v-spacer></v-spacer>
-            <span>{{ event.date.seconds | dateTime }}</span>
+            <span>{{ event.date | toDateString }}</span>
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
           <div  v-if="presentation.presenter" class="grey--text mb-3">
-            {{ presentation.presenter.name }}
+            by {{ presentation.presenter.name }}
           </div>
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
@@ -29,14 +29,14 @@
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
               <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
-              <strong v-if="comment.userRef" class="title">
+              <strong v-if="comment.userRef" class="text-truncate">
                 {{ comment.userRef.name }}
               </strong>
-              <strong v-else class="title">
+              <strong v-else class="text-truncate">
                 （削除されたユーザ）
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt.seconds | dateTime }}
+              <span>{{ comment.postedAt | toDateTimeString }}
               </span>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import firebase from 'firebase'
+import moment from 'moment'
 
 export default {
   name: 'presentation',
@@ -178,8 +178,11 @@ export default {
     }
   },
   filters: {
-    dateTime (seconds) {
-      return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
+    toDateString (date) {
+      return moment(date).format('YYYY/MM/DD（ddd）')
+    },
+    toDateTimeString (date) {
+      return moment(date).format('YYYY/MM/DD HH:mm')
     }
   },
   methods: {
