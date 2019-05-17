@@ -39,7 +39,9 @@ export default new Vuex.Store({
         })
         .sort((a, b) => {
           // 開催日時の降順にソート
-          return moment(a.date).isAfter(b.date) ? -1 : 1
+          return !moment(a.date).isSame(b.date)
+            ? (moment(a.date).isAfter(b.date) ? -1 : 1)
+            : 0
         })
     },
     presentations (state, getters) {
@@ -64,8 +66,8 @@ export default new Vuex.Store({
         })
         .sort((a, b) => {
           // 投稿日時の昇順にソート
-          return !moment(a.date).isSame(b.date)
-            ? (moment(a.date).isAfter(b.date) ? 1 : -1)
+          return !moment(a.postedAt).isSame(b.postedAt)
+            ? (moment(a.postedAt).isAfter(b.postedAt) ? 1 : -1)
             : 0
         })
     },
