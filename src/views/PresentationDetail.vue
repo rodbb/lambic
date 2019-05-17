@@ -28,8 +28,17 @@
           <v-divider :key="comment.id + '-divider'"></v-divider>
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
-              <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
-              <strong v-if="comment.userRef" class="text-truncate">
+              <v-avatar
+                v-if="comment.userRef !== null && comment.userRef.photoURL"
+                size="28"
+                class="mr-1"
+              >
+                <img v-bind:src="comment.userRef.photoURL">
+              </v-avatar>
+              <v-avatar v-else size="28" class="mr-1">
+                <v-icon size="28" color="gray">account_circle</v-icon>
+              </v-avatar>
+              <strong v-if="comment.userRef">
                 {{ comment.userRef.name }}
               </strong>
               <strong v-else class="text-truncate">
