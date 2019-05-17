@@ -141,7 +141,6 @@
 </template>
 
 <script>
-import firebase from 'firebase'
 import moment from 'moment'
 
 export default {
@@ -180,10 +179,10 @@ export default {
   },
   filters: {
     toDateString (date) {
-      return moment(date, 'X').format('YYYY/MM/DD（ddd）')
+      return moment(date).format('YYYY/MM/DD（ddd）')
     },
     toDateTimeString (date) {
-      return moment(date, 'X').format('YYYY/MM/DD HH:mm')
+      return moment(date).format('YYYY/MM/DD HH:mm')
     }
   },
   methods: {

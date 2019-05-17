@@ -83,7 +83,7 @@ export default {
   },
   filters: {
     toDateString (date) {
-      return moment(date, 'X').format('YYYY/MM/DD（ddd）')
+      return moment(date).format('YYYY/MM/DD（ddd）')
     }
   }
 }
