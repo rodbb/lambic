@@ -17,7 +17,7 @@
       <v-card v-if="event.presentations != 0">
 
         <v-list two-line>
-          <template v-for="presentation in event.presentations">
+          <template v-for="(presentation, index) in event.presentations">
 
             <v-list-tile :key="presentation.id" :to="{ path: '/presentations/' + presentation.id }">
 
@@ -34,7 +34,10 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <v-divider :key="presentation.id + '_divider'" class="mx-2 my-2"></v-divider>
+            <v-divider v-if="index+1 < event.presentations.length"
+              :key="presentation.id + '_divider'"
+              class="mx-2 my-2">
+            </v-divider>
 
           </template>
         </v-list>
