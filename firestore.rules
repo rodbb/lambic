@@ -1,16 +1,48 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAuth() {
+      return request.auth.uid != null;
+    }
+
+    function matchUserRef(ref, uid) {
+      return  ref != null
+              && ref == get(/databases/$(database)/documents/users/$(uid)).__name__;
+    }
+
     match /events/{document=**} {
-      allow read, write: if true;
+      allow read  : if isAuth();
+      allow write : if isAuth();
     }
+
     match /comments/{document=**} {
-      allow read, write: if request.auth != null;
+      allow read  : if isAuth();
+      allow write : if isAuth()
+                    && matchUserRef(request.resource.data.userRef, request.auth.uid);
     }
+
     match /presentations/{document=**} {
-      allow read, write: if true;
+      allow read  : if isAuth();
+      allow write : if isAuth();
     }
+
     match /users/{document=**} {
-      allow read, write: if request.auth != null;
+      allow read  : if isAuth();
+      allow write : if isAuth();
+    }
+
+    match /screens/{document=**} {
+      allow read  : if isAuth();
+      allow write : if isAuth();
+    }
+
+    match /stampCounts/{document=**} {
+      allow read  : if isAuth();
+      allow write : if isAuth();
+    }
+
+    match /stamps/{document=**} {
+      allow read  : if isAuth();
+      allow write : if isAuth();
     }
   }
 }
