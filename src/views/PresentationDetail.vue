@@ -7,11 +7,11 @@
           <v-layout align-center mb-3 class="grey--text">
             <span>{{ event.title }}</span>
             <v-spacer></v-spacer>
-            <span>{{ event.date.seconds | dateTime }}</span>
+            <span>{{ event.date | toDateString }}</span>
           </v-layout>
           <h1 class="headline">{{ presentation.title }}</h1>
           <div  v-if="presentation.presenter" class="grey--text mb-3">
-            {{ presentation.presenter.name }}
+            by {{ presentation.presenter.name }}
           </div>
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
@@ -61,15 +61,24 @@
           <v-divider :key="comment.id + '-divider'"></v-divider>
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
-              <v-avatar color="grey" size="24" class="mr-3"></v-avatar>
-              <strong v-if="comment.userRef" class="title">
+              <v-avatar
+                v-if="comment.userRef !== null && comment.userRef.photoURL"
+                size="28"
+                class="mr-1"
+              >
+                <img v-bind:src="comment.userRef.photoURL">
+              </v-avatar>
+              <v-avatar v-else size="28" class="mr-1">
+                <v-icon size="28" color="gray">account_circle</v-icon>
+              </v-avatar>
+              <strong v-if="comment.userRef">
                 {{ comment.userRef.name }}
               </strong>
-              <strong v-else class="title">
+              <strong v-else class="text-truncate">
                 （削除されたユーザ）
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt.seconds | dateTime }}
+              <span>{{ comment.postedAt | toDateTimeString }}
               </span>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
@@ -112,7 +121,7 @@
           <v-icon>create</v-icon>
         </v-btn>
 
-        <v-card>
+        <v-card v-if="user">
           <v-card-text>
             <v-alert
               outline
@@ -150,6 +159,22 @@
             </v-btn>
           </v-card-actions>
         </v-card>
+        <v-card v-else>
+          <v-card-text class="text-xs-center">
+            <p class="title mt-3">コメントしてみませんか？</p>
+          </v-card-text>
+          <v-card-actions class="justify-center">
+            <v-btn
+              color="light-green"
+              :to="{ path: '/login' }"
+            >
+              ログインする
+            </v-btn>
+          </v-card-actions>
+          <v-card-text class="text-xs-center">
+            <p>ログインすると発表にコメントできます。</p>
+          </v-card-text>
+        </v-card>
       </v-dialog>
 
     </v-flex>
@@ -158,6 +183,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'presentation',
   props: {
@@ -190,11 +217,17 @@ export default {
           id: this.presentation.eventId
         }
       }
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   filters: {
-    dateTime (seconds) {
-      return new Date(seconds * 1000 /* to milliseconds */).toLocaleString()
+    toDateString (date) {
+      return moment(date).format('YYYY/MM/DD（ddd）')
+    },
+    toDateTimeString (date) {
+      return moment(date).format('YYYY/MM/DD HH:mm')
     }
   },
   methods: {
