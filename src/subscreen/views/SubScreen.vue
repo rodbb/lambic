@@ -46,7 +46,6 @@
 <script>
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-import _ from 'lodash'
 
 export default {
   name: 'subscreen',
@@ -95,6 +94,10 @@ export default {
      * @param oldSC
      */
     stampCounts (newSC, oldSC) {
+      // 表示する発表が切り替わったときはデータが出そろうまで点滅させない
+      if (newSC.length !== oldSC.length) {
+        return
+      }
       this.stamps = this.stamps.map((stmp, idx) => {
         const maybeOldStmpCnt = oldSC.find((cnt) => cnt.stampId === stmp.id)
         const maybeNewStmpCnt = newSC.find((cnt) => cnt.stampId === stmp.id)
@@ -127,10 +130,16 @@ export default {
       firestore.collection('screens')
         .doc(this.id)
         .onSnapshot((screenDoc) => {
+          // 表示する発表が切り替わった時の初期化処理
           if (this.unsubscribe.presentation != null) {
             this.unsubscribe.presentation()
             this.presentation = null
           }
+          if (this.unsubscribe.stampCounts !== []) {
+            this.unsubscribe.stampCounts.forEach((u) => u())
+            this.stampCounts = []
+          }
+          // 表示する発表が取得できない場合は後続のリスナの設定不要
           if (!screenDoc.exists) {
             this.isLoadong = false
             return
@@ -171,10 +180,13 @@ export default {
                     })
                     const stampId = sc.data().stampId
                     const data = { stampId: stampId, count: totalCount }
-                    // clone配列に対して変更し、元配列を上書きする
+                    // cloneした配列に対して変更し、元配列を上書きする
                     // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
-                    let stampCounts = _.cloneDeep(this.stampCounts)
-                    const idx = this.stampCounts.findIndex((c) => c.stampId === stampId)
+                    let stampCounts = []
+                    this.stampCounts.forEach((sc) => {
+                      stampCounts.push(JSON.parse(JSON.stringify(sc)))
+                    })
+                    const idx = stampCounts.findIndex((c) => c.stampId === stampId)
                     if (idx !== -1) {
                       stampCounts.splice(idx, 1, data)
                     } else {
