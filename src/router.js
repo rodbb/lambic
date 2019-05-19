@@ -7,6 +7,7 @@ import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
 import AdminScreenSetting from './views/AdminScreenSetting.vue'
 import AdminScreenList from './views/AdminScreenList.vue'
+import DraftPresentation from './views/DraftPresentation.vue'
 import Error from './views/Error.vue'
 
 Vue.use(Router)
@@ -38,6 +39,12 @@ const router = new Router({
       path: '/presentations/:id',
       name: 'presentationDetail',
       component: PresentationDetail,
+      props: true
+    },
+    {
+      path: '/:eventId/draftPresentations/:id',
+      name: 'draftPresentation',
+      component: DraftPresentation,
       props: true
     },
     {

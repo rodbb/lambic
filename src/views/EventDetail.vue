@@ -1,6 +1,6 @@
 <template>
 
-  <v-layout row wrap class="pb-5">
+  <v-layout v-if="event" row wrap class="pb-5">
     <v-flex>
       <v-card class="mb-2" color="light-green lighten-4">
         <v-card-title primary-title>
@@ -50,9 +50,15 @@
         </v-card-text>
       </v-card>
 
-      <v-btn color="green" block large class="my-3">
+      <v-btn
+        :to="{ path: '/' + id + '/draftPresentations/' + 'new' }"
+        color="green"
+        block
+        large
+        class="my-3 white--text"
+      >
         <v-icon color="white">add</v-icon>
-        <span class="white--text">発表を登録する</span>
+        発表を登録する
       </v-btn>
 
       <v-btn
@@ -67,6 +73,7 @@
       </v-btn>
     </v-flex>
   </v-layout>
+  <v-progress-linear v-else :indeterminate="event == null"></v-progress-linear>
 </template>
 
 <script>
