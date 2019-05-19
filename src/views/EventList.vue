@@ -44,6 +44,9 @@ import moment from 'moment'
 export default {
   name: 'events',
   computed: {
+    /*
+     * イベント一覧取得
+     */
     events () {
       const nowDate = new Date()
       return this.$store.getters.events
