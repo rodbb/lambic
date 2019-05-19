@@ -12,7 +12,7 @@
       <v-card v-if="screens">
         <v-list>
 
-          <template v-for="screen in screens">
+          <template v-for="(screen, index) in screens">
             <v-list-tile
               :to="{ path: 'screens/' + screen.id }"
               :key="screen.id + '_list'">
@@ -25,7 +25,11 @@
                 </template>
               </v-list-tile-title>
             </v-list-tile>
-            <v-divider :key="screen.id + '_divider'" class="mx-2 my-2"></v-divider>
+            <v-divider
+              v-if="index+1 < screens.length"
+              :key="screen.id + '_divider'"
+              class="mx-2 my-2">
+            </v-divider>
           </template>
 
         </v-list>

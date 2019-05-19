@@ -75,7 +75,7 @@
       <v-card v-if="this.selectedEvent">
         <v-list two-line>
 
-          <template v-for="presentation in selectedEvent.presentations">
+          <template v-for="(presentation, index) in selectedEvent.presentations">
             <v-list-tile
               v-if="presentation.id"
               @click="selectPresentation(presentation)"
@@ -93,8 +93,8 @@
                   cast
                 </v-icon>
               </v-list-tile-avatar>
-              <v-list-tile-content class="ml-2">
-                <v-list-tile-title class="title" :key="presentation.id + '_title'">
+              <v-list-tile-content>
+                <v-list-tile-title :key="presentation.id + '_title'">
                   {{ presentation.title }}
                 </v-list-tile-title>
                 <v-list-tile-sub-title v-if="presentation.presenter" :key="presentation.id + '_subtitle'">
@@ -102,7 +102,12 @@
                 </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-divider :key="presentation.id + '_divider'" class="mx-2 my-2"></v-divider>
+            <v-divider
+              v-if="index+1 < selectedEvent.presentations.length"
+              :key="presentation.id + '_divider'"
+              class="mx-2 my-2"
+            >
+            </v-divider>
           </template>
 
           <template v-if="selectedEvent.presentations == 0">
