@@ -28,7 +28,7 @@ export default new Vuex.Store({
     events: [],
     presentations: [],
     comments: [],
-    screens: []
+    screens: [],
     stamps: [],
     stampCounts: [],
     counts: []
