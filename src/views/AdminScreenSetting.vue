@@ -7,7 +7,12 @@
         <v-card-title>
           <div>
             <div v-if="screen" class="grey--text">
-              {{ screen.name }}
+              <template v-if="screen.name">
+                {{ screen.name }}
+              </template>
+              <template v-else>
+                （スクリーン名未設定）
+              </template>
             </div>
             <h3 class="headline mb-0">スクリーンの管理</h3>
           </div>

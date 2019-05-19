@@ -17,7 +17,12 @@
               :to="{ path: 'screens/' + screen.id }"
               :key="screen.id + '_list'">
               <v-list-tile-title class="title ml-2" :key="screen.id + '_title'">
-                {{ screen.name }}
+                <template v-if="screen.name">
+                  {{ screen.name }}
+                </template>
+                <template v-else>
+                  （スクリーン名未設定）
+                </template>
               </v-list-tile-title>
             </v-list-tile>
             <v-divider :key="screen.id + '_divider'" class="mx-2 my-2"></v-divider>
