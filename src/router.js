@@ -1,13 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store'
 import Login from './views/Login.vue'
 import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
+import AdminScreenSetting from './views/AdminScreenSetting.vue'
+import AdminScreenList from './views/AdminScreenList.vue'
+import Error from './views/Error.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -37,14 +41,32 @@ export default new Router({
       props: true
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/screens',
+      name: 'adminScreenList',
+      component: AdminScreenList,
+      meta: { needsAdmin: true }
+    },
+    {
+      path: '/screens/:id',
+      name: 'adminScreenSetting',
+      component: AdminScreenSetting,
+      props: true,
+      meta: { needsAdmin: true }
+    },
+    {
+      path: '/error',
+      name: 'error',
+      component: Error
+    },
+    {
+      path: '/*',
+      redirect: '/error'
     }
   ],
+
+  /*
+   * 画面表示変更時、スクロール位置を一番上にする
+   */
   scrollBehavior (to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
@@ -53,3 +75,31 @@ export default new Router({
     }
   }
 })
+
+/*
+ * ナビゲーションガード
+ * ルーティングの前処理を行う
+ */
+router.beforeEach((to, from, next) => {
+  const user = store.getters.user
+  if (user !== null && user.isAdmin) {
+    // 権限を更新する
+    // 裏で管理者権限が剥奪されている可能性があるため、
+    // ページ遷移時に権限を更新する必要があるが、
+    // 全ての画面遷移時に更新を行うと、ドキュメントの読取りが毎回発生し、
+    // 読取り回数が増加するため、
+    // ここで、管理者権限が必要なページへ遷移するときのみ権限を更新する。
+    store.dispatch('updatePermission', user.id)
+  }
+
+  // 権限による表示制御
+  if (to.matched.some(record => record.meta.needsAdmin) &&
+    (user === null || !user.isAdmin)) {
+    // 権限がない場合はエラーページへ遷移
+    next({ name: 'error' })
+  } else {
+    next()
+  }
+})
+
+export default router
