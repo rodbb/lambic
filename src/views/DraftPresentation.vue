@@ -14,65 +14,72 @@
           <h1 class="headline">発表登録</h1>
         </v-card-title>
 
-        <v-container fluid class="py-1">
+        <v-form
+          ref="form"
+          v-model="valid"
+          lazy-validation
+        >
+          <v-container fluid class="py-1">
 
-          <v-layout row class="py-2">
-            <v-flex xs12 md5>
-              <v-text-field
-                v-model="title"
-                label="タイトル"
-                :rules="titleRules"
-                required
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
+            <v-layout row class="py-2">
+              <v-flex xs12 md5>
+                <v-text-field
+                  v-model="title"
+                  label="タイトル"
+                  :rules="titleRules"
+                  required
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
 
-          <v-layout row class="py-2">
-            <v-flex xs12 md5>
-              <v-textarea
-                v-model="description"
-                label="内容"
-                :counter="500"
-                :rules="descriptionRules"
-              >
-              </v-textarea>
-            </v-flex>
-          </v-layout>
+            <v-layout row class="py-2">
+              <v-flex xs12 md5>
+                <v-textarea
+                  v-model="description"
+                  label="内容"
+                  :counter="descriptionMaxLength"
+                  :rules="descriptionRules"
+                >
+                </v-textarea>
+              </v-flex>
+            </v-layout>
 
-          <v-layout row class="py-2">
-            <v-flex xs12 md5>
-              発表へのコメント投稿を許可する。
-              <v-switch
-                v-model="isAllowComment"
-                :label="`${ isAllowComment ? 'はい' : 'いいえ' }`"
-                color="green"
-                hide-details
-                class="pt-0 mt-1"
-              >
-              </v-switch>
-            </v-flex>
-          </v-layout>
+            <v-layout row class="py-2">
+              <v-flex xs12 md5>
+                発表へのコメント投稿を許可する。
+                <v-switch
+                  v-model="isAllowComment"
+                  :label="`${ isAllowComment ? 'はい' : 'いいえ' }`"
+                  color="green"
+                  hide-details
+                  class="pt-0 mt-1"
+                >
+                </v-switch>
+              </v-flex>
+            </v-layout>
 
-          <v-layout row class="py-2">
-            <v-flex xs12 md5>
-              <v-checkbox
-                v-model="checkConfidential"
-                color="green"
-                required
-              >
-                <template v-slot:label>
-                  <span class="black--text">
-                    上記登録内容に、社外へ公開不可な情報は含まれていません。
-                  </span>
-                </template>
-              </v-checkbox>
-            </v-flex>
-          </v-layout>
+            <v-layout row class="py-2">
+              <v-flex xs12 md5>
+                <v-checkbox
+                  v-model="checkConfidential"
+                  color="green"
+                  required
+                >
+                  <template v-slot:label>
+                    <span class="black--text">
+                      上記登録内容に、社外へ公開不可な情報は含まれていません。
+                    </span>
+                  </template>
+                </v-checkbox>
+              </v-flex>
+            </v-layout>
 
-        </v-container>
+          </v-container>
+        </v-form>
       </v-card>
 
       <v-btn
+        @click="submit"
         :disabled="!checkConfidential"
         color="orange"
         block
@@ -112,33 +119,48 @@ export default {
   },
   data () {
     return {
-      valid: false,
-      title: '',
-      titleMaxLength: 50,
-      description: '',
-      descriptionMaxLength: 500,
-      isAllowComment: true,
-      checkConfidential: false,
+      valid: true,
+      title: '', // 入力する発表タイトル
+      titleMaxLength: 50, // 発表タイトル最大文字数
+      description: '', // 入力する発表内容
+      descriptionMaxLength: 500, // 発表内容最大文字数
+      isAllowComment: true, // コメント投稿を許可するかどうか
+      checkConfidential: false, // 社外秘チェック
       titleRules: [
+        // 発表タイトル入力規則
         v => !!v || 'タイトルは必須です。',
-        v => v.length <= 50 || 'タイトルは50文字以内にしてください。'
+        v => v.length <= this.titleMaxLength || 'タイトルは50文字以内にしてください。'
       ],
       descriptionRules: [
-        v => v.length <= 500 || '内容は500文字以内にしてください。'
+        // 発表内容入力規則
+        v => v.length <= this.descriptionMaxLength || '内容は500文字以内にしてください。'
       ]
     }
   },
   computed: {
+    /*
+     * イベントの取得
+     */
     event () {
       return this.$store.getters.event(this.eventId)
     }
   },
   filters: {
+    /*
+     * 日付のフォーマット
+     */
     toDateString (date) {
       return moment(date).format('YYYY/MM/DD（ddd）')
     }
   },
   methods: {
+    submit () {
+      // バリデート
+      if (!this.$refs.form.validate()) {
+        return 0
+      }
+      // TODO: 発表追加処理
+    }
   }
 }
 </script>
