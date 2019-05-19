@@ -50,7 +50,7 @@
         </v-card-text>
       </v-card>
 
-      <v-btn color="green" block="true" large class="my-3">
+      <v-btn color="green" block large class="my-3">
         <v-icon color="white">add</v-icon>
         <span class="white--text">発表を登録する</span>
       </v-btn>
