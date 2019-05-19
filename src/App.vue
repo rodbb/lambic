@@ -13,12 +13,16 @@
 
       <v-list dense class="pt-0">
 
-        <v-list-tile v-if="user" :to="{ name: 'myPage' }" class="my-2">
-          <v-list-tile-avatar>
-            <img v-bind:src="user.photoURL">
-          </v-list-tile-avatar>
+        <v-list-tile v-if="user" class="my-2">
+          <button type="button" @click="goMyPage">
+            <v-list-tile-avatar>
+              <img v-bind:src="user.photoURL">
+            </v-list-tile-avatar>
+          </button>
           <v-list-tile-content>
-            <v-list-tile-title>{{ user.name }}</v-list-tile-title>
+            <v-list-tile-title @click="goMyPage">
+              <button type="button">{{ user.name }}</button>
+            </v-list-tile-title>
             <v-list-tile-sub-title>
               <button type="button" @click="doLogout">ログアウト</button>
             </v-list-tile-sub-title>
@@ -109,6 +113,10 @@ export default {
         })
         this.$store.dispatch('logout')
       }
+    },
+    // マイページ画面へ遷移
+    goMyPage () {
+      this.$router.push({ path: '/myPage' })
     }
   }
 }

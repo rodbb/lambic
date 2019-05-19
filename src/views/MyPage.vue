@@ -10,6 +10,7 @@
           transition="scale-transition"
           :value="errors.length > 0"
           color="error"
+          class="mx-2"
         >
           <ul>
             <li v-for="(err, i) in errors" :key="i">{{ err }}</li>
@@ -32,7 +33,9 @@
           </v-layout>
           <v-layout row>
             <v-flex xs12 md6>
-              <v-btn @click="updateUserInfo" color="green">更新する</v-btn>
+              <v-btn @click="updateUserInfo" color="green" class="white--text">
+                更新する
+              </v-btn>
             </v-flex>
           </v-layout>
         </v-container>
@@ -40,10 +43,10 @@
     </v-flex>
     <v-snackbar
       v-model="snackbar"
-      :bottom="top === 'bottom'"
+      :bottom="'top' === 'bottom'"
       :timeout=5000
       :top="'top'"
-      color = green
+      color=green
     >
       更新しました。
       <v-btn flat @click="snackbar = false">
@@ -68,8 +71,6 @@ export default {
       this.name = this.$store.getters.user.name
     }
   },
-  computed: {
-  },
   methods: {
     validateUserName (name) {
       const maxLength = 50
@@ -86,10 +87,10 @@ export default {
         this.snackbar = true
       } else {
         this.errors = [
-          !res.length ? 'ユーザ名は50文字以内にしてください。' : null,
-          !res.required ? 'ユーザ名を入力してください。' : null
+          !res.length ? 'ユーザ名は50文字以内にしてください。' : '',
+          !res.required ? 'ユーザ名を入力してください。' : ''
         ]
-          .filter((e) => e != null)
+          .filter((e) => e !== '')
       }
     }
   }
