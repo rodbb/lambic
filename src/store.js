@@ -11,10 +11,11 @@ const firestore = firebaseApp.firestore()
 firestore.settings({})
 
 const users = firestore.collection('users')
+const permissions = firestore.collection('permissions')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
-
+const screens = firestore.collection('screens')
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -23,7 +24,8 @@ export default new Vuex.Store({
     user: null,
     events: [],
     presentations: [],
-    comments: []
+    comments: [],
+    screens: []
   },
   getters: {
     events (state, getters) {
@@ -71,6 +73,9 @@ export default new Vuex.Store({
             : 0
         })
     },
+    screens (state) {
+      return state.screens
+    },
     user (state) {
       return state.user
     },
@@ -82,11 +87,17 @@ export default new Vuex.Store({
     },
     comment (state, getters) {
       return (id) => getters.comments.find((e) => e.id === id)
+    },
+    screen (state, getters) {
+      return (id) => getters.screens.find((e) => e.id === id)
     }
   },
   mutations: {
     setUser (state, payload) {
       state.user = payload
+    },
+    setUserIsAdmin (state, payload) {
+      state.user.isAdmin = payload
     },
     ...firebaseMutations
   },
@@ -96,6 +107,7 @@ export default new Vuex.Store({
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
+      bindFirebaseRef('screens', screens)
     }),
     login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
@@ -103,12 +115,22 @@ export default new Vuex.Store({
         .get()
         .then((authUserInfo) => {
           if (authUserInfo.exists) {
-            commit('setUser', {
-              id: authUserInfo.id,
-              name: authUserInfo.data().name,
-              photoURL: authUserInfo.data().photoURL
-            })
+            // 登録済みユーザの場合
+            // 権限情報の取得
+            permissions
+              .doc(authUserInfo.id)
+              .get()
+              .then(function (permissionInfo) {
+                const isAdmin = permissionInfo.exists ? permissionInfo.data().isAdmin : false
+                commit('setUser', {
+                  id: authUserInfo.id,
+                  name: authUserInfo.data().name,
+                  photoURL: authUserInfo.data().photoURL,
+                  isAdmin: isAdmin
+                })
+              })
           } else {
+            // 未登録ユーザの場合
             userDoc
               .set({
                 name: auth.displayName,
@@ -117,7 +139,8 @@ export default new Vuex.Store({
             commit('setUser', {
               id: auth.uid,
               name: auth.displayName,
-              photoURL: auth.photoURL
+              photoURL: auth.photoURL,
+              isAdmin: false
             })
           }
         }).catch((error) => {
@@ -127,12 +150,43 @@ export default new Vuex.Store({
     logout ({ commit }) {
       commit('setUser', null)
     },
+    /*
+     * ユーザの権限情報を更新する
+     */
+    updatePermission ({ commit }, userId) {
+      const permissionDoc = permissions.doc(userId)
+      permissionDoc
+        .get()
+        .then((permission) => {
+          if (permission.exists) {
+            commit('setUserIsAdmin', permission.data().isAdmin)
+          } else {
+            commit('setUserIsAdmin', false)
+          }
+        })
+    },
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
         comment,
         postedAt: firebase.firestore.Timestamp.fromDate(new Date()),
         presentationId,
         userRef: users.doc(state.user.id)
+      })
+    },
+    /*
+     * screenドキュメントの表示中プレゼンテーションを更新する
+     */
+    updateScreenPresentation ({ state }, { screenId, presentationId }) {
+      screens.doc(screenId).update({
+        displayPresentationRef: presentations.doc(presentationId)
+      })
+    },
+    /*
+     * screenドキュメントの表示中プレゼンテーションを削除する
+     */
+    unsetScreenPresentation ({ state }, screenId) {
+      screens.doc(screenId).update({
+        displayPresentationRef: null
       })
     }
   }
