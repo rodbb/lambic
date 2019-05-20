@@ -22,7 +22,7 @@
           <v-container fluid class="py-1">
 
             <v-layout row class="py-2">
-              <v-flex xs12 md5>
+              <v-flex xs12 md7>
                 <v-text-field
                   v-model="title"
                   label="タイトル"
@@ -34,7 +34,7 @@
             </v-layout>
 
             <v-layout row class="py-2">
-              <v-flex xs12 md5>
+              <v-flex xs12 md7>
                 <v-textarea
                   v-model="description"
                   label="内容"
@@ -47,7 +47,7 @@
             </v-layout>
 
             <v-layout row class="py-2">
-              <v-flex xs12 md5>
+              <v-flex xs12 md7>
                 発表へのコメント投稿を許可する。
                 <v-switch
                   v-model="isAllowComment"
@@ -61,7 +61,7 @@
             </v-layout>
 
             <v-layout row class="py-2">
-              <v-flex xs12 md5>
+              <v-flex xs12 md7>
                 <v-checkbox
                   v-model="checkConfidential"
                   color="green"
