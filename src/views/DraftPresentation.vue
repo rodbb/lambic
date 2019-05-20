@@ -26,6 +26,7 @@
                 <v-text-field
                   v-model="title"
                   label="タイトル"
+                  outline
                   :rules="titleRules"
                   required
                 ></v-text-field>
@@ -37,6 +38,7 @@
                 <v-textarea
                   v-model="description"
                   label="内容"
+                  outline
                   :counter="descriptionMaxLength"
                   :rules="descriptionRules"
                 >
@@ -154,12 +156,23 @@ export default {
     }
   },
   methods: {
+    /*
+     * 入力内容を登録する
+     */
     submit () {
       // バリデート
-      if (!this.$refs.form.validate()) {
+      if (!this.$refs.form.validate() || !this.checkConfidential) {
         return 0
       }
-      // TODO: 発表追加処理
+      if (confirm('発表を申し込みます。よろしいですか？')) {
+        // 発表追加処理
+        this.$store.dispatch('addPresentation', {
+          eventId: this.eventId,
+          title: this.title,
+          description: this.description
+        })
+        this.$router.push({ path: '/events/' + this.eventId })
+      }
     }
   }
 }

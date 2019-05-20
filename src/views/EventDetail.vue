@@ -58,7 +58,7 @@
         class="my-3 white--text"
       >
         <v-icon color="white">add</v-icon>
-        発表を登録する
+        発表を申し込む
       </v-btn>
 
       <v-btn

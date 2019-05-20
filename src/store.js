@@ -165,6 +165,20 @@ export default new Vuex.Store({
           }
         })
     },
+    /*
+     * 発表を新規登録する
+     */
+    addPresentation ({ state }, { eventId, title, description }) {
+      presentations.add({
+        eventId,
+        title,
+        description,
+        presenter: users.doc(state.user.id)
+      })
+    },
+    /*
+     * コメントを登録する
+     */
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
         comment,
