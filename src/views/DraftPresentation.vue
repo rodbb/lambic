@@ -97,7 +97,7 @@
         bottom
         left
         color="green"
-        :to="{ path: '/events/' + eventId }"
+        @click="backTo"
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
@@ -107,6 +107,7 @@
 </template>
 <script>
 import moment from 'moment'
+const NEW_PRESENTATION_KEYWORD = 'new'
 export default {
   name: 'draftPresentation',
   props: {
@@ -121,6 +122,7 @@ export default {
   },
   data () {
     return {
+      isNewPresentation: true,
       valid: true,
       title: '', // 入力する発表タイトル
       titleMaxLength: 50, // 発表タイトル最大文字数
@@ -137,6 +139,18 @@ export default {
         // 発表内容入力規則
         v => v.length <= this.descriptionMaxLength || '内容は500文字以内にしてください。'
       ]
+    }
+  },
+  created () {
+    this.isNewPresentation = this.id === NEW_PRESENTATION_KEYWORD
+    const presentation = this.getPresentation()
+    if (presentation) {
+      // 編集の場合、対象の発表データをセットする
+      this.title = presentation.title
+      this.description = presentation.description
+      this.isAllowComment = presentation.isAllowComment
+    } else {
+      this.$router.push({ path: '/error' })
     }
   },
   computed: {
@@ -157,6 +171,16 @@ export default {
   },
   methods: {
     /*
+     * 発表情報を取得する
+     */
+    getPresentation () {
+      if (!this.isNewPresentation) {
+        // 新規作成でない場合
+        return this.$store.getters.presentation(this.id)
+      }
+      return null
+    },
+    /*
      * 入力内容を登録する
      */
     submit () {
@@ -164,14 +188,36 @@ export default {
       if (!this.$refs.form.validate() || !this.checkConfidential) {
         return 0
       }
-      if (confirm('発表を申し込みます。よろしいですか？')) {
-        // 発表追加処理
+      if (this.isNewPresentation && confirm('発表を申し込みます。よろしいですか？')) {
+        // 発表登録処理
         this.$store.dispatch('addPresentation', {
           eventId: this.eventId,
           title: this.title,
-          description: this.description
+          description: this.description,
+          isAllowComment: this.isAllowComment
         })
         this.$router.push({ path: '/events/' + this.eventId })
+      } else if (confirm('発表内容を更新します。よろしいですか？')) {
+        this.$store.dispatch('updatePresentation', {
+          presentationId: this.id,
+          eventId: this.eventId,
+          title: this.title,
+          description: this.description,
+          isAllowComment: this.isAllowComment
+        })
+        this.$router.push({ path: '/presentations/' + this.id })
+      }
+    },
+    /*
+     * 前のページへ遷移させる
+     */
+    backTo () {
+      if (this.isNewPresentation) {
+        // 新規作成の場合はイベント詳細画面へ戻る
+        this.$router.push({ path: '/events/' + this.eventId })
+      } else {
+        // 編集の場合は発表詳細画面へ戻る
+        this.$router.push({ path: '/presentations/' + this.id })
       }
     }
   }

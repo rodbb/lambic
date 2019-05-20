@@ -4,12 +4,40 @@
 
       <v-card>
         <v-card-text>
-          <v-layout align-center mb-3 class="grey--text">
+          <v-layout align-center mb-2 class="grey--text">
             <span>{{ event.title }}</span>
             <v-spacer></v-spacer>
             <span>{{ event.date | toDateString }}</span>
           </v-layout>
+          <v-layout align-center>
           <h1 class="headline">{{ presentation.title }}</h1>
+          <v-spacer></v-spacer>
+
+          <v-menu
+            v-if="user != null && presentation.presenter.id == user.id"
+            bottom
+            left
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn icon v-on="on" class="mx-0 my-0">
+                <v-icon color="gray">more_vert</v-icon>
+              </v-btn>
+            </template>
+            <v-list class="px-2">
+              <v-list-tile @click="editPresentation">
+                <v-list-tile-title>
+                  <v-icon class="mr-1">edit</v-icon>編集する
+                </v-list-tile-title>
+              </v-list-tile>
+              <v-list-tile @click="deletePresentation">
+                <v-list-tile-title>
+                  <v-icon class="mr-1">delete_forever</v-icon>削除する
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+          </v-layout>
+
           <div  v-if="presentation.presenter" class="grey--text mb-3">
             by {{ presentation.presenter.name }}
           </div>
@@ -195,6 +223,17 @@ export default {
     }
   },
   methods: {
+    editPresentation () {
+      this.$router.push({
+        path: '/' +
+        this.presentation.eventId +
+        '/draftPresentations/' +
+        this.id
+      })
+    },
+    deletePresentation () {
+      alert('削除しよう')
+    },
     validateComment (c) {
       return {
         length: c.length <= 1000,

@@ -168,11 +168,24 @@ export default new Vuex.Store({
     /*
      * 発表を新規登録する
      */
-    addPresentation ({ state }, { eventId, title, description }) {
+    addPresentation ({ state }, { eventId, title, description, isAllowComment }) {
       presentations.add({
         eventId,
         title,
         description,
+        isAllowComment,
+        presenter: users.doc(state.user.id)
+      })
+    },
+    /*
+     * 発表を更新する
+     */
+    updatePresentation ({ state }, { presentationId, eventId, title, description, isAllowComment }) {
+      presentations.doc(presentationId).update({
+        eventId,
+        title,
+        description,
+        isAllowComment,
         presenter: users.doc(state.user.id)
       })
     },
