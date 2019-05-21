@@ -15,6 +15,8 @@ const permissions = firestore.collection('permissions')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
+const stamps = firestore.collection('stamps')
+const stampCounts = firestore.collection('stampCounts')
 const screens = firestore.collection('screens')
 Vue.use(Vuex)
 
@@ -25,6 +27,8 @@ export default new Vuex.Store({
     events: [],
     presentations: [],
     comments: [],
+    stamps: [],
+    stampCounts: [],
     screens: []
   },
   getters: {
@@ -107,6 +111,8 @@ export default new Vuex.Store({
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
+      bindFirebaseRef('stamps', stamps)
+      bindFirebaseRef('stampCounts', stampCounts)
       bindFirebaseRef('screens', screens)
     }),
     login ({ commit }, auth) {
@@ -169,13 +175,31 @@ export default new Vuex.Store({
      * 発表を新規登録する
      */
     addPresentation ({ state }, { eventId, title, description, isAllowComment }) {
-      presentations.add({
+      // 発表を追加
+      const newPresentationPromise = presentations.add({
         eventId,
         title,
         description,
         isAllowComment,
         presenter: users.doc(state.user.id)
       })
+
+      // スタンプの数だけスタンプカウントドキュメントを追加
+      newPresentationPromise
+        .then((newPresentationDoc) => {
+          stamps.where('canUse', '==', true)
+            .get()
+            .then((canUseStamps) => {
+              canUseStamps.forEach((stampDoc) => {
+                // スタンプカウントを追加
+                stampCounts.add({
+                  presentationId: newPresentationDoc.id,
+                  stampId: stampDoc.id,
+                  shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
+                })
+              })
+            })
+        })
     },
     /*
      * 発表を更新する
