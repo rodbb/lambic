@@ -51,7 +51,7 @@
       </v-card>
 
       <v-btn
-        :to="{ path: '/' + id + '/draftPresentations/' + 'new' }"
+        @click="goAddPlesentation"
         color="green"
         block
         large
@@ -60,6 +60,28 @@
         <v-icon color="white">add</v-icon>
         発表を申し込む
       </v-btn>
+
+      <v-dialog
+        v-model="dialog"
+        width="500"
+      >
+        <v-card>
+          <v-card-text class="text-xs-center">
+            <p class="title mt-3">発表登録にはログインが必要です。</p>
+          </v-card-text>
+          <v-card-actions class="justify-center">
+            <v-btn
+              color="light-green"
+              :to="{ path: '/login' }"
+            >
+              ログインする
+            </v-btn>
+          </v-card-actions>
+          <v-card-text class="text-xs-center">
+            <p>ログインして発表を申し込みましょう。</p>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <v-btn
         fixed
@@ -88,7 +110,8 @@ export default {
   },
   data () {
     return {
-      show: false
+      show: false,
+      dialog: false
     }
   },
   computed: {
@@ -99,6 +122,20 @@ export default {
   filters: {
     toDateString (date) {
       return moment(date).format('YYYY/MM/DD（ddd）')
+    }
+  },
+  methods: {
+    /*
+     * 発表追加ボタンを押したときの挙動
+     */
+    goAddPlesentation () {
+      if (this.$store.getters.user) {
+        // ログインしている場合は発表追加画面へ
+        this.$router.push({ path: '/' + this.id + '/draftPresentations/' + 'new' })
+      } else {
+        // 未ログインの場合はログインを促すダイアログを表示
+        this.dialog = true
+      }
     }
   }
 }
