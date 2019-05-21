@@ -86,7 +86,7 @@
         color="orange"
         block
         large
-        class="my-3 white--text"
+        class="my-2 white--text"
       >
         登録内容を確定する
       </v-btn>

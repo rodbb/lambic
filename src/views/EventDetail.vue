@@ -55,7 +55,7 @@
         color="green"
         block
         large
-        class="my-3 white--text"
+        class="my-2 white--text"
       >
         <v-icon color="white">add</v-icon>
         発表を申し込む
