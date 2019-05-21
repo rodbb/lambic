@@ -190,6 +190,12 @@ export default new Vuex.Store({
       })
     },
     /*
+     * 発表を削除する
+     */
+    deletePresentation ({ state }, presentationId) {
+      presentations.doc(presentationId).delete()
+    },
+    /*
      * コメントを登録する
      */
     appendComment ({ state }, { comment, presentationId }) {

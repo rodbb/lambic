@@ -235,7 +235,10 @@ export default {
       })
     },
     deletePresentation () {
-      alert('削除しよう')
+      if (confirm('この発表を削除します。よろしいですか？')) {
+        this.$store.dispatch('deletePresentation', this.id)
+        this.$router.push({ path: '/events/' + this.presentation.eventId })
+      }
     },
     validateComment (c) {
       return {
