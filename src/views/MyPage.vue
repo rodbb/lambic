@@ -83,7 +83,7 @@ export default {
       const res = this.validateUserName(this.name)
       if (Object.values(res).every((v) => v)) {
         this.errors = []
-        this.$store.dispatch('updateUserInfo', this.name)
+        this.$store.dispatch('updateUserInfo', { name: this.name })
         this.snackbar = true
       } else {
         this.errors = [
