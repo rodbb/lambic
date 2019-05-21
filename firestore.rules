@@ -10,37 +10,42 @@ service cloud.firestore {
     }
 
     match /events/{document=**} {
-      allow read  : if isAuth();
+      allow read;
       allow write : if isAuth();
     }
 
     match /comments/{document=**} {
-      allow read  : if isAuth();
+      allow read;
       allow write : if isAuth()
                     && matchUserRef(request.resource.data.userRef, request.auth.uid);
     }
 
     match /presentations/{document=**} {
-      allow read  : if isAuth();
+      allow read;
       allow write : if isAuth();
     }
 
     match /users/{document=**} {
-      allow read  : if isAuth();
+      allow read;
       allow write : if isAuth();
     }
 
     match /screens/{document=**} {
-      allow read  : if isAuth();
+      allow read;
       allow write : if isAuth();
     }
 
     match /stampCounts/{document=**} {
-      allow read  : if isAuth();
+      allow read;
       allow write : if isAuth();
     }
 
     match /stamps/{document=**} {
+      allow read;
+      allow write : if isAuth();
+    }
+
+    match /permissions/{document=**} {
       allow read  : if isAuth();
       allow write : if isAuth();
     }
