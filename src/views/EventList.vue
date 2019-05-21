@@ -16,7 +16,7 @@
                 <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }" class="my-2">
                   <v-list-tile-content>
                     <div>
-                      {{ event.date | dateFormat }}
+                      {{ event.date | toDateString }}
                       <v-chip v-if="event.isFinished" small light>終了しました</v-chip>
                       <v-chip v-else-if="event.isToday" small color="green" text-color="white">本日開催</v-chip>
                     </div>
@@ -44,22 +44,23 @@ import moment from 'moment'
 export default {
   name: 'events',
   computed: {
+    /*
+     * イベント一覧取得
+     */
     events () {
       const nowDate = new Date()
       return this.$store.getters.events
-        .map((pr) => {
-          const eventDate = new Date(pr.date.seconds * 1000 /* to milliseconds */)
+        .map((ev) => {
           return {
-            ...pr,
-            date: eventDate,
-            isFinished: moment(eventDate).isBefore(nowDate, 'day'),
-            isToday: moment(eventDate).isSame(nowDate, 'day')
+            ...ev,
+            isFinished: moment(ev.date).isBefore(nowDate, 'day'),
+            isToday: moment(ev.date).isSame(nowDate, 'day')
           }
         })
     }
   },
   filters: {
-    dateFormat (date) {
+    toDateString (date) {
       return moment(date).format('YYYY/MM/DD（ddd）')
     }
   }

@@ -52,6 +52,23 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-divider></v-divider>
+
+        <template v-if="user && user.isAdmin">
+          <v-list-tile>
+            <strong>管理者メニュー</strong>
+          </v-list-tile>
+
+          <v-list-tile :to="{name: 'adminScreenList' }">
+            <v-list-tile-action>
+              <v-icon>cast</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>スクリーンの設定</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-divider></v-divider>
+        </template>
       </v-list>
 
       <qriously id="qrcode" class="pb-4" :value="href.here" :size="150"/>
