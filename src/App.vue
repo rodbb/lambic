@@ -4,7 +4,7 @@
       <v-toolbar flat>
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
-            <img :src="imagePath('logo\.png')" id="logo">
+            <img :src="imagePath('logo\.png')" class="logo">
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -128,7 +128,7 @@ export default {
 img {
     object-fit: contain;
 }
-#logo {
+.logo {
     height: 60%;
 }
 </style>
