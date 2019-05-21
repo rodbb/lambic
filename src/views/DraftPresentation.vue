@@ -5,7 +5,7 @@
       <v-card class="mb-2">
         <v-card-text class="pb-0">
           <v-layout class="grey--text">
-            <span>{{ event.title }}</span>
+            <span class="text-truncate">{{ event.title }}</span>
             <v-spacer></v-spacer>
             <span>{{ event.date | toDateString }}</span>
           </v-layout>
@@ -149,8 +149,6 @@ export default {
       this.title = presentation.title
       this.description = presentation.description
       this.isAllowComment = presentation.isAllowComment
-    } else {
-      this.$router.push({ path: '/error' })
     }
   },
   computed: {

@@ -5,7 +5,7 @@
       <v-card>
         <v-card-text>
           <v-layout align-center mb-2 class="grey--text">
-            <span>{{ event.title }}</span>
+            <span class="text-truncate">{{ event.title }}</span>
             <v-spacer></v-spacer>
             <span>{{ event.date | toDateString }}</span>
           </v-layout>
@@ -14,7 +14,9 @@
           <v-spacer></v-spacer>
 
           <v-menu
-            v-if="user != null && presentation.presenter.id == user.id"
+            v-if="user != null &&
+              presentation.presenter &&
+              presentation.presenter.id == user.id"
             bottom
             left
           >
@@ -36,6 +38,7 @@
               </v-list-tile>
             </v-list>
           </v-menu>
+
           </v-layout>
 
           <div  v-if="presentation.presenter" class="grey--text mb-3">
@@ -50,7 +53,7 @@
 
       <v-card v-if="presentation.isAllowComment !== false">
         <v-card-title>
-          <h1 class="headline">コメント一覧</h1>
+          <h3>コメント一覧</h3>
         </v-card-title>
         <template v-for="comment in presentation.comments">
           <v-divider :key="comment.id + '-divider'"></v-divider>
