@@ -4,20 +4,18 @@ service cloud.firestore {
       return request.auth.uid != null;
     }
 
-    function matchUserRef(ref, uid) {
-      return  ref != null
-              && ref == get(/databases/$(database)/documents/users/$(uid)).__name__;
+    function isAdmin(uid) {
+      return  uid == get(/databases/{database}/documents/permissions/{docId});
     }
 
     match /events/{document=**} {
       allow read;
-      allow write : if isAuth();
+      allow write : if isAuth() && isAdmin(request.auth.uid);
     }
 
     match /comments/{document=**} {
       allow read;
-      allow write : if isAuth()
-                    && matchUserRef(request.resource.data.userRef, request.auth.uid);
+      allow write : if isAuth();
     }
 
     match /presentations/{document=**} {
@@ -32,22 +30,21 @@ service cloud.firestore {
 
     match /screens/{document=**} {
       allow read;
-      allow write : if isAuth();
+      allow write : if isAuth() && isAdmin(request.auth.uid);
     }
 
     match /stampCounts/{document=**} {
-      allow read;
-      allow write : if isAuth();
+      allow read, write;
     }
 
     match /stamps/{document=**} {
       allow read;
-      allow write : if isAuth();
+      allow write : if isAuth() && isAdmin(request.auth.uid);
     }
 
     match /permissions/{document=**} {
       allow read  : if isAuth();
-      allow write : if isAuth();
+      allow write : if isAuth() && isAdmin(request.auth.uid);
     }
   }
 }
