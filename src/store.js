@@ -228,7 +228,26 @@ export default new Vuex.Store({
      * 発表を削除する
      */
     deletePresentation ({ state }, presentationId) {
-      presentations.doc(presentationId).delete()
+      const batch = firestore.batch()
+      // スタンプカウント削除
+      stampCounts.where('presentationId', '==', presentationId)
+        .get()
+        .then((stampCountSnapshotList) => {
+          stampCountSnapshotList.forEach((stampCountSnapshot) => {
+            batch.delete(stampCountSnapshot.ref)
+          })
+          // コメント削除
+          comments.where('presentationId', '==', presentationId)
+            .get()
+            .then((commentSnapshotList) => {
+              commentSnapshotList.forEach((commentSnapshot) => {
+                batch.delete(commentSnapshot.ref)
+              })
+              // 発表削除
+              batch.delete(presentations.doc(presentationId))
+              batch.commit()
+            })
+        })
     },
     /*
      * コメントを登録する
