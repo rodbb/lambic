@@ -10,7 +10,7 @@ service cloud.firestore {
 
     match /events/{document=**} {
       allow read;
-      allow write : if isAuth() && isAdmin(request.auth.uid);
+      allow write : if isAdmin(request.auth.uid);
     }
 
     match /comments/{document=**} {
@@ -30,7 +30,7 @@ service cloud.firestore {
 
     match /screens/{document=**} {
       allow read;
-      allow write : if isAuth() && isAdmin(request.auth.uid);
+      allow write : if isAdmin(request.auth.uid);
     }
 
     match /stampCounts/{document=**} {
@@ -39,12 +39,12 @@ service cloud.firestore {
 
     match /stamps/{document=**} {
       allow read;
-      allow write : if isAuth() && isAdmin(request.auth.uid);
+      allow write : if isAdmin(request.auth.uid);
     }
 
     match /permissions/{document=**} {
       allow read  : if isAuth();
-      allow write : if isAuth() && isAdmin(request.auth.uid);
+      allow write : if isAdmin(request.auth.uid);
     }
   }
 }
