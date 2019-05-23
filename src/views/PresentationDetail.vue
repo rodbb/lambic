@@ -31,6 +31,7 @@
                   <v-icon class="mr-1">edit</v-icon>編集する
                 </v-list-tile-title>
               </v-list-tile>
+              <v-divider class="mx-2"></v-divider>
               <v-list-tile @click="deletePresentation">
                 <v-list-tile-title>
                   <v-icon class="mr-1">delete_forever</v-icon>削除する
