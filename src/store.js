@@ -176,20 +176,16 @@ export default new Vuex.Store({
      * presentation ドキュメントを追加
      * stampCount ドキュメントを追加
      */
-    addPresentation ({ state }, { eventId, title, description, isAllowComment }) {
+    addPresentation ({ state }, presentationInfo) {
       stamps.where('canUse', '==', true)
         .get() // 現在有効なスタンプを取得
         .then((canUseStamps) => {
           const batch = firestore.batch()
           // 発表を追加する ///////////////////////////////////////////////////
           const newPresentationDoc = presentations.doc()
-          batch.set(newPresentationDoc, {
-            eventId,
-            title,
-            description,
-            isAllowComment,
+          batch.set(newPresentationDoc, Object.assign({}, presentationInfo, {
             presenter: users.doc(state.user.id)
-          })
+          }))
 
           // スタンプカウントを追加する ////////////////////////////////////////
           // 有効なスタンプの数だけ追加
