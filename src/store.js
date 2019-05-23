@@ -202,9 +202,9 @@ export default new Vuex.Store({
               })
 
               // スタンプカウントにshardsサブコレクションを追加する ////////////////
-              const stampCountSherds = stampCountDoc.collection('shards')
+              const stampCountShards = stampCountDoc.collection('shards')
               for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
-                transaction.set(stampCountSherds.doc(idx.toString()), {
+                transaction.set(stampCountShards.doc(idx.toString()), {
                   count: 0
                 })
               }
