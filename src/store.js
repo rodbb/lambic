@@ -177,40 +177,40 @@ export default new Vuex.Store({
      * stampCount ドキュメントを追加
      */
     addPresentation ({ state }, { eventId, title, description, isAllowComment }) {
-      firestore.runTransaction((transaction) => {
-        return stamps.where('canUse', '==', true)
-          .get() // 現在有効なスタンプを取得
-          .then((canUseStamps) => {
-            // 発表を追加する ///////////////////////////////////////////////////
-            const newPresentationDoc = presentations.doc()
-            transaction.set(newPresentationDoc, {
-              eventId,
-              title,
-              description,
-              isAllowComment,
-              presenter: users.doc(state.user.id)
+      stamps.where('canUse', '==', true)
+        .get() // 現在有効なスタンプを取得
+        .then((canUseStamps) => {
+          const batch = firestore.batch()
+          // 発表を追加する ///////////////////////////////////////////////////
+          const newPresentationDoc = presentations.doc()
+          batch.set(newPresentationDoc, {
+            eventId,
+            title,
+            description,
+            isAllowComment,
+            presenter: users.doc(state.user.id)
+          })
+
+          // スタンプカウントを追加する ////////////////////////////////////////
+          // 有効なスタンプの数だけ追加
+          canUseStamps.forEach((stampDoc) => {
+            const stampCountDoc = stampCounts.doc()
+            batch.set(stampCountDoc, {
+              presentationId: newPresentationDoc.id,
+              stampId: stampDoc.id,
+              shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
             })
 
-            // スタンプカウントを追加する ////////////////////////////////////////
-            // 有効なスタンプの数だけ追加
-            canUseStamps.forEach((stampDoc) => {
-              const stampCountDoc = stampCounts.doc()
-              transaction.set(stampCountDoc, {
-                presentationId: newPresentationDoc.id,
-                stampId: stampDoc.id,
-                shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
+            // スタンプカウントにshardsサブコレクションを追加する ////////////////
+            const stampCountShards = stampCountDoc.collection('shards')
+            for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
+              batch.set(stampCountShards.doc(idx.toString()), {
+                count: 0
               })
-
-              // スタンプカウントにshardsサブコレクションを追加する ////////////////
-              const stampCountShards = stampCountDoc.collection('shards')
-              for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
-                transaction.set(stampCountShards.doc(idx.toString()), {
-                  count: 0
-                })
-              }
-            }) // End forEach
-          })
-      })// End transaction
+            }
+          }) // End forEach
+          batch.commit()
+        })
     },
     /*
      * 発表を更新する
