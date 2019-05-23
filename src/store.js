@@ -234,6 +234,14 @@ export default new Vuex.Store({
         .get()
         .then((stampCountSnapshotList) => {
           stampCountSnapshotList.forEach((stampCountSnapshot) => {
+            // shardsサブコレクション内ドキュメント削除
+            stampCountSnapshot.ref.get().then((stampCount) => {
+              const shardNum = stampCount.data().shardNum
+              for (let idx = 0; idx < shardNum; idx++) {
+                batch.delete(stampCountSnapshot.ref.collection('shards').doc(idx.toString()))
+              }
+            })
+            // スタンプカウントドキュメント削除
             batch.delete(stampCountSnapshot.ref)
           })
           // コメント削除
