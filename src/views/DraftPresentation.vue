@@ -195,7 +195,7 @@ export default {
           isAllowComment: this.isAllowComment
         })
         this.$router.push({ path: '/events/' + this.eventId })
-      } else if (confirm('発表内容を更新します。よろしいですか？')) {
+      } else if (!this.isNewPresentation && confirm('発表内容を更新します。よろしいですか？')) {
         this.$store.dispatch('updatePresentation', {
           presentationId: this.id,
           eventId: this.eventId,
