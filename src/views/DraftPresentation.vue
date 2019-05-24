@@ -196,8 +196,7 @@ export default {
         })
         this.$router.push({ path: '/events/' + this.eventId })
       } else if (!this.isNewPresentation && confirm('発表内容を更新します。よろしいですか？')) {
-        this.$store.dispatch('updatePresentation', {
-          presentationId: this.id,
+        this.$store.dispatch('updatePresentation', this.id, {
           eventId: this.eventId,
           title: this.title,
           description: this.description,

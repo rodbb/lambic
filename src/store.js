@@ -211,14 +211,10 @@ export default new Vuex.Store({
     /*
      * 発表を更新する
      */
-    updatePresentation ({ state }, { presentationId, eventId, title, description, isAllowComment }) {
-      presentations.doc(presentationId).update({
-        eventId,
-        title,
-        description,
-        isAllowComment,
+    updatePresentation ({ state }, presentationId, presentationInfo) {
+      presentations.doc(presentationId).update(Object.assign({}, presentationInfo, {
         presenter: users.doc(state.user.id)
-      })
+      }))
     },
     /*
      * 発表を削除する
