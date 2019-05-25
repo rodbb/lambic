@@ -1,16 +1,15 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ユーザが認証済みか確認する
     function isAuth() {
-      return request.auth.uid != null;
+      return request.auth != null;
     }
 
-    function isAdmin(uid) {
-      return  uid == get(/databases/{database}/documents/permissions/{docId});
-    }
-
-    match /events/{document=**} {
-      allow read;
-      allow write : if isAdmin(request.auth.uid);
+    // ユーザが管理者か判定する
+    function isAdmin() {
+      return isAuth()
+             && exists(/databases/$(database)/documents/permissions/$(request.auth.uid));
     }
 
     match /comments/{document=**} {
@@ -18,19 +17,24 @@ service cloud.firestore {
       allow write : if isAuth();
     }
 
-    match /presentations/{document=**} {
+    match /events/{document=**} {
       allow read;
-      allow write : if isAuth();
+      allow write : if isAdmin();
     }
 
-    match /users/{document=**} {
+    match /permissions/{document=**} {
+      allow read  : if isAuth();
+      allow write : if isAdmin();
+    }
+
+    match /presentations/{document=**} {
       allow read;
       allow write : if isAuth();
     }
 
     match /screens/{document=**} {
       allow read;
-      allow write : if isAdmin(request.auth.uid);
+      allow write : if isAdmin();
     }
 
     match /stampCounts/{document=**} {
@@ -39,12 +43,14 @@ service cloud.firestore {
 
     match /stamps/{document=**} {
       allow read;
-      allow write : if isAdmin(request.auth.uid);
+      allow write : if isAdmin();
     }
 
-    match /permissions/{document=**} {
-      allow read  : if isAuth();
-      allow write : if isAdmin(request.auth.uid);
+    match /users/{document=**} {
+      allow read;
+      allow create         : if isAuth();
+      allow update, delete : if isAuth()
+                             && request.auth.uid == resource.id;
     }
   }
 }
