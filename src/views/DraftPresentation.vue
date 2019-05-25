@@ -1,5 +1,9 @@
 <template>
-  <v-layout v-if="event" row class="pb-5">
+  <v-layout v-if="event &&
+    (isNewPresentation || presentation) &&
+    user &&
+    user.id == presentation.presenter.id"
+    row class="pb-5">
     <v-flex>
 
       <v-card class="mb-2">
@@ -104,6 +108,8 @@
 
     </v-flex>
   </v-layout>
+  <v-progress-linear v-else :indeterminate="event !== null && presentation !== null">
+  </v-progress-linear>
 </template>
 <script>
 import moment from 'moment'
@@ -122,7 +128,7 @@ export default {
   },
   data () {
     return {
-      isNewPresentation: true,
+      isNewPresentation: false,
       valid: true,
       title: '', // 入力する発表タイトル
       titleMaxLength: 50, // 発表タイトル最大文字数
@@ -143,7 +149,7 @@ export default {
   },
   created () {
     this.isNewPresentation = this.id === NEW_PRESENTATION_KEYWORD
-    const presentation = this.getPresentation()
+    const presentation = this.isNewPresentation ? null : this.$store.getters.presentation(this.id)
     if (presentation) {
       // 編集の場合、対象の発表データをセットする
       this.title = presentation.title
@@ -157,6 +163,22 @@ export default {
      */
     event () {
       return this.$store.getters.event(this.eventId)
+    },
+    /*
+     * プレゼンテーションの取得
+     */
+    presentation () {
+      if (!this.isNewPresentation) {
+        // 新規作成でない場合
+        return this.$store.getters.presentation(this.id)
+      }
+      return null
+    },
+    /*
+     * ユーザ情報取得
+     */
+    user () {
+      return this.$store.getters.user
     }
   },
   filters: {
@@ -168,16 +190,6 @@ export default {
     }
   },
   methods: {
-    /*
-     * 発表情報を取得する
-     */
-    getPresentation () {
-      if (!this.isNewPresentation) {
-        // 新規作成でない場合
-        return this.$store.getters.presentation(this.id)
-      }
-      return null
-    },
     /*
      * 入力内容を登録する
      */
