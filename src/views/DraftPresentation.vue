@@ -139,11 +139,11 @@ export default {
       titleRules: [
         // 発表タイトル入力規則
         v => !!v || 'タイトルは必須です。',
-        v => v.length <= this.titleMaxLength || 'タイトルは50文字以内にしてください。'
+        v => v.length <= this.titleMaxLength || 'タイトルは' + this.titleMaxLength + '文字以内にしてください。'
       ],
       descriptionRules: [
         // 発表内容入力規則
-        v => v.length <= this.descriptionMaxLength || '内容は500文字以内にしてください。'
+        v => v.length <= this.descriptionMaxLength || '内容は' + this.descriptionMaxLength + '文字以内にしてください。'
       ]
     }
   },
