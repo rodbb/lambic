@@ -128,6 +128,9 @@ export default new Vuex.Store({
     setUserIsAdmin (state, payload) {
       state.user.isAdmin = payload
     },
+    clearCounts (state) {
+      state.counts.splice(0, state.counts.length)
+    },
     setCount (state, payload) {
       const idx = state.counts.findIndex((c) => c.stampId === payload.stampId)
       if (idx !== -1) {
@@ -228,33 +231,39 @@ export default new Vuex.Store({
         displayPresentationRef: null
       })
     },
+    clearCounts ({ commit }) {
+      commit('clearCounts')
+    },
     watchStampCount ({ commit }, { presentationId }) {
       // サブコレクションに対するbindFirebaseRefの適用方法が不明なため、
       // shardsの監視処理は自前で実装
+      let unsubscribes = []
       stampCounts
         .where('presentationId', '==', presentationId)
         .get()
         .then((query) => {
-          query.docs.forEach((sc) => {
+          query.docs.forEach((stampCount) => {
             // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
-            stampCounts.doc(sc.id).collection('shards').onSnapshot((querySnapshot) => {
+            const stampCountRef = stampCounts.doc(stampCount.id)
+            unsubscribes.push(stampCountRef.collection('shards').onSnapshot((querySnapshot) => {
               querySnapshot.docChanges().forEach((docChange) => {
                 if (docChange.type === 'added' || docChange.type === 'modified') {
-                  stampCounts.doc(sc.id).collection('shards').get().then((snap) => {
+                  stampCountRef.collection('shards').get().then((snap) => {
                     let totalCount = 0
                     snap.forEach((doc) => {
                       totalCount += doc.data().count
                     })
                     commit('setCount', {
-                      stampId: sc.data().stampId,
+                      stampId: stampCount.data().stampId,
                       count: totalCount
                     })
                   })
                 }
               })
-            })
+            }))
           })
         })
+      return unsubscribes
     },
     countUpStamp ({ commit }, { presentationId, stampId }) {
       const stampCount = this.getters.stampCounts

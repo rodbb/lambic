@@ -217,13 +217,14 @@ export default {
   },
   data () {
     return {
+      unsubscribes: [],
       dialog: false,
       comment: '',
       errors: []
     }
   },
-  created () {
-    this.$store.dispatch('watchStampCount', { presentationId: this.id })
+  async created () {
+    this.unsubscribes = await this.$store.dispatch('watchStampCount', { presentationId: this.id })
   },
   computed: {
     presentation () {
@@ -287,7 +288,7 @@ export default {
      */
     getStampCount (stampId) {
       const countObj = this.$store.getters.count(stampId)
-      return countObj ? countObj.count : 0
+      return countObj ? countObj.count : ''
     },
     /**
      * スタンプのカウントをインクリメント
@@ -296,6 +297,10 @@ export default {
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
     }
+  },
+  beforeDestroy () {
+    this.unsubscribes.forEach((u) => u())
+    this.$store.dispatch('clearCounts')
   }
 }
 </script>
