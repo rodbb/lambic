@@ -183,9 +183,10 @@ export default new Vuex.Store({
           const batch = firestore.batch()
           // 発表を追加する ///////////////////////////////////////////////////
           const newPresentationDoc = presentations.doc()
-          batch.set(newPresentationDoc, Object.assign({}, presentationInfo, {
+          batch.set(newPresentationDoc, {
+            ...presentationInfo,
             presenter: users.doc(state.user.id)
-          }))
+          })
 
           // スタンプカウントを追加する ////////////////////////////////////////
           // 有効なスタンプの数だけ追加
@@ -211,10 +212,11 @@ export default new Vuex.Store({
     /*
      * 発表を更新する
      */
-    updatePresentation ({ state }, presentationId, presentationInfo) {
-      presentations.doc(presentationId).update(Object.assign({}, presentationInfo, {
+    updatePresentation ({ state }, { presentationId, presentationInfo }) {
+      presentations.doc(presentationId).update({
+        ...presentationInfo,
         presenter: users.doc(state.user.id)
-      }))
+      })
     },
     /*
      * 発表を削除する
