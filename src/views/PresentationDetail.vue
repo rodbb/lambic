@@ -28,11 +28,22 @@
             </template>
             <v-card-actions :key="index">
               <v-btn
+                v-if="stamp.src"
+                icon
+                @click="countUpStamp(stamp.id)"
+              >
+                <img
+                  class="stamp"
+                  :src="stamp.src"
+                >
+              </v-btn>
+              <v-btn
+                v-else
                 icon
                 :key="index"
                 @click="countUpStamp(stamp.id)"
               >
-              {{ stamp.string }}
+                {{ stamp.string }}
               </v-btn>
             </v-card-actions>
           </v-badge>
@@ -42,11 +53,22 @@
             </template>
             <v-card-actions :key="index">
               <v-btn
+                v-if="stamp.src"
+                icon
+                disabled
+               >
+                <img
+                  class="stamp"
+                  :src="stamp.src"
+                >
+              </v-btn>
+              <v-btn
+                v-else
                 icon
                 disabled
                 :key="index"
               >
-              {{ stamp.string }}
+                {{ stamp.string }}
               </v-btn>
             </v-card-actions>
           </v-badge>
@@ -281,5 +303,11 @@ export default {
 <style scoped>
 .pre {
   white-space: pre-wrap;
+}
+
+.stamp {
+  border-radius: 50%;
+  max-width: 28px;
+  max-height: 28px;
 }
 </style>
