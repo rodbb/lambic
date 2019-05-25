@@ -173,39 +173,44 @@ export default new Vuex.Store({
     },
     /*
      * 発表を新規登録する
-     * presentation ドキュメントを追加
-     * stampCount ドキュメントを追加
+     * @params { state }
+     * @params presentationInfo
      */
     addPresentation ({ state }, presentationInfo) {
-      stamps.where('canUse', '==', true)
-        .get() // 現在有効なスタンプを取得
-        .then((canUseStamps) => {
-          const batch = firestore.batch()
-          // 発表を追加する ///////////////////////////////////////////////////
-          const newPresentationDoc = presentations.doc()
-          batch.set(newPresentationDoc, {
-            ...presentationInfo,
-            presenter: users.doc(state.user.id)
-          })
+      new Promise((resolve) => {
+        const batch = firestore.batch()
+        // 発表を追加する ///////////////////////////////////////////////////
+        const newPresentationDoc = presentations.doc()
+        batch.set(newPresentationDoc, {
+          ...presentationInfo,
+          presenter: users.doc(state.user.id)
+        })
 
-          // スタンプカウントを追加する ////////////////////////////////////////
-          // 有効なスタンプの数だけ追加
-          canUseStamps.forEach((stampDoc) => {
-            const stampCountDoc = stampCounts.doc()
-            batch.set(stampCountDoc, {
-              presentationId: newPresentationDoc.id,
-              stampId: stampDoc.id,
-              shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
-            })
-
-            // スタンプカウントにshardsサブコレクションを追加する ////////////////
-            const stampCountShards = stampCountDoc.collection('shards')
-            for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
-              batch.set(stampCountShards.doc(idx.toString()), {
-                count: 0
+        // スタンプカウントを追加する ////////////////////////////////////////
+        // 有効なスタンプの数だけ追加
+        stamps.where('canUse', '==', true)
+          .get() // 現在有効なスタンプを取得
+          .then((canUseStamps) => {
+            canUseStamps.forEach((stampDoc) => {
+              const stampCountDoc = stampCounts.doc()
+              batch.set(stampCountDoc, {
+                presentationId: newPresentationDoc.id,
+                stampId: stampDoc.id,
+                shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
               })
-            }
-          }) // End forEach
+
+              // スタンプカウントにshardsサブコレクションを追加する ////////////////
+              const stampCountShards = stampCountDoc.collection('shards')
+              for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
+                batch.set(stampCountShards.doc(idx.toString()), {
+                  count: 0
+                })
+              }
+            }) // End forEach
+            resolve(batch)
+          })
+      })
+        .then((batch) => {
           batch.commit()
         })
     },
