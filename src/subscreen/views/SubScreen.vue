@@ -171,20 +171,20 @@ export default {
             .where('presentationId', '==', this.screenInfo.displayPresentationRef.id)
             .get()
             .then((query) => {
-              query.docs.forEach((sc) => {
-                this.unsubscribe.stampCounts.push(stampCounts.doc(sc.id).collection('shards').onSnapshot(() => {
-                  stampCounts.doc(sc.id).collection('shards').get().then((snap) => {
+              query.docs.forEach((stampCountSnap) => {
+                this.unsubscribe.stampCounts.push(stampCounts.doc(stampCountSnap.id).collection('shards').onSnapshot(() => {
+                  stampCounts.doc(stampCountSnap.id).collection('shards').get().then((snap) => {
                     let totalCount = 0
                     snap.forEach((doc) => {
                       totalCount += doc.data().count
                     })
-                    const stampId = sc.data().stampId
+                    const stampId = stampCountSnap.data().stampId
                     const data = { stampId: stampId, count: totalCount }
                     // cloneした配列に対して変更し、元配列を上書きする
                     // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
                     let stampCounts = []
-                    this.stampCounts.forEach((sc) => {
-                      stampCounts.push(JSON.parse(JSON.stringify(sc)))
+                    this.stampCounts.forEach((stampCount) => {
+                      stampCounts.push(JSON.parse(JSON.stringify(stampCount)))
                     })
                     const idx = stampCounts.findIndex((c) => c.stampId === stampId)
                     if (idx !== -1) {
