@@ -1,8 +1,7 @@
 <template>
   <v-layout v-if="event &&
-    (isNewPresentation || presentation) &&
     user &&
-    user.id == presentation.presenter.id"
+    (isNewPresentation || (presentation && user.id == presentation.presenter.id))"
     row class="pb-5">
     <v-flex>
 
