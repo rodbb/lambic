@@ -4,7 +4,7 @@
       <v-toolbar flat>
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
-            <v-list-tile-title class="title">Lambic</v-list-tile-title>
+            <img :src="imagePath('logo\.png')" class="logo">
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -134,6 +134,9 @@ export default {
     // マイページ画面へ遷移
     goMyPage () {
       this.$router.push({ path: '/myPage' })
+    },
+    imagePath (fileName) {
+      return require('@/assets/' + fileName)
     }
   }
 }
@@ -146,5 +149,11 @@ export default {
     width: 100%;
     display: flex;
     justify-content: center;
+}
+img {
+    object-fit: contain;
+}
+.logo {
+    height: 60%;
 }
 </style>
