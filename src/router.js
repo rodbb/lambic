@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
 import Login from './views/Login.vue'
+import MyPage from './views/MyPage.vue'
 import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
@@ -23,6 +24,11 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/myPage',
+      name: 'myPage',
+      component: MyPage
     },
     {
       path: '/events/:id',

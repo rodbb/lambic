@@ -100,6 +100,9 @@ export default new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    updateUserInfo (state, payload) {
+      state.user = Object.assign({}, state.user, payload)
+    },
     setUserIsAdmin (state, payload) {
       state.user.isAdmin = payload
     },
@@ -155,6 +158,13 @@ export default new Vuex.Store({
     },
     logout ({ commit }) {
       commit('setUser', null)
+    },
+    /*
+     * ユーザ情報を更新する
+     */
+    updateUserInfo ({ getters, commit }, userInfo) {
+      users.doc(getters.user.id).update(userInfo)
+      commit('updateUserInfo', userInfo)
     },
     /*
      * ユーザの権限情報を更新する
