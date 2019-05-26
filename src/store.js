@@ -15,6 +15,8 @@ const permissions = firestore.collection('permissions')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
+const stamps = firestore.collection('stamps')
+const stampCounts = firestore.collection('stampCounts')
 const screens = firestore.collection('screens')
 Vue.use(Vuex)
 
@@ -25,6 +27,8 @@ export default new Vuex.Store({
     events: [],
     presentations: [],
     comments: [],
+    stamps: [],
+    stampCounts: [],
     screens: []
   },
   getters: {
@@ -107,6 +111,8 @@ export default new Vuex.Store({
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
+      bindFirebaseRef('stamps', stamps)
+      bindFirebaseRef('stampCounts', stampCounts)
       bindFirebaseRef('screens', screens)
     }),
     login ({ commit }, auth) {
@@ -165,6 +171,94 @@ export default new Vuex.Store({
           }
         })
     },
+    /*
+     * 発表を新規登録する
+     * @params { state }
+     * @params presentationInfo
+     */
+    addPresentation ({ state }, presentationInfo) {
+      new Promise((resolve) => {
+        const batch = firestore.batch()
+        // 発表を追加する ///////////////////////////////////////////////////
+        const newPresentationDoc = presentations.doc()
+        batch.set(newPresentationDoc, {
+          ...presentationInfo,
+          presenter: users.doc(state.user.id)
+        })
+
+        // スタンプカウントを追加する ////////////////////////////////////////
+        // 有効なスタンプの数だけ追加
+        stamps.where('canUse', '==', true)
+          .get() // 現在有効なスタンプを取得
+          .then((canUseStamps) => {
+            canUseStamps.forEach((stampDoc) => {
+              const stampCountDoc = stampCounts.doc()
+              batch.set(stampCountDoc, {
+                presentationId: newPresentationDoc.id,
+                stampId: stampDoc.id,
+                shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
+              })
+
+              // スタンプカウントにshardsサブコレクションを追加する ////////////////
+              const stampCountShards = stampCountDoc.collection('shards')
+              for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
+                batch.set(stampCountShards.doc(idx.toString()), {
+                  count: 0
+                })
+              }
+            }) // End forEach
+            resolve(batch)
+          })
+      })
+        .then((batch) => {
+          batch.commit()
+        })
+    },
+    /*
+     * 発表を更新する
+     */
+    updatePresentation ({ state }, { presentationId, presentationInfo }) {
+      presentations.doc(presentationId).update({
+        ...presentationInfo,
+        presenter: users.doc(state.user.id)
+      })
+    },
+    /*
+     * 発表を削除する
+     */
+    deletePresentation ({ state }, presentationId) {
+      const batch = firestore.batch()
+      // スタンプカウント削除
+      stampCounts.where('presentationId', '==', presentationId)
+        .get()
+        .then((stampCountSnapshotList) => {
+          stampCountSnapshotList.forEach((stampCountSnapshot) => {
+            // shardsサブコレクション内ドキュメント削除
+            stampCountSnapshot.ref.get().then((stampCount) => {
+              const shardNum = stampCount.data().shardNum
+              for (let idx = 0; idx < shardNum; idx++) {
+                batch.delete(stampCountSnapshot.ref.collection('shards').doc(idx.toString()))
+              }
+            })
+            // スタンプカウントドキュメント削除
+            batch.delete(stampCountSnapshot.ref)
+          })
+          // コメント削除
+          comments.where('presentationId', '==', presentationId)
+            .get()
+            .then((commentSnapshotList) => {
+              commentSnapshotList.forEach((commentSnapshot) => {
+                batch.delete(commentSnapshot.ref)
+              })
+              // 発表削除
+              batch.delete(presentations.doc(presentationId))
+              batch.commit()
+            })
+        })
+    },
+    /*
+     * コメントを登録する
+     */
     appendComment ({ state }, { comment, presentationId }) {
       comments.add({
         comment,
