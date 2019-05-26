@@ -137,14 +137,15 @@ export default new Vuex.Store({
               })
           } else {
             // 未登録ユーザの場合
+            const registUserName = auth.displayName ? auth.displayName : auth.email.substr(0, auth.email.indexOf('@'))
             userDoc
               .set({
-                name: auth.displayName,
+                name: registUserName,
                 photoURL: auth.photoURL
               })
             commit('setUser', {
               id: auth.uid,
-              name: auth.displayName,
+              name: registUserName,
               photoURL: auth.photoURL,
               isAdmin: false
             })
