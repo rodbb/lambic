@@ -5,6 +5,9 @@
         <v-list class="py-0">
           <v-list-tile :to="{ name: 'home' }">
             <img :src="imagePath('logo\.png')" class="logo">
+            <div class="text-xs-center ml-1">
+              <v-chip small outline color="red" class="text-xs-center caption">beta</v-chip>
+            </div>
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -43,7 +46,19 @@
 
         <v-divider></v-divider>
 
-        <v-list-tile :href="href.issues">
+        <v-list-tile :to="{ path: '/events' }">
+          <v-list-tile-action>
+            <v-icon>view_list</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>イベント一覧</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-divider></v-divider>
+
+        <v-list-tile
+          :href="href.issues"
+          target="_blank">
           <v-list-tile-action>
             <v-icon>feedback</v-icon>
           </v-list-tile-action>
