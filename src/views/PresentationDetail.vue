@@ -52,6 +52,61 @@
         </v-card-text>
       </v-card>
 
+      <v-card  class="pb-3">
+        <template v-for="(stamp, index) in presentation.stamps">
+          <v-badge bottom overlap v-if="stamp.canUse !== false" :key="index">
+            <template v-slot:badge>
+              <span>{{ getStampCount(stamp.id) }}</span>
+            </template>
+            <v-card-actions :key="index">
+              <v-btn
+                v-if="stamp.src"
+                icon
+                @click="countUpStamp(stamp.id)"
+              >
+                <img
+                  class="stamp"
+                  :src="stamp.src"
+                >
+              </v-btn>
+              <v-btn
+                v-else
+                icon
+                :key="index"
+                @click="countUpStamp(stamp.id)"
+              >
+                {{ stamp.string }}
+              </v-btn>
+            </v-card-actions>
+          </v-badge>
+          <v-badge bottom overlap v-else color="grey" :key="index">
+            <template v-slot:badge>
+              <span>{{ getStampCount(stamp.id) }}</span>
+            </template>
+            <v-card-actions :key="index">
+              <v-btn
+                v-if="stamp.src"
+                icon
+                disabled
+               >
+                <img
+                  class="stamp"
+                  :src="stamp.src"
+                >
+              </v-btn>
+              <v-btn
+                v-else
+                icon
+                disabled
+                :key="index"
+              >
+                {{ stamp.string }}
+              </v-btn>
+            </v-card-actions>
+          </v-badge>
+        </template>
+      </v-card>
+
       <v-card v-if="presentation.isAllowComment !== false">
         <v-card-title>
           <h3>コメント一覧</h3>
@@ -194,10 +249,14 @@ export default {
   },
   data () {
     return {
+      unsubscribes: [],
       dialog: false,
       comment: '',
       errors: []
     }
+  },
+  async created () {
+    this.unsubscribes = await this.$store.dispatch('watchStampCount', { presentationId: this.id })
   },
   computed: {
     presentation () {
@@ -267,7 +326,27 @@ export default {
       this.comment = ''
       this.errors = []
       this.dialog = false
+    },
+    /**
+     * スタンプのカウントを取得
+     * @param stampId
+     * @returns {number}
+     */
+    getStampCount (stampId) {
+      const countObj = this.$store.getters.count(stampId)
+      return countObj ? countObj.count : ''
+    },
+    /**
+     * スタンプのカウントをインクリメント
+     * @param stampId
+     */
+    countUpStamp (stampId) {
+      this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
     }
+  },
+  beforeDestroy () {
+    this.unsubscribes.forEach((u) => u())
+    this.$store.dispatch('clearCounts')
   }
 }
 </script>
@@ -275,5 +354,11 @@ export default {
 <style scoped>
 .pre {
   white-space: pre-wrap;
+}
+
+.stamp {
+  border-radius: 50%;
+  max-width: 28px;
+  max-height: 28px;
 }
 </style>

@@ -15,9 +15,10 @@ const permissions = firestore.collection('permissions')
 const events = firestore.collection('events')
 const presentations = firestore.collection('presentations')
 const comments = firestore.collection('comments')
+const screens = firestore.collection('screens')
 const stamps = firestore.collection('stamps')
 const stampCounts = firestore.collection('stampCounts')
-const screens = firestore.collection('screens')
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -27,9 +28,10 @@ export default new Vuex.Store({
     events: [],
     presentations: [],
     comments: [],
+    screens: [],
     stamps: [],
     stampCounts: [],
-    screens: []
+    counts: []
   },
   getters: {
     events (state, getters) {
@@ -57,7 +59,8 @@ export default new Vuex.Store({
             ...pr,
             id: pr.id,
             comments: getters.comments
-              .filter((cm) => cm.presentationId === pr.id)
+              .filter((cm) => cm.presentationId === pr.id),
+            stamps: getters.stamps
           }
         })
     },
@@ -83,6 +86,25 @@ export default new Vuex.Store({
     user (state) {
       return state.user
     },
+    stamps (state) {
+      return state.stamps
+        .map((st) => {
+          return {
+            ...st,
+            id: st.id
+          }
+        })
+        .sort((a, b) => a.order - b.order)
+    },
+    stampCounts (state) {
+      return state.stampCounts
+        .map((sc) => {
+          return {
+            ...sc,
+            id: sc.id
+          }
+        })
+    },
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
@@ -94,6 +116,9 @@ export default new Vuex.Store({
     },
     screen (state, getters) {
       return (id) => getters.screens.find((e) => e.id === id)
+    },
+    count (state) {
+      return (stampId) => state.counts.find((c) => c.stampId === stampId)
     }
   },
   mutations: {
@@ -106,6 +131,17 @@ export default new Vuex.Store({
     setUserIsAdmin (state, payload) {
       state.user.isAdmin = payload
     },
+    clearCounts (state) {
+      state.counts.splice(0, state.counts.length)
+    },
+    setCount (state, payload) {
+      const idx = state.counts.findIndex((c) => c.stampId === payload.stampId)
+      if (idx !== -1) {
+        state.counts.splice(idx, 1, payload)
+      } else {
+        state.counts.push(payload)
+      }
+    },
     ...firebaseMutations
   },
   actions: {
@@ -114,9 +150,9 @@ export default new Vuex.Store({
       bindFirebaseRef('events', events)
       bindFirebaseRef('presentations', presentations)
       bindFirebaseRef('comments', comments)
+      bindFirebaseRef('screens', screens)
       bindFirebaseRef('stamps', stamps)
       bindFirebaseRef('stampCounts', stampCounts)
-      bindFirebaseRef('screens', screens)
     }),
     login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
@@ -292,6 +328,57 @@ export default new Vuex.Store({
       screens.doc(screenId).update({
         displayPresentationRef: null
       })
+    },
+    clearCounts ({ commit }) {
+      commit('clearCounts')
+    },
+    watchStampCount ({ commit }, { presentationId }) {
+      // サブコレクションに対するbindFirebaseRefの適用方法が不明なため、
+      // shardsの監視処理は自前で実装
+      let unsubscribes = []
+      stampCounts
+        .where('presentationId', '==', presentationId)
+        .get()
+        .then((query) => {
+          query.docs.forEach((stampCount) => {
+            // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
+            const stampCountRef = stampCounts.doc(stampCount.id)
+            unsubscribes.push(stampCountRef.collection('shards').onSnapshot((querySnapshot) => {
+              querySnapshot.docChanges().forEach((docChange) => {
+                if (docChange.type === 'added' || docChange.type === 'modified') {
+                  stampCountRef.collection('shards').get().then((snap) => {
+                    let totalCount = 0
+                    snap.forEach((doc) => {
+                      totalCount += doc.data().count
+                    })
+                    commit('setCount', {
+                      stampId: stampCount.data().stampId,
+                      count: totalCount
+                    })
+                  })
+                }
+              })
+            }))
+          })
+        })
+      return unsubscribes
+    },
+    countUpStamp ({ commit }, { presentationId, stampId }) {
+      const stampCount = this.getters.stampCounts
+        .find((e) => e.presentationId === presentationId && e.stampId === stampId)
+      if (stampCount) {
+        const stampCountDoc = stampCounts.doc(stampCount.id)
+        stampCountDoc
+          .get()
+          .then((scSnap) => {
+            // 1回/秒の更新制限を回避するため
+            // shardNum個あるshardsのうち、ランダムな1個のカウントをインクリメント
+            const shardIdx = Math.floor(Math.random() * scSnap.data().shardNum).toString()
+            stampCountDoc.collection('shards').doc(shardIdx).update({
+              count: firebase.firestore.FieldValue.increment(1)
+            })
+          })
+      }
     }
   }
 })

@@ -61,10 +61,12 @@ export default {
       screenInfo: null,
       presentation: null,
       stamps: [],
+      stampCounts: [],
       unsubscribe: {
         screenInfo: null,
         presentation: null,
-        stamps: null
+        stamps: null,
+        stampCounts: []
       }
     }
   },
@@ -86,20 +88,19 @@ export default {
     }
   },
   watch: {
-    presentation (newP, oldP) {
-      if (newP == null || oldP == null || newP.stampCounts == null) {
+    /**
+     * スタンプのカウントを監視し、変更があれば該当スタンプを点滅させる
+     * @param newSC
+     * @param oldSC
+     */
+    stampCounts (newSC, oldSC) {
+      // 表示する発表が切り替わったときはデータが出そろうまで点滅させない
+      if (newSC.length !== oldSC.length) {
         return
       }
-      const newCnt = newP.stampCounts
-      const oldCnt = oldP.stampCounts || newCnt.map((p) => {
-        return {
-          ...p,
-          count: 0
-        }
-      })
-      const blinkStmps = this.stamps.map((stmp, idx) => {
-        const maybeOldStmpCnt = oldCnt.find((cnt) => cnt.stampId === stmp.id)
-        const maybeNewStmpCnt = newCnt.find((cnt) => cnt.stampId === stmp.id)
+      this.stamps = this.stamps.map((stmp, idx) => {
+        const maybeOldStmpCnt = oldSC.find((cnt) => cnt.stampId === stmp.id)
+        const maybeNewStmpCnt = newSC.find((cnt) => cnt.stampId === stmp.id)
         if (maybeNewStmpCnt == null) {
           return stmp
         }
@@ -119,19 +120,26 @@ export default {
             : null
         }
       })
-      this.stamps = blinkStmps
     }
   },
   created () {
+    // 各ドキュメントの変更を監視するリスナを設定
     const firestore = firebase.firestore()
+    // screenのリスナを設定
     this.unsubscribe.screenInfo =
       firestore.collection('screens')
         .doc(this.id)
         .onSnapshot((screenDoc) => {
+          // 表示する発表が切り替わった時の初期化処理
           if (this.unsubscribe.presentation != null) {
             this.unsubscribe.presentation()
             this.presentation = null
           }
+          if (this.unsubscribe.stampCounts !== []) {
+            this.unsubscribe.stampCounts.forEach((u) => u())
+            this.stampCounts = []
+          }
+          // 表示する発表が取得できない場合は後続のリスナの設定不要
           if (!screenDoc.exists) {
             this.isLoadong = false
             return
@@ -141,6 +149,7 @@ export default {
             this.isLoadong = false
             return
           }
+          // presentationのリスナを設定
           this.unsubscribe.presentation =
             this.screenInfo.displayPresentationRef
               .onSnapshot(async (doc) => {
@@ -156,9 +165,44 @@ export default {
                 }
                 this.isLoadong = false
               })
+          // shardsのリスナを設定
+          const stampCounts = firestore.collection('stampCounts')
+          stampCounts
+            .where('presentationId', '==', this.screenInfo.displayPresentationRef.id)
+            .get()
+            .then((query) => {
+              query.docs.forEach((stampCountSnap) => {
+                this.unsubscribe.stampCounts.push(stampCounts.doc(stampCountSnap.id).collection('shards').onSnapshot(() => {
+                  stampCounts.doc(stampCountSnap.id).collection('shards').get().then((snap) => {
+                    let totalCount = 0
+                    snap.forEach((doc) => {
+                      totalCount += doc.data().count
+                    })
+                    const stampId = stampCountSnap.data().stampId
+                    const data = { stampId: stampId, count: totalCount }
+                    // cloneした配列に対して変更し、元配列を上書きする
+                    // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
+                    let stampCounts = []
+                    this.stampCounts.forEach((stampCount) => {
+                      stampCounts.push(JSON.parse(JSON.stringify(stampCount)))
+                    })
+                    const idx = stampCounts.findIndex((c) => c.stampId === stampId)
+                    if (idx !== -1) {
+                      stampCounts.splice(idx, 1, data)
+                    } else {
+                      stampCounts.push(data)
+                    }
+                    this.stampCounts = stampCounts
+                  })
+                }))
+              })
+            }, (error) => {
+              console.log('Error getting collection:', error)
+            })
         }, (error) => {
           console.log('Error getting document:', error)
         })
+    // stampsのリスナを設定
     this.unsubscribe.stamps =
       firestore.collection('stamps')
         .orderBy('order')
@@ -180,10 +224,15 @@ export default {
         })
   },
   beforeDestroy () {
+    // 各リスナのデタッチ
     Object.values(this.unsubscribe)
       .filter((e) => e != null)
       .forEach((unsubscribe) => {
-        unsubscribe()
+        if (Array.isArray(unsubscribe)) {
+          unsubscribe.forEach((u) => u())
+        } else {
+          unsubscribe()
+        }
       })
   }
 }
