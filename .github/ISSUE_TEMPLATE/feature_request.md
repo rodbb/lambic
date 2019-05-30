@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: 機能要望
+about: 機能要望はこちらから
 title: ''
 labels: enhancement
 assignees: ''
