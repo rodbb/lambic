@@ -2,7 +2,7 @@
 
   <v-layout v-if="event" row wrap class="pb-5">
     <v-flex>
-      <v-card class="mb-2" color="light-green lighten-4">
+      <v-card class="mb-2" color="info">
         <v-card-title primary-title>
           <div>
             <div class="grey--text mb-3">{{ event.date | toDateString }}</div>
@@ -52,7 +52,7 @@
 
       <v-btn
         @click="goAddPlesentation"
-        color="green"
+        color="secondary"
         block
         large
         class="my-2 white--text"
@@ -71,7 +71,7 @@
           </v-card-text>
           <v-card-actions class="justify-center">
             <v-btn
-              color="light-green"
+              color="secondary"
               :to="{ path: '/login' }"
             >
               ログインする
@@ -88,7 +88,7 @@
         fab
         bottom
         left
-        color="green"
+        color="secondary"
         :to="{ path: '/events' }"
       >
         <v-icon>arrow_back</v-icon>

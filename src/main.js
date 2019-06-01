@@ -13,7 +13,17 @@ moment.locale('ja', {
   weekdaysShort: ['日', '月', '火', '水', '木', '金', '土']
 })
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#8BC34A',
+    secondary: '#4CAF50',
+    accent: '#FF9800',
+    error: '#FF5722',
+    warning: '#2196f3',
+    info: '#DCEDC8',
+    success: '#ffeb3b'
+  }
+})
 Vue.use(VueQriously)
 Vue.config.productionTip = false
 

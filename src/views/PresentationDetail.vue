@@ -153,7 +153,7 @@
         fab
         bottom
         left
-        color="green"
+        color="secondary"
         :to="prevLink"
       >
         <v-icon>arrow_back</v-icon>
@@ -170,7 +170,7 @@
           fab
           bottom
           right
-          color="green"
+          color="secondary"
         >
           <v-icon>create</v-icon>
         </v-btn>
@@ -199,13 +199,13 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-              color="primary"
+              color="accent"
               @click="postCommnet"
             >
               submit
             </v-btn>
             <v-btn
-              color="primary"
+              color="secondary"
               flat
               @click="closeComment"
             >
@@ -219,7 +219,7 @@
           </v-card-text>
           <v-card-actions class="justify-center">
             <v-btn
-              color="light-green"
+              color="secondary"
               :to="{ path: '/login' }"
             >
               ログインする

@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app id="v-app">
     <v-navigation-drawer app fixed v-model="permanent">
       <v-toolbar flat>
         <v-list class="py-0">
@@ -34,7 +34,7 @@
 
         <v-list-tile v-else class="my-2">
           <v-list-tile-avatar>
-            <v-icon x-large color="light-green">account_circle</v-icon>
+            <v-icon x-large color="primary">account_circle</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>ゲストユーザ</v-list-tile-title>
@@ -88,7 +88,7 @@
 
       <qriously id="qrcode" class="pb-4" :value="href.here" :size="150"/>
     </v-navigation-drawer>
-    <v-toolbar app color="light-green">
+    <v-toolbar app color="primary">
       <v-toolbar-side-icon @click="permanent = !permanent"></v-toolbar-side-icon>
     </v-toolbar>
     <v-content>
@@ -170,5 +170,8 @@ img {
 }
 .logo {
     height: 60%;
+}
+#v-app {
+  background: #ffffff;
 }
 </style>

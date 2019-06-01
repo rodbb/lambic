@@ -55,7 +55,7 @@
                 <v-switch
                   v-model="isAllowComment"
                   :label="`${ isAllowComment ? 'はい' : 'いいえ' }`"
-                  color="green"
+                  color="primary"
                   hide-details
                   class="pt-0 mt-1"
                 >
@@ -67,7 +67,7 @@
               <v-flex xs12 md7>
                 <v-checkbox
                   v-model="checkConfidential"
-                  color="green"
+                  color="primary"
                   required
                 >
                   <template v-slot:label>
@@ -86,7 +86,7 @@
       <v-btn
         @click="submit"
         :disabled="!checkConfidential"
-        color="orange"
+        color="accent"
         block
         large
         class="my-2 white--text"
@@ -99,7 +99,7 @@
         fab
         bottom
         left
-        color="green"
+        color="secondary"
         @click="backTo"
       >
         <v-icon>arrow_back</v-icon>

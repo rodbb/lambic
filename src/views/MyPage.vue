@@ -33,7 +33,7 @@
           </v-layout>
           <v-layout row>
             <v-flex xs12 md6>
-              <v-btn @click="updateUserInfo" color="green" class="white--text">
+              <v-btn @click="updateUserInfo" color="secondary" class="white--text">
                 更新する
               </v-btn>
             </v-flex>
@@ -46,7 +46,7 @@
       :bottom="'top' === 'bottom'"
       :timeout=5000
       :top="'top'"
-      color=green
+      color=success
     >
       更新しました。
       <v-btn flat @click="snackbar = false">

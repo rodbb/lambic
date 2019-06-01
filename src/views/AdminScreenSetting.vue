@@ -84,7 +84,7 @@
               <v-list-tile-avatar :key="presentation.id + '_avatar'">
                 <v-icon v-if="screen.displayPresentationRef && presentation.id == screen.displayPresentationRef.id"
                   x-large
-                  color="orange lighten-1">
+                  color="accent">
                   cast_connected
                 </v-icon>
                 <v-icon v-else
@@ -124,7 +124,7 @@
         fab
         bottom
         left
-        color="green"
+        color="secondary"
         :to="{ path: '/screens' }"
       >
         <v-icon>arrow_back</v-icon>

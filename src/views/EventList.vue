@@ -3,7 +3,7 @@
     <v-flex v-if="events.length != 0">
       <v-card>
 
-        <v-card color="light-green">
+        <v-card color="primary">
           <v-card-title>
             <h1 class="headline white--text">イベント一覧</h1>
           </v-card-title>
@@ -18,7 +18,7 @@
                     <div>
                       {{ event.date | toDateString }}
                       <v-chip v-if="event.isFinished" small light>終了しました</v-chip>
-                      <v-chip v-else-if="event.isToday" small color="green" text-color="white">本日開催</v-chip>
+                      <v-chip v-else-if="event.isToday" small color="accent" text-color="white">本日開催</v-chip>
                     </div>
                     <v-list-tile-title class="title">
                       {{ event.title }}
