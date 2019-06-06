@@ -11,7 +11,7 @@
 
         <v-card>
           <v-list two-line>
-            <template v-for="event in events">
+            <template v-for="(event, index) in events">
 
                 <v-list-tile :key="event.title" :to="{ path: 'events/' + event.id }" class="my-2">
                   <v-list-tile-content>
@@ -28,8 +28,7 @@
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                 </v-list-tile>
-                <v-divider :key="event.id" class="mx-2"></v-divider>
-
+                <v-divider v-if="index + 1 < events.length" :key="event.id" class="mx-2"></v-divider>
             </template>
           </v-list>
         </v-card>
