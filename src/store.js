@@ -4,9 +4,11 @@ import { firebaseMutations, firebaseAction } from 'vuexfire'
 import firebase from 'firebase/app'
 import FirebaseConfig from '../firebase-config.json'
 import 'firebase/firestore'
+import 'firebase/storage'
 import moment from 'moment'
 
 const firebaseApp = firebase.initializeApp(FirebaseConfig)
+const storage = firebaseApp.storage()
 const firestore = firebaseApp.firestore()
 firestore.settings({})
 
@@ -116,6 +118,9 @@ export default new Vuex.Store({
     },
     screen (state, getters) {
       return (id) => getters.screens.find((e) => e.id === id)
+    },
+    stamp (state, getters) {
+      return (id) => getters.stamps.find((s) => s.id === id)
     },
     count (state) {
       return (stampId) => state.counts.find((c) => c.stampId === stampId)
@@ -380,6 +385,34 @@ export default new Vuex.Store({
             })
           })
       }
+    },
+    uploadStamp ({ commit }, file) {
+      const metadata = {
+        cacheControl: 'public,max-age=86400'
+      }
+      const fileRef = storage.ref().child(file.name)
+      return fileRef.put(file, metadata)
+    },
+    addStamp ({ getters }, stamp) {
+      const stampInfo = {
+        ...stamp,
+        order: getters.stamps.length
+      }
+      stamps.add(stampInfo)
+    },
+    updateStamp ({ commit }, { stampId, stamp }) {
+      const stampRef = stamps.doc(stampId)
+      stampRef
+        .get()
+        .then(() => {
+          stampRef.update(stamp)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    getStampRef ({ commit }, fullPath) {
+      return storage.ref().child(fullPath)
     }
   }
 })

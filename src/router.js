@@ -6,8 +6,11 @@ import MyPage from './views/MyPage.vue'
 import EventList from './views/EventList.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
+import AdminPage from './views/AdminPage.vue'
 import AdminScreenSetting from './views/AdminScreenSetting.vue'
 import AdminScreenList from './views/AdminScreenList.vue'
+import AdminStampSetting from './views/AdminStampSetting.vue'
+import AdminStampList from './views/AdminStampList.vue'
 import DraftPresentation from './views/DraftPresentation.vue'
 import Error from './views/Error.vue'
 
@@ -54,6 +57,12 @@ const router = new Router({
       props: true
     },
     {
+      path: '/adminPage',
+      name: 'adminPage',
+      component: AdminPage,
+      meta: { needsAdmin: true }
+    },
+    {
       path: '/screens',
       name: 'adminScreenList',
       component: AdminScreenList,
@@ -63,6 +72,19 @@ const router = new Router({
       path: '/screens/:id',
       name: 'adminScreenSetting',
       component: AdminScreenSetting,
+      props: true,
+      meta: { needsAdmin: true }
+    },
+    {
+      path: '/stamps',
+      name: 'adminStampList',
+      component: AdminStampList,
+      meta: { needsAdmin: true }
+    },
+    {
+      path: '/stamps/:id',
+      name: 'adminStampSetting',
+      component: AdminStampSetting,
       props: true,
       meta: { needsAdmin: true }
     },

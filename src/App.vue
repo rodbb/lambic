@@ -73,12 +73,12 @@
             <strong>管理者メニュー</strong>
           </v-list-tile>
 
-          <v-list-tile :to="{name: 'adminScreenList' }">
+          <v-list-tile :to="{name: 'adminPage' }">
             <v-list-tile-action>
-              <v-icon>cast</v-icon>
+              <v-icon>settings</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>スクリーンの設定</v-list-tile-title>
+              <v-list-tile-title>管理者ページ</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
