@@ -171,11 +171,9 @@ export default {
  */
 function deleteFiles (fileRefs, committedRef) {
   try {
-    console.log(committedRef)
     fileRefs.forEach(async (fileRef) => {
       if (fileRef.fullPath !== committedRef.fullPath) {
         await fileRef.delete()
-        console.log(fileRef)
       }
     })
   } catch (err) {

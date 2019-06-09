@@ -62,7 +62,12 @@ export default new Vuex.Store({
             id: pr.id,
             comments: getters.comments
               .filter((cm) => cm.presentationId === pr.id),
-            stamps: getters.stamps
+            stamps: getters.stamps.filter((stamp) => {
+              let stampIds = getters.stampCounts.map((stampCount) => {
+                return stampCount.stampId
+              })
+              return stampIds.includes(stamp.id)
+            })
           }
         })
     },
