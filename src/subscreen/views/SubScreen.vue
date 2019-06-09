@@ -65,7 +65,7 @@ export default {
       unsubscribe: {
         screenInfo: null,
         presentation: null,
-        stamps: null,
+        stamps: [],
         stampCounts: []
       }
     }
@@ -195,32 +195,34 @@ export default {
                     this.stampCounts = stampCounts
                   })
                 }))
+                stampCounts
+                  .doc(stampCountSnap.id)
+                  .get()
+                  .then((stampCount) => {
+                    if (!stampCount.exists) {
+                      return
+                    }
+                    // stampsのリスナを設定
+                    this.unsubscribe.stamps.push(firestore.collection('stamps')
+                      .doc(stampCount.data().stampId)
+                      .onSnapshot((docSnapshot) => {
+                        this.stamps.push({
+                          id: docSnapshot.id,
+                          blink: false,
+                          timer: null,
+                          ...docSnapshot.data()
+                        })
+                        this.stamps.sort((a, b) => a.order - b.order)
+                      }, (error) => {
+                        console.log('Error getting collection:', error)
+                      }))
+                  })
               })
             }, (error) => {
               console.log('Error getting collection:', error)
             })
         }, (error) => {
           console.log('Error getting document:', error)
-        })
-    // stampsのリスナを設定
-    this.unsubscribe.stamps =
-      firestore.collection('stamps')
-        .orderBy('order')
-        .onSnapshot((querySnapshot) => {
-          const stamps = []
-          querySnapshot
-            .forEach((doc) => {
-              const d = doc.data()
-              stamps.push({
-                id: doc.id,
-                blink: false,
-                timer: null,
-                ...d
-              })
-            })
-          this.stamps = stamps
-        }, (error) => {
-          console.log('Error getting collection:', error)
         })
   },
   beforeDestroy () {
