@@ -90,7 +90,7 @@
                 disabled
                >
                 <img
-                  class="stamp"
+                  class="stamp grayscale100"
                   :src="stamp.src"
                 >
               </v-btn>
@@ -360,5 +360,9 @@ export default {
   border-radius: 50%;
   max-width: 28px;
   max-height: 28px;
+}
+
+.grayscale100 {
+  filter: grayscale(100);
 }
 </style>

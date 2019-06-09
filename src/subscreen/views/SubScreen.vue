@@ -28,7 +28,7 @@
                 <img
                   :src="stamp.src || ''"
                   :alt="stamp.string"
-                  :class="['lighten-2', 'display-4', 'text-xs-center', {'blinking': stamp.blink}]"
+                  :class="['lighten-2', 'display-4', 'text-xs-center', {'blinking': stamp.blink, 'grayscale100': !stamp.canUse }]"
                 >
               </v-card>
             </v-flex>
@@ -244,6 +244,11 @@ export default {
 .blinking{
     animation:blink 0.2s ease-in-out infinite alternate;
 }
+
+.grayscale100 {
+  filter: grayscale(100);
+}
+
 @keyframes blink{
     0% {opacity:0;}
     100% {opacity:1;}
