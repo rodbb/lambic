@@ -187,6 +187,7 @@
               </ul>
             </v-alert>
             <v-textarea
+              v-if="dialog"
               outline
               autofocus
               no-resize
