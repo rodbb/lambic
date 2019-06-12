@@ -52,7 +52,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card  class="pb-3">
+      <v-card  class="pb-3 mb-2 sticky-top top-56">
         <template v-for="(stamp, index) in presentation.stamps">
           <v-badge bottom overlap v-if="stamp.canUse !== false" :key="index">
             <template v-slot:badge>
@@ -90,7 +90,7 @@
                 disabled
                >
                 <img
-                  class="stamp grayscale100"
+                  class="stamp"
                   :src="stamp.src"
                 >
               </v-btn>
@@ -187,6 +187,7 @@
               </ul>
             </v-alert>
             <v-textarea
+              v-if="dialog"
               outline
               autofocus
               no-resize
@@ -360,6 +361,16 @@ export default {
   border-radius: 50%;
   max-width: 28px;
   max-height: 28px;
+}
+
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.top-56 {
+  top: 56px;
 }
 
 .grayscale100 {
