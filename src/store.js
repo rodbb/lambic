@@ -110,14 +110,28 @@ export default new Vuex.Store({
     },
     presentation (state, getters) {
       return (id) => {
-        return presentations.doc(id).get().then(pr => {
+        return presentations.doc(id).get({ source: 'cache' }).then(prDoc => {
+          const str = prDoc.metadata.fromCache ? 'cache' : 'server'
+          console.log('Source is ' + str)
           return {
-            ...pr.data(),
-            id: pr.data().id,
+            ...prDoc.data(),
+            id: prDoc.data().id,
             comments: getters.comments
-              .filter((cm) => cm.presentationId === pr.id),
+              .filter((cm) => cm.presentationId === prDoc.id),
             stamps: getters.stamps
           }
+        }).catch((e) => {
+          return presentations.doc(id).get({ source: 'server' }).then(prDoc => {
+            const str = prDoc.metadata.fromCache ? 'cache (catch)' : 'server (catch)'
+            console.log('Source is ' + str)
+            return {
+              ...prDoc.data(),
+              id: prDoc.data().id,
+              comments: getters.comments
+                .filter((cm) => cm.presentationId === prDoc.id),
+              stamps: getters.stamps
+            }
+          })
         })
       }
     },
