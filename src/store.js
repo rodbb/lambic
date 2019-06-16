@@ -109,7 +109,17 @@ export default new Vuex.Store({
       return (id) => getters.events.find((e) => e.id === id)
     },
     presentation (state, getters) {
-      return (id) => getters.presentations.find((e) => e.id === id)
+      return (id) => {
+        return presentations.doc(id).get().then(pr => {
+          return {
+            ...pr.data(),
+            id: pr.data().id,
+            comments: getters.comments
+              .filter((cm) => cm.presentationId === pr.id),
+            stamps: getters.stamps
+          }
+        })
+      }
     },
     comment (state, getters) {
       return (id) => getters.comments.find((e) => e.id === id)

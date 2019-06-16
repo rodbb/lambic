@@ -1,6 +1,6 @@
 <template>
   <v-layout row class="pb-5">
-    <v-flex v-if="presentation != null">
+    <v-flex v-if="this.presentation != null">
 
       <v-card>
         <v-card-text>
@@ -10,13 +10,13 @@
             <span>{{ event.date | toDateString }}</span>
           </v-layout>
           <v-layout align-center>
-          <h1 class="headline">{{ presentation.title }}</h1>
+          <h1 class="headline">{{ this.presentation.title }}</h1>
           <v-spacer></v-spacer>
 
           <v-menu
             v-if="user != null &&
-              presentation.presenter &&
-              presentation.presenter.id == user.id"
+              this.presentation.presenter &&
+              this.presentation.presenter.id == user.id"
             bottom
             left
           >
@@ -42,18 +42,18 @@
 
           </v-layout>
 
-          <div  v-if="presentation.presenter" class="grey--text mb-3">
-            by {{ presentation.presenter.name }}
+          <div  v-if="this.presentation.presenter" class="grey--text mb-3">
+            by {{ this.presentation.presenter.name }}
           </div>
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
           </div>
-          <p class="pre">{{ presentation.description }}</p>
+          <p class="pre">{{ this.presentation.description }}</p>
         </v-card-text>
       </v-card>
 
       <v-card  class="pb-3 mb-2 sticky-top top-56">
-        <template v-for="(stamp, index) in presentation.stamps">
+        <template v-for="(stamp, index) in this.presentation.stamps">
           <v-badge bottom overlap v-if="stamp.canUse !== false" :key="index">
             <template v-slot:badge>
               <span>{{ getStampCount(stamp.id) }}</span>
@@ -107,11 +107,11 @@
         </template>
       </v-card>
 
-      <v-card v-if="presentation.isAllowComment !== false">
+      <v-card v-if="this.presentation.isAllowComment !== false">
         <v-card-title>
           <h3>コメント一覧</h3>
         </v-card-title>
-        <template v-for="comment in presentation.comments">
+        <template v-for="comment in this.presentation.comments">
           <v-divider :key="comment.id + '-divider'"></v-divider>
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
@@ -138,7 +138,7 @@
             <p class="pre">{{ comment.comment }}</p>
           </v-card-text>
         </template>
-        <v-card-text v-if="presentation.comments.length === 0">
+        <v-card-text v-if="this.presentation.comments.length === 0">
           <p>まだコメントはありません。</p>
         </v-card-text>
       </v-card>
@@ -162,7 +162,7 @@
       <v-dialog
         v-model="dialog"
         width="500"
-        v-if="presentation.isAllowComment !== false"
+        v-if="this.presentation.isAllowComment !== false"
       >
         <v-btn
           slot="activator"
@@ -233,7 +233,7 @@
       </v-dialog>
 
     </v-flex>
-    <v-progress-linear v-else :indeterminate="presentation == null"></v-progress-linear>
+    <v-progress-linear v-else :indeterminate="this.presentation == null"></v-progress-linear>
   </v-layout>
 </template>
 
@@ -253,16 +253,17 @@ export default {
       unsubscribes: [],
       dialog: false,
       comment: '',
-      errors: []
+      errors: [],
+      presentation: null
     }
   },
   async created () {
     this.unsubscribes = await this.$store.dispatch('watchStampCount', { presentationId: this.id })
+    this.$store.getters.presentation(this.id).then(pr => {
+      this.presentation = pr
+    })
   },
   computed: {
-    presentation () {
-      return this.$store.getters.presentation(this.id)
-    },
     event () {
       return this.$store.getters.event(this.presentation.eventId)
     },
