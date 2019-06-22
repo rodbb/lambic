@@ -130,6 +130,18 @@
               </strong>
               <v-spacer></v-spacer>
               <span>{{ comment.postedAt | toDateTimeString }}</span>
+              <v-menu bottom left v-if="comment.isEditable">
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on">
+                    <v-icon>more_vert</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-tile @click="deleteComment(comment.id)">
+                    <v-list-tile-title>削除</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
           </v-card-text>
@@ -345,6 +357,19 @@ export default {
       this.comment = ''
       this.errors = []
       this.dialog = false
+    },
+    /**
+     * 指定したコメントの削除
+     * @param {string} commentId
+     */
+    deleteComment (commentId) {
+      const target = this.comments.find((c) => c.id === commentId)
+      if (target == null || !target.isEditable) {
+        return alert('そのコメントは削除できません！')
+      }
+      if (confirm('このコメントを削除します。よろしいですか？')) {
+        this.$store.dispatch('deleteComment', { commentId })
+      }
     },
     /**
      * スタンプのカウントを取得
