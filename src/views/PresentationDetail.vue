@@ -137,6 +137,9 @@
                   </v-btn>
                 </template>
                 <v-list>
+                  <v-list-tile @click="openModifyComment(comment.id)">
+                    <v-list-tile-title>編集</v-list-tile-title>
+                  </v-list-tile>
                   <v-list-tile @click="deleteComment(comment.id)">
                     <v-list-tile-title>削除</v-list-tile-title>
                   </v-list-tile>
@@ -260,6 +263,7 @@ export default {
       unsubscribes: [],
       dialog: false,
       comment: '',
+      editingCommentId: null,
       errors: []
     }
   },
@@ -331,19 +335,43 @@ export default {
         this.$router.push({ path: '/events/' + this.presentation.eventId })
       }
     },
+    /**
+     * 指定したコメントの編集モーダルを開く
+     * @param {string} commentId
+     */
+    openModifyComment (commentId) {
+      const target = this.comments.find((c) => c.id === commentId)
+      if (target == null || !target.isEditable) {
+        return alert('そのコメントは編集できません！')
+      }
+      this.editingCommentId = commentId
+      this.comment = target.comment
+      this.dialog = true
+    },
     validateComment (c) {
       return {
         length: c.length <= 1000,
         required: c.replace(/\s+$/mg, '').length > 0
       }
     },
+    /**
+     * コメントを保存する
+     */
     postCommnet () {
       // eslint-disable-next-line no-irregular-whitespace
       const rtrimRegex = /[ \t\f　]+$/mg
       const com = this.comment.replace(rtrimRegex, '')
       const res = this.validateComment(com)
       if (Object.values(res).every((v) => v)) {
-        this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+        if (this.editingCommentId == null) {
+          this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+        } else {
+          const target = this.comments.find((c) => c.id === this.editingCommentId)
+          if (target == null || !target.isEditable) {
+            return
+          }
+          this.$store.dispatch('updateComment', { comment: com, commentId: this.editingCommentId })
+        }
         this.closeComment()
       } else {
         this.errors = [
@@ -355,6 +383,7 @@ export default {
     },
     closeComment () {
       this.comment = ''
+      this.editingCommentId = null
       this.errors = []
       this.dialog = false
     },
