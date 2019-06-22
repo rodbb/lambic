@@ -111,12 +111,12 @@
         <v-card-title>
           <h3>コメント一覧</h3>
         </v-card-title>
-        <template v-for="comment in presentation.comments">
+        <template v-for="comment in comments">
           <v-divider :key="comment.id + '-divider'"></v-divider>
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
               <v-avatar
-                v-if="comment.userRef !== null && comment.userRef.photoURL"
+                v-if="comment.userRef.photoURL"
                 size="28"
                 class="mr-1"
               >
@@ -125,20 +125,16 @@
               <v-avatar v-else size="28" class="mr-1">
                 <v-icon size="28" color="gray">account_circle</v-icon>
               </v-avatar>
-              <strong v-if="comment.userRef">
-                {{ comment.userRef.name }}
-              </strong>
-              <strong v-else class="text-truncate">
-                （削除されたユーザ）
+              <strong  class="text-truncate">
+                {{ comment.userRef.name || '（削除されたユーザ）' }}
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt | toDateTimeString }}
-              </span>
+              <span>{{ comment.postedAt | toDateTimeString }}</span>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
           </v-card-text>
         </template>
-        <v-card-text v-if="presentation.comments.length === 0">
+        <v-card-text v-if="comments.length === 0">
           <p>まだコメントはありません。</p>
         </v-card-text>
       </v-card>
@@ -264,6 +260,29 @@ export default {
     },
     event () {
       return this.$store.getters.event(this.presentation.eventId)
+    },
+    /**
+     * 情報を補完したコメントリスト
+     * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
+     * isEditable：ログインユーザーがそのコメントを操作できるかどうか（管理者または投稿者が操作可能）
+     */
+    comments () {
+      return this.presentation.comments
+        .map((cm) => {
+          const userRef = cm.userRef || {
+            photoURL: null,
+            name: null
+          }
+          const loginUser = this.user || {
+            id: null,
+            isAdmin: false
+          }
+          return {
+            ...cm,
+            userRef,
+            isEditable: loginUser.isAdmin || userRef.id === loginUser.id
+          }
+        })
     },
     prevLink () {
       return {
