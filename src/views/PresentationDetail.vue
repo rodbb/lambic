@@ -130,17 +130,17 @@
               </strong>
               <v-spacer></v-spacer>
               <span>{{ comment.postedAt | toDateTimeString }}</span>
-              <v-menu bottom left v-if="comment.isEditable">
+              <v-menu bottom left v-if="comment.isDeletable">
                 <template v-slot:activator="{ on }">
                   <v-btn icon v-on="on">
                     <v-icon>more_vert</v-icon>
                   </v-btn>
                 </template>
                 <v-list>
-                  <v-list-tile @click="openModifyComment(comment.id)">
+                  <v-list-tile v-if="comment.isEditable" @click="openModifyComment(comment.id)">
                     <v-list-tile-title>編集</v-list-tile-title>
                   </v-list-tile>
-                  <v-list-tile @click="deleteComment(comment.id)">
+                  <v-list-tile v-if="comment.isDeletable" @click="deleteComment(comment.id)">
                     <v-list-tile-title>削除</v-list-tile-title>
                   </v-list-tile>
                 </v-list>
@@ -296,7 +296,8 @@ export default {
           return {
             ...cm,
             userRef,
-            isEditable: loginUser.isAdmin || userRef.id === loginUser.id
+            isEditable: userRef.id === loginUser.id,
+            isDeletable: loginUser.isAdmin || userRef.id === loginUser.id
           }
         })
     },
@@ -393,7 +394,7 @@ export default {
      */
     deleteComment (commentId) {
       const target = this.comments.find((c) => c.id === commentId)
-      if (target == null || !target.isEditable) {
+      if (target == null || !target.isDeletable) {
         return alert('そのコメントは削除できません！')
       }
       if (confirm('このコメントを削除します。よろしいですか？')) {
