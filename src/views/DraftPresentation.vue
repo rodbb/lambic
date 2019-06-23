@@ -1,7 +1,7 @@
 <template>
   <v-layout v-if="event &&
     user &&
-    (isNewPresentation || (presentation && user.id == presentation.presenter.id))"
+    (isNewPresentation || (this.originPresentation && user.id == this.originPresentation.presenter.id))"
     row class="pb-5">
     <v-flex>
 
@@ -107,7 +107,7 @@
 
     </v-flex>
   </v-layout>
-  <v-progress-linear v-else :indeterminate="event !== null && presentation !== null">
+  <v-progress-linear v-else :indeterminate="event !== null && this.originPresentation !== null">
   </v-progress-linear>
 </template>
 <script>
@@ -127,7 +127,8 @@ export default {
   },
   data () {
     return {
-      isNewPresentation: false,
+      isNewPresentation: false, // 新規登録かどうか
+      originPresentation: null, // 元の発表情報
       valid: true,
       title: '', // 入力する発表タイトル
       titleMaxLength: 50, // 発表タイトル最大文字数
@@ -146,14 +147,14 @@ export default {
       ]
     }
   },
-  created () {
+  async created () {
     this.isNewPresentation = this.id === NEW_PRESENTATION_KEYWORD
-    const presentation = this.isNewPresentation ? null : this.$store.getters.presentation(this.id)
-    if (presentation) {
+    this.originPresentation = this.isNewPresentation ? null : await this.$store.getters.presentation(this.id)
+    if (this.originPresentation) {
       // 編集の場合、対象の発表データをセットする
-      this.title = presentation.title
-      this.description = presentation.description
-      this.isAllowComment = presentation.isAllowComment
+      this.title = this.originPresentation.title
+      this.description = this.originPresentation.description
+      this.isAllowComment = this.originPresentation.isAllowComment
     }
   },
   computed: {
@@ -162,16 +163,6 @@ export default {
      */
     event () {
       return this.$store.getters.event(this.eventId)
-    },
-    /*
-     * プレゼンテーションの取得
-     */
-    presentation () {
-      if (!this.isNewPresentation) {
-        // 新規作成でない場合
-        return this.$store.getters.presentation(this.id)
-      }
-      return null
     },
     /*
      * ユーザ情報取得
