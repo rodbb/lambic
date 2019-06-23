@@ -108,11 +108,15 @@ export default new Vuex.Store({
     event (state, getters) {
       return (id) => getters.events.find((e) => e.id === id)
     },
+    /*
+     * 発表情報の取得
+     * @param id String presentationドキュメントのID
+     * @return {Object} 発表情報
+     */
     presentation (state, getters) {
       return (id) => {
+        // キャッシュから発表情報の取得を試みる
         return presentations.doc(id).get({ source: 'cache' }).then(prDoc => {
-          const str = prDoc.metadata.fromCache ? 'cache' : 'server'
-          console.log('Source is ' + str)
           return {
             ...prDoc.data(),
             id: prDoc.data().id,
@@ -121,9 +125,8 @@ export default new Vuex.Store({
             stamps: getters.stamps
           }
         }).catch((e) => {
+          // firebaseから発表情報を取得
           return presentations.doc(id).get({ source: 'server' }).then(prDoc => {
-            const str = prDoc.metadata.fromCache ? 'cache (catch)' : 'server (catch)'
-            console.log('Source is ' + str)
             return {
               ...prDoc.data(),
               id: prDoc.data().id,
