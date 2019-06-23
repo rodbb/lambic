@@ -315,6 +315,15 @@ export default new Vuex.Store({
       })
     },
     /*
+     * コメントを編集する
+     */
+    updateComment ({ state }, { comment, commentId }) {
+      comments.doc(commentId)
+        .update({
+          comment
+        })
+    },
+    /*
      * コメントを削除する
      */
     deleteComment ({ state }, { commentId }) {
