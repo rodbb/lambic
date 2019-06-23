@@ -69,10 +69,10 @@
             <v-avatar v-else color="grey lighten-3" class="black--text">
               {{ stamp.string }}
             </v-avatar>
-            <span v-if="getStampCount(stamp.id)">
+            <span v-if="getStampCount(stamp.id) || getStampCount(stamp.id)===0">
               {{ getStampCount(stamp.id) }}
             </span>
-            <span v-else :indeterminate="getStampCount(stamp.id) === null">
+            <span v-else>
               <v-progress-circular indeterminate
                 :size="15"
                 :width="2"
@@ -95,10 +95,10 @@
             <v-avatar v-else color="grey lighten-3" class="black--text">
               {{ stamp.string }}
             </v-avatar>
-            <span v-if="getStampCount(stamp.id)">
+            <span v-if="getStampCount(stamp.id) || getStampCount(stamp.id)===0">
               {{ getStampCount(stamp.id) }}
             </span>
-            <span v-else :indeterminate="getStampCount(stamp.id) === null">
+            <span v-else>
               <v-progress-circular indeterminate
                 :size="15"
                 :width="2"
