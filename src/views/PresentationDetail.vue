@@ -54,9 +54,8 @@
 
       <v-card  class="py-3 mb-2 sticky-top top-56">
         <template v-for="(stamp, index) in presentation.stamps">
-
           <v-chip
-            v-if="stamp.canUse !== false"
+            v-if="getStampCount(stamp.id) || getStampCount(stamp.id)===0"
             :key="index"
             @click="countUpStamp(stamp.id)"
             color="light-green"
@@ -70,45 +69,10 @@
             <v-avatar v-else color="grey lighten-3" class="black--text">
               {{ stamp.string }}
             </v-avatar>
-            <span v-if="getStampCount(stamp.id) || getStampCount(stamp.id)===0">
+            <span>
               {{ getStampCount(stamp.id) }}
             </span>
-            <span v-else>
-              <v-progress-circular indeterminate
-                :size="15"
-                :width="2"
-                color="grey lighten-2"
-              >
-              </v-progress-circular>
-            </span>
           </v-chip>
-
-          <v-chip
-            v-else
-            :key="index"
-            color="grey"
-            text-color="white"
-            class="text-xs-center"
-          >
-            <v-avatar v-if="stamp.src" color="grey lighten-3">
-              <img :src="stamp.src">
-            </v-avatar>
-            <v-avatar v-else color="grey lighten-3" class="black--text">
-              {{ stamp.string }}
-            </v-avatar>
-            <span v-if="getStampCount(stamp.id) || getStampCount(stamp.id)===0">
-              {{ getStampCount(stamp.id) }}
-            </span>
-            <span v-else>
-              <v-progress-circular indeterminate
-                :size="15"
-                :width="2"
-                color="grey lighten-2"
-              >
-              </v-progress-circular>
-            </span>
-          </v-chip>
-
         </template>
       </v-card>
 
