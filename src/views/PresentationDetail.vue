@@ -62,8 +62,9 @@
             color="light-green"
             text-color="white"
             class="text-xs-center"
+            label
           >
-            <v-avatar v-if="stamp.src" color="grey lighten-3">
+            <v-avatar v-if="stamp.src" tile color="grey lighten-3">
               <img :src="stamp.src">
             </v-avatar>
             <v-avatar v-else color="grey lighten-3" class="black--text">
