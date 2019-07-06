@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { firebaseMutations, firebaseAction } from 'vuexfire'
+import { vuexfireMutations, firestoreAction } from 'vuexfire'
 import firebase from 'firebase/app'
 import FirebaseConfig from '../firebase-config.json'
 import 'firebase/firestore'
@@ -142,17 +142,17 @@ export default new Vuex.Store({
         state.counts.push(payload)
       }
     },
-    ...firebaseMutations
+    ...vuexfireMutations
   },
   actions: {
-    initStore: firebaseAction(({ bindFirebaseRef }) => {
-      bindFirebaseRef('users', users)
-      bindFirebaseRef('events', events)
-      bindFirebaseRef('presentations', presentations)
-      bindFirebaseRef('comments', comments)
-      bindFirebaseRef('screens', screens)
-      bindFirebaseRef('stamps', stamps)
-      bindFirebaseRef('stampCounts', stampCounts)
+    initStore: firestoreAction(({ bindFirestoreRef }) => {
+      bindFirestoreRef('users', users)
+      bindFirestoreRef('events', events)
+      bindFirestoreRef('presentations', presentations)
+      bindFirestoreRef('comments', comments)
+      bindFirestoreRef('screens', screens)
+      bindFirestoreRef('stamps', stamps)
+      bindFirestoreRef('stampCounts', stampCounts)
     }),
     login ({ commit }, auth) {
       const userDoc = users.doc(auth.uid)
@@ -334,7 +334,7 @@ export default new Vuex.Store({
       commit('clearCounts')
     },
     watchStampCount ({ commit }, { presentationId }) {
-      // サブコレクションに対するbindFirebaseRefの適用方法が不明なため、
+      // サブコレクションに対するbindFirestoreRefの適用方法が不明なため、
       // shardsの監視処理は自前で実装
       let unsubscribes = []
       stampCounts
