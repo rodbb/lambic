@@ -34,6 +34,17 @@
         </v-card>
 
       </v-card>
+      <v-btn
+        v-if="user && user.isAdmin"
+        :to="{ path: 'events/draft/new' }"
+        color="green"
+        block
+        large
+        class="my-2 white--text"
+      >
+        <v-icon color="white">add</v-icon>
+        イベントを登録する
+      </v-btn>
     </v-flex>
     <v-progress-linear v-else :indeterminate="events.length == 0"></v-progress-linear>
   </v-layout>
@@ -56,6 +67,12 @@ export default {
             isToday: moment(ev.date).isSame(nowDate, 'day')
           }
         })
+    },
+    /*
+     * ログインユーザ取得
+     */
+    user () {
+      return this.$store.getters.user
     }
   },
   filters: {

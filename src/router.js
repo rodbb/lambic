@@ -4,6 +4,7 @@ import store from './store'
 import Login from './views/Login.vue'
 import MyPage from './views/MyPage.vue'
 import EventList from './views/EventList.vue'
+import DraftEvent from './views/DraftEvent.vue'
 import EventDetail from './views/EventDetail.vue'
 import PresentationDetail from './views/PresentationDetail.vue'
 import AdminScreenSetting from './views/AdminScreenSetting.vue'
@@ -40,6 +41,13 @@ const router = new Router({
       path: '/events',
       name: 'eventList',
       component: EventList
+    },
+    {
+      path: '/events/draft/:id',
+      name: 'draftEvent',
+      component: DraftEvent,
+      props: true,
+      meta: { needsAdmin: true }
     },
     {
       path: '/presentations/:id',
