@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 jobs:
   build:
     docker:
@@ -16,6 +16,9 @@ jobs:
           paths:
             - node_modules
           key: lambic-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Set the active project
+          command: npx firebase use developement
       - run:
           name: Build
           command: npm run build
