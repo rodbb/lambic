@@ -130,7 +130,7 @@
               </strong>
               <v-spacer></v-spacer>
               <span>{{ comment.postedAt | toDateTimeString }}</span>
-              <v-menu bottom left v-if="comment.isDeletable">
+              <v-menu bottom left v-if="comment.isEditable || comment.isDeletable">
                 <template v-slot:activator="{ on }">
                   <v-btn icon v-on="on">
                     <v-icon>more_vert</v-icon>
