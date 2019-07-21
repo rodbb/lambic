@@ -69,11 +69,7 @@
         <v-divider></v-divider>
 
         <template v-if="user && user.isAdmin">
-          <v-list-tile>
-            <strong>管理者メニュー</strong>
-          </v-list-tile>
-
-          <v-list-tile :to="{name: 'adminPage' }">
+          <v-list-tile :to="{ path: '/admin' }">
             <v-list-tile-action>
               <v-icon>settings</v-icon>
             </v-list-tile-action>

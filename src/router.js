@@ -57,32 +57,32 @@ const router = new Router({
       props: true
     },
     {
-      path: '/adminPage',
+      path: '/admin',
       name: 'adminPage',
       component: AdminPage,
       meta: { needsAdmin: true }
     },
     {
-      path: '/screens',
+      path: '/admin/screens',
       name: 'adminScreenList',
       component: AdminScreenList,
       meta: { needsAdmin: true }
     },
     {
-      path: '/screens/:id',
+      path: '/admin/screens/:id',
       name: 'adminScreenSetting',
       component: AdminScreenSetting,
       props: true,
       meta: { needsAdmin: true }
     },
     {
-      path: '/stamps',
+      path: '/admin/stamps',
       name: 'adminStampList',
       component: AdminStampList,
       meta: { needsAdmin: true }
     },
     {
-      path: '/stamps/:id',
+      path: '/admin/stamps/:id',
       name: 'adminStampSetting',
       component: AdminStampSetting,
       props: true,
