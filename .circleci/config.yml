@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.15.3
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - lambic-build-{{ checksum "package.json" }}
+            - lambic-build-
+      - run:
+          name: Install Project
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: lambic-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Set the active project
+          command: npx firebase use developement
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Run test
+          command: npm run test:unit
