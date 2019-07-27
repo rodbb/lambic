@@ -46,10 +46,10 @@
               </v-flex>
             </v-layout>
 
-            <!-- 開始日時 -->
+            <!-- 日時 -->
             <v-layout row>
               <v-flex xs12 md12>
-                <h3>開始日時</h3>
+                <h3>日時</h3>
               </v-flex>
             </v-layout>
 
@@ -86,7 +86,6 @@
                   :items="hours"
                   label="時"
                   outline
-                  :rules="startTimeRules"
                 ></v-select>
               </v-flex>
 
@@ -96,65 +95,8 @@
                   :items="minutes"
                   label="分"
                   outline
-                  :rules="startTimeRules"
                 ></v-select>
               </v-flex>
-            </v-layout>
-
-            <!-- 終了日時 -->
-            <v-layout row>
-              <v-flex xs12 md12>
-                <h3>終了日時</h3>
-              </v-flex>
-            </v-layout>
-
-            <v-layout row>
-              <v-flex xs6 md3>
-                <v-menu
-                  ref="endDateMenu"
-                  v-model="endDateMenu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  lazy
-                  transition="scale-transition"
-                  offset-y
-                  full-width
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-text-field
-                      v-model="endDate"
-                      label="日付"
-                      outline
-                      v-on="on"
-                      :rules="endDateRules && endTimeRules"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker v-model="endDate" no-title @input="endDateMenu = false"></v-date-picker>
-                </v-menu>
-              </v-flex>
-
-              <v-flex xs3 md1>
-                <v-select
-                  v-model="endTimeHour"
-                  :items="hours"
-                  label="時"
-                  outline
-                  :rules="endTimeRules"
-                ></v-select>
-              </v-flex>
-
-              <v-flex xs3 md1>
-                <v-select
-                  v-model="endTimeMin"
-                  :items="minutes"
-                  label="分"
-                  outline
-                  :rules="endTimeRules"
-                ></v-select>
-              </v-flex>
-
             </v-layout>
 
             <v-layout row class="py-2">
@@ -166,7 +108,7 @@
                 >
                   <template v-slot:label>
                     <span class="black--text">
-                      上記登録内容に、社外へ公開不可な情報は含まれていません。
+                      上記記載内容に、社外へ公開不可な情報は含まれていません。
                     </span>
                   </template>
                 </v-checkbox>
@@ -227,10 +169,6 @@ export default {
       startDate: null, // 開始日
       startTimeHour: '00', // 開始時間(時)
       startTimeMin: '00', // 開始時間(分)
-      endDateMenu: false,
-      endDate: null, // 終了日
-      endTimeHour: '00', // 終了時間(時)
-      endTimeMin: '00', // 終了時間(分)
       checkConfidential: false,
       titleRules: [
         // イベントタイトル入力規則
@@ -243,15 +181,8 @@ export default {
       ],
       satrtDateRules: [
         // イベント開始日入力規則
-        v => !!v || 'イベント開始日は必須です。',
-        v => this.validStartEndDate() || '開始日時と終了日時が不正です。'
-      ],
-      endDateRules: [
-        // イベント終了日入力規則
-        v => !!v || 'イベント終了日は必須です。'
-      ],
-      startTimeRules: [],
-      endTimeRules: []
+        v => !!v || 'イベント日時は必須です。'
+      ]
     }
   },
   created () {
@@ -318,23 +249,6 @@ export default {
         // })
         this.$router.push({ path: '/events/' + this.id })
       }
-    },
-    validStartEndDate () {
-      if (this.startDate && this.endDate) {
-        // フォーマット '2018-09-01 06:00:00'
-        const startDateTime = moment(this.startDate + ' ' + this.startTimeHour + ':' + this.startTimeMin)
-        const endDateTime = moment(this.endDate + ' ' + this.endTimeHour + ':' + this.endTimeMin)
-        if (startDateTime.isSameOrBefore(endDateTime)) {
-          this.startTimeRules = [] // 時間のルールを削除する
-          this.endTimeRules = [] // 時間のルールを削除する
-          return true
-        } else {
-          this.startTimeRules = [false || ''] // 時間のルールを追加しバリデートエラーとする
-          this.endTimeRules = [false || ''] // 時間のルールを追加しバリデートエラーとする
-          return false
-        }
-      }
-      return true
     }
   }
 }
