@@ -55,7 +55,7 @@
       <v-card  class="py-3 mb-2 sticky-top top-56">
         <template v-for="(stamp, index) in presentation.stamps">
           <v-chip
-            v-if="getStampCount(stamp.id) || getStampCount(stamp.id)===0"
+            v-if="getStampCount(stamp.id) || getStampCount(stamp.id) === 0"
             :key="index"
             @click="countUpStamp(stamp.id)"
             color="light-green"
