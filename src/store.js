@@ -240,6 +240,21 @@ export default new Vuex.Store({
         })
     },
     /*
+     * イベントを削除する
+     */
+    deleteEvent ({ state }, eventId) {
+      const batch = firestore.batch()
+      // 発表数確認
+      presentations.where('eventId', '==', eventId)
+        .get()
+        .then((presentationSnapshotList) => {
+          if (presentationSnapshotList.docs.length == 0) {
+            batch.delete(events.doc(eventId))
+          }
+          batch.commit()
+        })
+    },
+    /*
      * 発表を新規登録する
      * @params { state }
      * @params presentationInfo

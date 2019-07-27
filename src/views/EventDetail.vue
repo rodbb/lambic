@@ -177,7 +177,15 @@ export default {
      * 発表を削除する
      */
     deleteEvent () {
-      return
+      const event = this.$store.getters.event(this.id)
+      if (event.presentations.length > 0) {
+        alert('イベント内の発表を、すべて削除してください。')
+      } else {
+        if (confirm('イベントを削除します。よろしいですか？')) {
+          this.$store.dispatch('deleteEvent', this.id)
+          this.$router.push({ path: '/events'})
+        }
+      }
     }
   }
 }
