@@ -248,7 +248,7 @@ export default new Vuex.Store({
       presentations.where('eventId', '==', eventId)
         .get()
         .then((presentationSnapshotList) => {
-          if (presentationSnapshotList.docs.length == 0) {
+          if (presentationSnapshotList.docs.length === 0) {
             batch.delete(events.doc(eventId))
           }
           batch.commit()

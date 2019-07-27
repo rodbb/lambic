@@ -12,7 +12,7 @@
           <v-spacer></v-spacer>
 
           <v-menu
-            v-if="true"
+            v-if="user != null && user.isAdmin"
             bottom
             left
           >
@@ -147,6 +147,9 @@ export default {
   computed: {
     event () {
       return this.$store.getters.event(this.id)
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   filters: {
@@ -183,7 +186,7 @@ export default {
       } else {
         if (confirm('イベントを削除します。よろしいですか？')) {
           this.$store.dispatch('deleteEvent', this.id)
-          this.$router.push({ path: '/events'})
+          this.$router.push({ path: '/events' })
         }
       }
     }
