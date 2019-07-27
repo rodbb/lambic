@@ -9,7 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "firebase": "^6.3.0",
+    "firebase": "^6.3.1",
     "firebaseui-ja": "^1.0.0",
     "material-design-icons-iconfont": "^5.0.1",
     "moment": "^2.24.0",
@@ -19,21 +19,21 @@
     "vue-router": "^3.0.7",
     "vuetify": "^1.5.16",
     "vuex": "^3.1.1",
-    "vuexfire": "^3.0.1"
+    "vuexfire": "^3.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.9.2",
     "@vue/cli-plugin-eslint": "^3.9.2",
     "@vue/cli-plugin-pwa": "^3.9.0",
     "@vue/cli-plugin-unit-mocha": "^3.9.0",
-    "@vue/cli-service": "^3.9.2",
+    "@vue/cli-service": "^3.9.3",
     "@vue/eslint-config-standard": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-eslint": "^10.0.2",
     "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.2.3",
-    "firebase-tools": "^6.12.0",
+    "firebase-tools": "^7.1.1",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
