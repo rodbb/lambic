@@ -3,6 +3,7 @@ Lambic
 
 ビアバッシュを醸すWebアプリ
 
+[![CircleCI](https://circleci.com/gh/rodbb/lambic.svg?style=svg)](https://circleci.com/gh/rodbb/lambic)
 
 ## Description
 
