@@ -21,7 +21,7 @@ Vue.use(Vuetify, {
     error: '#FF5722',
     warning: '#2196f3',
     info: '#DCEDC8',
-    success: '#ffeb3b'
+    success: '#43A047'
   }
 })
 Vue.use(VueQriously)
