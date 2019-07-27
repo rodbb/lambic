@@ -315,6 +315,21 @@ export default new Vuex.Store({
       })
     },
     /*
+     * コメントを編集する
+     */
+    updateComment ({ state }, { comment, commentId }) {
+      comments.doc(commentId)
+        .update({
+          comment
+        })
+    },
+    /*
+     * コメントを削除する
+     */
+    deleteComment ({ state }, { commentId }) {
+      comments.doc(commentId).delete()
+    },
+    /*
      * screenドキュメントの表示中プレゼンテーションを更新する
      */
     updateScreenPresentation ({ state }, { screenId, presentationId }) {
