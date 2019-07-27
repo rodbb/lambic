@@ -219,6 +219,27 @@ export default new Vuex.Store({
         })
     },
     /*
+     * イベントを登録する
+     */
+    appendEvent ({ state }, eventInfo) {
+      events.add({
+        title: eventInfo.title,
+        description: eventInfo.description,
+        date: firebase.firestore.Timestamp.fromDate(eventInfo.date)
+      })
+    },
+    /*
+     * イベントを更新する
+     */
+    updateEvent ({ state }, { eventId, eventInfo }) {
+      events.doc(eventId)
+        .update({
+          title: eventInfo.title,
+          description: eventInfo.description,
+          date: firebase.firestore.Timestamp.fromDate(eventInfo.date)
+        })
+    },
+    /*
      * 発表を新規登録する
      * @params { state }
      * @params presentationInfo

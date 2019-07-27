@@ -8,9 +8,39 @@
             <div class="grey--text mb-3">{{ event.date | toDateString }}</div>
             <div class="headline">{{ event.title }}</div>
           </div>
+
+          <v-spacer></v-spacer>
+
+          <v-menu
+            v-if="true"
+            bottom
+            left
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn icon v-on="on" class="mx-0 my-0">
+                <v-icon color="gray">more_vert</v-icon>
+              </v-btn>
+            </template>
+            <v-list class="px-2">
+              <v-list-tile @click="editEvent">
+                <v-list-tile-title>
+                  <v-icon class="mr-1">edit</v-icon>編集する
+                </v-list-tile-title>
+              </v-list-tile>
+              <v-divider class="mx-2"></v-divider>
+              <v-list-tile @click="deleteEvent">
+                <v-list-tile-title>
+                  <v-icon class="mr-1">delete_forever</v-icon>削除する
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
         </v-card-title>
+
         <v-card-text>
-          {{ event.description }}
+          <p class="pre">
+            {{ event.description }}
+          </p>
         </v-card-text>
       </v-card>
 
@@ -136,6 +166,18 @@ export default {
         // 未ログインの場合はログインを促すダイアログを表示
         this.dialog = true
       }
+    },
+    /*
+     * イベントを編集する
+     */
+    editEvent () {
+      this.$router.push({ path: '/events/draft/' + this.id })
+    },
+    /*
+     * 発表を削除する
+     */
+    deleteEvent () {
+      return
     }
   }
 }

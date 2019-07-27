@@ -4,8 +4,11 @@
     <v-flex>
 
       <v-card class="mb-2">
-        <v-card-title>
+        <v-card-title v-if="this.isNewPresentation">
           <h1 class="headline">イベント登録</h1>
+        </v-card-title>
+        <v-card-title v-else>
+          <h1 class="headline">イベント編集</h1>
         </v-card-title>
 
         <v-form
@@ -192,7 +195,9 @@ export default {
       // 編集の場合、対象のイベントデータをセットする
       this.title = event.title
       this.description = event.description
-      this.startTime = event.date
+      this.startDate = moment(event.date).format('YYYY-MM-DD')
+      this.startTimeHour = moment(event.date).format('HH')
+      this.startTimeMin = moment(event.date).format('mm')
     }
   },
   computed: {
@@ -232,21 +237,23 @@ export default {
       }
       if (this.isNewPresentation && confirm('イベントを追加します。よろしいですか？')) {
         // イベント登録処理
-        // this.$store.dispatch('addEvent', {
-        //   title: this.title,
-        //   description: this.description,
-        // })
-        this.$router.push({ path: '/events/' })
+        this.$store.dispatch('appendEvent', {
+          title: this.title,
+          description: this.description,
+          date: new Date(this.startDate + ' ' + this.startTimeHour + ':' + this.startTimeMin)
+        })
+        this.$router.push({ path: '/events' })
       } else if (!this.isNewPresentation && confirm('イベント内容を更新します。よろしいですか？')) {
         // イベント更新処理
-        // this.$store.dispatch('updateEvent', {
-        //   eventId: this.id,
-        //   EventInfo: {
-        //     eventId: this.eventId,
-        //     title: this.title,
-        //     description: this.description
-        //   }
-        // })
+        console.log(this.id)
+        this.$store.dispatch('updateEvent', {
+          eventId: this.id,
+          eventInfo: {
+            title: this.title,
+            description: this.description,
+            date: new Date(this.startDate + ' ' + this.startTimeHour + ':' + this.startTimeMin)
+          }
+        })
         this.$router.push({ path: '/events/' + this.id })
       }
     }
