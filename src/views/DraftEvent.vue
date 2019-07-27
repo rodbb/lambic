@@ -1,10 +1,10 @@
 <template>
-  <v-layout v-if="isNewPresentation || event"
+  <v-layout v-if="isNewEvent || event"
     row class="pb-5">
     <v-flex>
 
       <v-card class="mb-2">
-        <v-card-title v-if="this.isNewPresentation">
+        <v-card-title v-if="this.isNewEvent">
           <h1 class="headline">イベント登録</h1>
         </v-card-title>
         <v-card-title v-else>
@@ -139,7 +139,7 @@
         bottom
         left
         color="green"
-        :to="{ path: '/events' }"
+        @click="backTo"
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
@@ -162,7 +162,7 @@ export default {
   },
   data () {
     return {
-      isNewPresentation: false,
+      isNewEvent: false,
       valid: true,
       title: '', // 入力するイベントタイトル
       titleMaxLength: 50, // イベントタイトル最大文字数
@@ -189,8 +189,8 @@ export default {
     }
   },
   created () {
-    this.isNewPresentation = this.id === NEW_PRESENTATION_KEYWORD
-    const event = this.isNewPresentation ? null : this.$store.getters.event(this.id)
+    this.isNewEvent = this.id === NEW_PRESENTATION_KEYWORD
+    const event = this.isNewEvent ? null : this.$store.getters.event(this.id)
     if (event) {
       // 編集の場合、対象のイベントデータをセットする
       this.title = event.title
@@ -235,7 +235,7 @@ export default {
       if (!this.$refs.form.validate() || !this.checkConfidential) {
         return 0
       }
-      if (this.isNewPresentation && confirm('イベントを追加します。よろしいですか？')) {
+      if (this.isNewEvent && confirm('イベントを追加します。よろしいですか？')) {
         // イベント登録処理
         this.$store.dispatch('appendEvent', {
           title: this.title,
@@ -243,7 +243,7 @@ export default {
           date: new Date(this.startDate + ' ' + this.startTimeHour + ':' + this.startTimeMin)
         })
         this.$router.push({ path: '/events' })
-      } else if (!this.isNewPresentation && confirm('イベント内容を更新します。よろしいですか？')) {
+      } else if (!this.isNewEvent && confirm('イベント内容を更新します。よろしいですか？')) {
         // イベント更新処理
         console.log(this.id)
         this.$store.dispatch('updateEvent', {
@@ -254,6 +254,18 @@ export default {
             date: new Date(this.startDate + ' ' + this.startTimeHour + ':' + this.startTimeMin)
           }
         })
+        this.$router.push({ path: '/events/' + this.id })
+      }
+    },
+    /*
+     * 前のページへ遷移させる
+     */
+    backTo () {
+      if (this.isNewEvent) {
+        // 新規作成の場合はイベント一覧画面へ戻る
+        this.$router.push({ path: '/events' })
+      } else {
+        // 編集の場合はイベント詳細画面へ戻る
         this.$router.push({ path: '/events/' + this.id })
       }
     }
