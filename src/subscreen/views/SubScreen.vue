@@ -28,7 +28,7 @@
                 <img
                   :src="stamp.src || ''"
                   :alt="stamp.string"
-                  :class="['lighten-2', 'display-4', 'text-xs-center', {'blinking': stamp.blink, 'grayscale100': !stamp.canUse }]"
+                  :class="['lighten-2', 'display-4', 'text-xs-center', 'max-w300', 'max-h300', {'blinking': stamp.blink, 'grayscale100': !stamp.canUse }]"
                 >
               </v-card>
             </v-flex>
@@ -247,6 +247,14 @@ export default {
 
 .grayscale100 {
   filter: grayscale(100);
+}
+
+.max-w300 {
+  max-width: 300px;
+}
+
+.max-h300 {
+  max-height: 300px;
 }
 
 @keyframes blink{
