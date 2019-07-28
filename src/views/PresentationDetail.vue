@@ -316,7 +316,7 @@ export default {
      * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
      * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
      * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
-     * isShowtable：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者か発表者のみ閲覧可能）
+     * isShowtable：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
      * colorClass：コメント種別ごとに指定するクラス
      */
     comments () {
@@ -337,7 +337,8 @@ export default {
             userRef,
             isEditable: userRef.id === loginUser.id,
             isDeletable: loginUser.isAdmin || userRef.id === loginUser.id,
-            isShowtable: !cm.isDirect || (userRef.id === loginUser.id || presentations.presenter.id === loginUser.id),
+            isShowtable: !cm.isDirect || loginUser.isAdmin ||
+              userRef.id === loginUser.id || presentations.presenter.id === loginUser.id,
             colorClass
           }
         })
