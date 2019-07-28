@@ -83,11 +83,11 @@
         <template v-for="comment in comments">
           <div v-if="comment.isShowtable" v-bind:class="comment.colorClass" :key="comment.id + '-div'">
             <v-divider :key="comment.id + '-divider'"></v-divider>
-            <v-card-text :key="comment.id">
-              <v-layout v-if="comment.isDirect" mb-0>
+            <v-card-text :key="comment.id" class="py-1">
+              <v-layout v-if="comment.isDirect" mt-1>
                 <small class="grey--text">ダイレクトコメント</small>
               </v-layout>
-              <v-layout align-center mb-3>
+              <v-layout align-center mb-1>
                 <v-avatar
                   v-if="comment.userRef.photoURL"
                   size="28"
@@ -285,6 +285,8 @@ export default {
      * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
      * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
      * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
+     * isShowtable：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者か発表者のみ閲覧可能）
+     * colorClass：コメント種別ごとに指定するクラス
      */
     comments () {
       return this.presentation.comments
