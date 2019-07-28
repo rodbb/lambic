@@ -38,9 +38,7 @@
         </v-card-title>
 
         <v-card-text>
-          <p class="pre">
-            {{ event.description }}
-          </p>
+          <p class="pre">{{ event.description }}</p>
         </v-card-text>
       </v-card>
 
@@ -193,3 +191,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.pre {
+  white-space: pre-wrap;
+}
+</style>
