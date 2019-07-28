@@ -112,7 +112,11 @@
           <h3>コメント一覧</h3>
         </v-card-title>
         <template v-for="comment in comments">
-          <div v-if="comment.isShowtable" v-bind:class="comment.colorClass" :key="comment.id + '-div'">
+          <div
+            v-if="comment.canShow"
+            v-bind:class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
+            :key="comment.id + '-div'"
+          >
             <v-divider :key="comment.id + '-divider'"></v-divider>
             <v-card-text :key="comment.id" class="py-2">
               <v-layout v-if="comment.isDirect">
@@ -316,8 +320,7 @@ export default {
      * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
      * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
      * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
-     * isShowtable：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
-     * colorClass：コメント種別ごとに指定するクラス
+     * canShow：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
      */
     comments () {
       return this.presentation.comments
@@ -330,16 +333,15 @@ export default {
             id: null,
             isAdmin: false
           }
+          const isCommentedUser = userRef.id === loginUser.id
           const presentations = this.$store.getters.presentation(this.id)
-          const colorClass = cm.isDirect ? 'yellow lighten-4' : ''
           return {
             ...cm,
             userRef,
-            isEditable: userRef.id === loginUser.id,
-            isDeletable: loginUser.isAdmin || userRef.id === loginUser.id,
-            isShowtable: !cm.isDirect || loginUser.isAdmin ||
-              userRef.id === loginUser.id || presentations.presenter.id === loginUser.id,
-            colorClass
+            isEditable: isCommentedUser,
+            isDeletable: loginUser.isAdmin || isCommentedUser,
+            canShow: !cm.isDirect || loginUser.isAdmin ||
+              isCommentedUser || presentations.presenter.id === loginUser.id
           }
         })
     },
