@@ -83,8 +83,8 @@
         <template v-for="comment in comments">
           <div v-if="comment.isShowtable" v-bind:class="comment.colorClass" :key="comment.id + '-div'">
             <v-divider :key="comment.id + '-divider'"></v-divider>
-            <v-card-text :key="comment.id" class="py-1">
-              <v-layout v-if="comment.isDirect" mt-1>
+            <v-card-text :key="comment.id" class="py-2">
+              <v-layout v-if="comment.isDirect">
                 <small class="grey--text">ダイレクトコメント</small>
               </v-layout>
               <v-layout align-center mb-1>
@@ -161,7 +161,7 @@
         </v-btn>
 
         <v-card v-if="user">
-          <v-card-text>
+          <v-card-text class="pb-1">
             <v-alert
               outline
               :value="errors.length > 0"
@@ -357,6 +357,7 @@ export default {
       }
       this.editingCommentId = commentId
       this.comment = target.comment
+      this.isDirect = target.isDirect
       this.dialog = true
     },
     validateComment (c) {
@@ -392,6 +393,7 @@ export default {
           })
         }
         this.closeComment()
+        this.isDirect = false
       } else {
         this.errors = [
           !res.length ? 'コメントは1000文字までです' : null,
