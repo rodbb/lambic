@@ -155,7 +155,7 @@ export default {
         })
       }
       this.committedRef = await this.$store.dispatch('getStampRef', this.fullPath)
-      this.$router.push({ path: '/stamps' })
+      this.$router.push({ path: '/admin/stamps' })
     }
   },
   beforeDestroy () {

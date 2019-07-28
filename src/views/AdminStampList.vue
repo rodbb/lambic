@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     goAddStamp () {
-      this.$router.push({ path: '/stamps/' + 'new' })
+      this.$router.push({ path: '/admin/stamps/' + 'new' })
     }
   }
 }
