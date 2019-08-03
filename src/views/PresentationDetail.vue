@@ -80,12 +80,12 @@
         <v-card-title>
           <h3>コメント一覧</h3>
         </v-card-title>
-        <template v-for="comment in presentation.comments">
+        <template v-for="comment in comments">
           <v-divider :key="comment.id + '-divider'"></v-divider>
           <v-card-text :key="comment.id">
             <v-layout align-center mb-3>
               <v-avatar
-                v-if="comment.userRef !== null && comment.userRef.photoURL"
+                v-if="comment.userRef.photoURL"
                 size="28"
                 class="mr-1"
               >
@@ -94,20 +94,31 @@
               <v-avatar v-else size="28" class="mr-1">
                 <v-icon size="28" color="gray">account_circle</v-icon>
               </v-avatar>
-              <strong v-if="comment.userRef">
-                {{ comment.userRef.name }}
-              </strong>
-              <strong v-else class="text-truncate">
-                （削除されたユーザ）
+              <strong  class="text-truncate">
+                {{ comment.userRef.name || '（削除されたユーザ）' }}
               </strong>
               <v-spacer></v-spacer>
-              <span>{{ comment.postedAt | toDateTimeString }}
-              </span>
+              <span>{{ comment.postedAt | toDateTimeString }}</span>
+              <v-menu bottom left v-if="comment.isEditable || comment.isDeletable">
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on">
+                    <v-icon>more_vert</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-tile v-if="comment.isEditable" @click="openModifyComment(comment.id)">
+                    <v-list-tile-title>編集</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile v-if="comment.isDeletable" @click="deleteComment(comment.id)">
+                    <v-list-tile-title>削除</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
           </v-card-text>
         </template>
-        <v-card-text v-if="presentation.comments.length === 0">
+        <v-card-text v-if="comments.length === 0">
           <p>まだコメントはありません。</p>
         </v-card-text>
       </v-card>
@@ -222,6 +233,7 @@ export default {
       unsubscribes: [],
       dialog: false,
       comment: '',
+      editingCommentId: null,
       errors: []
     }
   },
@@ -234,6 +246,31 @@ export default {
     },
     event () {
       return this.$store.getters.event(this.presentation.eventId)
+    },
+    /**
+     * 情報を補完したコメントリスト
+     * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
+     * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
+     * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
+     */
+    comments () {
+      return this.presentation.comments
+        .map((cm) => {
+          const userRef = cm.userRef || {
+            photoURL: null,
+            name: null
+          }
+          const loginUser = this.user || {
+            id: null,
+            isAdmin: false
+          }
+          return {
+            ...cm,
+            userRef,
+            isEditable: userRef.id === loginUser.id,
+            isDeletable: loginUser.isAdmin || userRef.id === loginUser.id
+          }
+        })
     },
     prevLink () {
       return {
@@ -270,19 +307,43 @@ export default {
         this.$router.push({ path: '/events/' + this.presentation.eventId })
       }
     },
+    /**
+     * 指定したコメントの編集モーダルを開く
+     * @param {string} commentId
+     */
+    openModifyComment (commentId) {
+      const target = this.comments.find((c) => c.id === commentId)
+      if (target == null || !target.isEditable) {
+        return alert('そのコメントは編集できません！')
+      }
+      this.editingCommentId = commentId
+      this.comment = target.comment
+      this.dialog = true
+    },
     validateComment (c) {
       return {
         length: c.length <= 1000,
         required: c.replace(/\s+$/mg, '').length > 0
       }
     },
+    /**
+     * コメントを保存する
+     */
     postCommnet () {
       // eslint-disable-next-line no-irregular-whitespace
       const rtrimRegex = /[ \t\f　]+$/mg
       const com = this.comment.replace(rtrimRegex, '')
       const res = this.validateComment(com)
       if (Object.values(res).every((v) => v)) {
-        this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+        if (this.editingCommentId == null) {
+          this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+        } else {
+          const target = this.comments.find((c) => c.id === this.editingCommentId)
+          if (target == null || !target.isEditable) {
+            return
+          }
+          this.$store.dispatch('updateComment', { comment: com, commentId: this.editingCommentId })
+        }
         this.closeComment()
       } else {
         this.errors = [
@@ -294,8 +355,22 @@ export default {
     },
     closeComment () {
       this.comment = ''
+      this.editingCommentId = null
       this.errors = []
       this.dialog = false
+    },
+    /**
+     * 指定したコメントの削除
+     * @param {string} commentId
+     */
+    deleteComment (commentId) {
+      const target = this.comments.find((c) => c.id === commentId)
+      if (target == null || !target.isDeletable) {
+        return alert('そのコメントは削除できません！')
+      }
+      if (confirm('このコメントを削除します。よろしいですか？')) {
+        this.$store.dispatch('deleteComment', { commentId })
+      }
     },
     /**
      * スタンプのカウントを取得
