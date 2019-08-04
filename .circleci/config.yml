@@ -15,7 +15,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: lambic-dependencies-{{ checksum "package.json" }}
+          key: lambic-build-{{ checksum "package.json" }}
       - run:
           name: Set the active project
           command: npx firebase use developement
