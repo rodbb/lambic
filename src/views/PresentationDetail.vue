@@ -83,11 +83,11 @@
         <template v-for="comment in comments">
           <div
             v-if="comment.canShow"
-            v-bind:class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
+            :class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
             :key="comment.id + '-div'"
           >
-            <v-divider :key="comment.id + '-divider'"></v-divider>
-            <v-card-text :key="comment.id" class="py-2">
+            <v-divider></v-divider>
+            <v-card-text class="py-2">
               <v-layout v-if="comment.isDirect">
                 <small class="grey--text">ダイレクトコメント</small>
               </v-layout>
