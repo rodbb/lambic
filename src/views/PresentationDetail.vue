@@ -80,53 +80,51 @@
         <v-card-title>
           <h3>コメント一覧</h3>
         </v-card-title>
-        <template v-for="comment in comments">
-          <div
-            v-if="comment.canShow"
-            :class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
-            :key="comment.id + '-div'"
-          >
-            <v-divider></v-divider>
-            <v-card-text class="py-2">
-              <v-layout v-if="comment.isDirect">
-                <small class="grey--text">ダイレクトコメント</small>
-              </v-layout>
-              <v-layout align-center mb-1>
-                <v-avatar
-                  v-if="comment.userRef.photoURL"
-                  size="28"
-                  class="mr-1"
-                >
-                  <img v-bind:src="comment.userRef.photoURL">
-                </v-avatar>
-                <v-avatar v-else size="28" class="mr-1">
-                  <v-icon size="28" color="gray">account_circle</v-icon>
-                </v-avatar>
-                <strong  class="text-truncate">
-                  {{ comment.userRef.name || '（削除されたユーザ）' }}
-                </strong>
-                <v-spacer></v-spacer>
-                <span>{{ comment.postedAt | toDateTimeString }}</span>
-                <v-menu bottom left v-if="comment.isEditable || comment.isDeletable">
-                  <template v-slot:activator="{ on }">
-                    <v-btn icon v-on="on">
-                      <v-icon>more_vert</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-tile v-if="comment.isEditable" @click="openModifyComment(comment.id)">
-                      <v-list-tile-title>編集</v-list-tile-title>
-                    </v-list-tile>
-                    <v-list-tile v-if="comment.isDeletable" @click="deleteComment(comment.id)">
-                      <v-list-tile-title>削除</v-list-tile-title>
-                    </v-list-tile>
-                  </v-list>
-                </v-menu>
-              </v-layout>
-              <p class="pre">{{ comment.comment }}</p>
-            </v-card-text>
-          </div>
-        </template>
+        <div
+          v-for="comment in comments"
+          :class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
+          :key="comment.id + '-div'"
+        >
+          <v-divider></v-divider>
+          <v-card-text class="py-2">
+            <v-layout v-if="comment.isDirect">
+              <small class="grey--text">ダイレクトコメント</small>
+            </v-layout>
+            <v-layout align-center mb-1>
+              <v-avatar
+                v-if="comment.userRef.photoURL"
+                size="28"
+                class="mr-1"
+              >
+                <img v-bind:src="comment.userRef.photoURL">
+              </v-avatar>
+              <v-avatar v-else size="28" class="mr-1">
+                <v-icon size="28" color="gray">account_circle</v-icon>
+              </v-avatar>
+              <strong  class="text-truncate">
+                {{ comment.userRef.name || '（削除されたユーザ）' }}
+              </strong>
+              <v-spacer></v-spacer>
+              <span>{{ comment.postedAt | toDateTimeString }}</span>
+              <v-menu bottom left v-if="comment.isEditable || comment.isDeletable">
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on">
+                    <v-icon>more_vert</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-tile v-if="comment.isEditable" @click="openModifyComment(comment.id)">
+                    <v-list-tile-title>編集</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile v-if="comment.isDeletable" @click="deleteComment(comment.id)">
+                    <v-list-tile-title>削除</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+            </v-layout>
+            <p class="pre">{{ comment.comment }}</p>
+          </v-card-text>
+        </div>
         <v-card-text v-if="comments.length === 0">
           <p>まだコメントはありません。</p>
         </v-card-text>
@@ -314,6 +312,7 @@ export default {
               isCommentedUser || presentations.presenter.id === loginUser.id
           }
         })
+        .filter((cm) => cm.canShow)
     },
     prevLink () {
       return {
