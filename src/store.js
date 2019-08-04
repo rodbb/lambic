@@ -76,7 +76,7 @@ export default new Vuex.Store({
         .sort((a, b) => {
           // 投稿日時の昇順にソート
           return !moment(a.postedAt).isSame(b.postedAt)
-            ? (moment(a.postedAt).isAfter(b.postedAt) ? 1 : -1)
+            ? (moment(a.postedAt).isAfter(b.postedAt) ? -1 : 1)
             : 0
         })
     },
