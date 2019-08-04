@@ -80,10 +80,17 @@
         <v-card-title>
           <h3>コメント一覧</h3>
         </v-card-title>
-        <template v-for="comment in comments">
-          <v-divider :key="comment.id + '-divider'"></v-divider>
-          <v-card-text :key="comment.id">
-            <v-layout align-center mb-3>
+        <div
+          v-for="comment in comments"
+          :class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
+          :key="comment.id + '-div'"
+        >
+          <v-divider></v-divider>
+          <v-card-text class="py-2">
+            <v-layout v-if="comment.isDirect">
+              <small class="grey--text">ダイレクトコメント</small>
+            </v-layout>
+            <v-layout align-center mb-1>
               <v-avatar
                 v-if="comment.userRef.photoURL"
                 size="28"
@@ -117,7 +124,7 @@
             </v-layout>
             <p class="pre">{{ comment.comment }}</p>
           </v-card-text>
-        </template>
+        </div>
         <v-card-text v-if="comments.length === 0">
           <p>まだコメントはありません。</p>
         </v-card-text>
@@ -156,7 +163,7 @@
         </v-btn>
 
         <v-card v-if="user">
-          <v-card-text>
+          <v-card-text class="pb-1">
             <v-alert
               outline
               :value="errors.length > 0"
@@ -175,6 +182,34 @@
               label="input comment"
               v-model="comment"
             ></v-textarea>
+
+            <!-- 新規投稿のときのみダイレクトコメントを選択可能 -->
+            <v-container v-if="this.editingCommentId === null" grid-list-md class="px-0 py-0">
+              <v-layout wrap row>
+                <v-flex shrink>
+                  <v-checkbox
+                    v-model="isDirect"
+                    color="primary"
+                    class="my-0 py-0"
+                  >
+                    <template v-slot:label>
+                      <span class="black--text">
+                        ダイレクトコメントにする
+                      </span>
+                    </template>
+                  </v-checkbox>
+                </v-flex>
+                <v-flex>
+                  <v-tooltip right>
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="primary" v-on="on">help</v-icon>
+                    </template>
+                    <span><strong>ダイレクトコメント</strong>：<br>発表者と投稿者のみが<br>閲覧できるコメント</span>
+                  </v-tooltip>
+                </v-flex>
+              </v-layout>
+            </v-container>
+
           </v-card-text>
           <v-divider></v-divider>
           <v-card-actions>
@@ -233,6 +268,7 @@ export default {
       unsubscribes: [],
       dialog: false,
       comment: '',
+      isDirect: false,
       editingCommentId: null,
       errors: []
     }
@@ -252,6 +288,7 @@ export default {
      * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
      * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
      * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
+     * canShow：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
      */
     comments () {
       return this.presentation.comments
@@ -264,13 +301,18 @@ export default {
             id: null,
             isAdmin: false
           }
+          const isCommentedUser = userRef.id === loginUser.id
+          const presentations = this.$store.getters.presentation(this.id)
           return {
             ...cm,
             userRef,
-            isEditable: userRef.id === loginUser.id,
-            isDeletable: loginUser.isAdmin || userRef.id === loginUser.id
+            isEditable: isCommentedUser,
+            isDeletable: loginUser.isAdmin || isCommentedUser,
+            canShow: !cm.isDirect || loginUser.isAdmin ||
+              isCommentedUser || presentations.presenter.id === loginUser.id
           }
         })
+        .filter((cm) => cm.canShow)
     },
     prevLink () {
       return {
@@ -318,6 +360,7 @@ export default {
       }
       this.editingCommentId = commentId
       this.comment = target.comment
+      this.isDirect = target.isDirect
       this.dialog = true
     },
     validateComment (c) {
@@ -336,15 +379,24 @@ export default {
       const res = this.validateComment(com)
       if (Object.values(res).every((v) => v)) {
         if (this.editingCommentId == null) {
-          this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+          this.$store.dispatch('appendComment', {
+            comment: com,
+            presentationId: this.id,
+            isDirect: this.isDirect
+          })
         } else {
           const target = this.comments.find((c) => c.id === this.editingCommentId)
           if (target == null || !target.isEditable) {
             return
           }
-          this.$store.dispatch('updateComment', { comment: com, commentId: this.editingCommentId })
+          this.$store.dispatch('updateComment', {
+            comment: com,
+            isDirect: this.isDirect,
+            commentId: this.editingCommentId
+          })
         }
         this.closeComment()
+        this.isDirect = false
       } else {
         this.errors = [
           !res.length ? 'コメントは1000文字までです' : null,
