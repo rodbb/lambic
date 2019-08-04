@@ -185,7 +185,8 @@
               v-model="comment"
             ></v-textarea>
 
-            <v-container grid-list-md class="px-0 py-0">
+            <!-- 新規投稿のときのみダイレクトコメントを選択可能 -->
+            <v-container v-if="this.editingCommentId === null" grid-list-md class="px-0 py-0">
               <v-layout wrap row>
                 <v-flex shrink>
                   <v-checkbox
