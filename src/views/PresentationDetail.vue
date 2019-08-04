@@ -52,58 +52,27 @@
         </v-card-text>
       </v-card>
 
-      <v-card  class="pb-3 mb-2 sticky-top top-56">
+      <v-card  class="py-3 mb-2 sticky-top top-56">
         <template v-for="(stamp, index) in presentation.stamps">
-          <v-badge bottom overlap v-if="stamp.canUse !== false" :key="index">
-            <template v-slot:badge>
-              <span>{{ getStampCount(stamp.id) }}</span>
-            </template>
-            <v-card-actions :key="index">
-              <v-btn
-                v-if="stamp.src"
-                icon
-                @click="countUpStamp(stamp.id)"
-              >
-                <img
-                  class="stamp"
-                  :src="stamp.src"
-                >
-              </v-btn>
-              <v-btn
-                v-else
-                icon
-                :key="index"
-                @click="countUpStamp(stamp.id)"
-              >
-                {{ stamp.string }}
-              </v-btn>
-            </v-card-actions>
-          </v-badge>
-          <v-badge bottom overlap v-else color="grey" :key="index">
-            <template v-slot:badge>
-              <span>{{ getStampCount(stamp.id) }}</span>
-            </template>
-            <v-card-actions :key="index">
-              <v-btn
-                v-if="stamp.src"
-                icon
-                disabled
-               >
-                <img
-                  class="stamp"
-                  :src="stamp.src"
-                >
-              </v-btn>
-              <v-btn
-                v-else
-                icon
-                disabled
-                :key="index"
-              >
-                {{ stamp.string }}
-              </v-btn>
-            </v-card-actions>
-          </v-badge>
+          <v-chip
+            v-if="getStampCount(stamp.id) || getStampCount(stamp.id) === 0"
+            :key="index"
+            @click="countUpStamp(stamp.id)"
+            color="light-green"
+            text-color="white"
+            class="text-xs-center"
+            label
+          >
+            <v-avatar v-if="stamp.src" tile color="grey lighten-3">
+              <img :src="stamp.src">
+            </v-avatar>
+            <v-avatar v-else color="grey lighten-3" class="black--text">
+              {{ stamp.string }}
+            </v-avatar>
+            <span>
+              {{ getStampCount(stamp.id) }}
+            </span>
+          </v-chip>
         </template>
       </v-card>
 
@@ -430,12 +399,6 @@ export default {
 <style scoped>
 .pre {
   white-space: pre-wrap;
-}
-
-.stamp {
-  border-radius: 50%;
-  max-width: 28px;
-  max-height: 28px;
 }
 
 .sticky-top {
