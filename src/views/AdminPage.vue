@@ -9,7 +9,7 @@
         <v-icon>cast</v-icon>
       </v-list-tile-action>
       <v-list-tile-content>
-        <v-list-tile-title>スクリーンの設定</v-list-tile-title>
+        <v-list-tile-title>スクリーン管理</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -18,7 +18,7 @@
         <v-icon>insert_emoticon</v-icon>
       </v-list-tile-action>
       <v-list-tile-content>
-        <v-list-tile-title>スタンプの管理</v-list-tile-title>
+        <v-list-tile-title>スタンプ管理</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
   </v-list>

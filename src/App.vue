@@ -74,7 +74,7 @@
               <v-icon>settings</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>管理者ページ</v-list-tile-title>
+              <v-list-tile-title>管理者メニュー</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 

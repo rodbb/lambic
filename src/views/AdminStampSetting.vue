@@ -60,6 +60,17 @@
         登録内容を確定する
       </v-btn>
 
+      <v-btn
+        fixed
+        fab
+        bottom
+        left
+        color="green"
+        :to="{ path: '/admin/stamps' }"
+      >
+        <v-icon>arrow_back</v-icon>
+      </v-btn>
+
     </v-flex>
   </v-layout>
 </template>

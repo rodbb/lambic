@@ -43,6 +43,17 @@
         </v-card-title>
       </v-card>
 
+      <v-btn
+        fixed
+        fab
+        bottom
+        left
+        color="green"
+        :to="{ path: '/admin' }"
+      >
+        <v-icon>arrow_back</v-icon>
+      </v-btn>
+
     </v-flex>
   </v-layout>
 </template>

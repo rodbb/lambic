@@ -125,7 +125,7 @@
         bottom
         left
         color="green"
-        :to="{ path: '/screens' }"
+        :to="{ path: '/admin/screens' }"
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
