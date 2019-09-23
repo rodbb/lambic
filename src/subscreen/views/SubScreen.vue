@@ -3,7 +3,7 @@
     <v-toolbar height="80" extended>
       <v-toolbar-title class="display-3">{{ presentationTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <qriously id="qrcode" class="pt-1 pb-0" :value="qrUrl" :size="140"/>
+      <qriously id="qrcode" class="pt-1 pb-0" :value="qrUrl" size="140"/>
       <template v-slot:extension>
         <div class="display-2 text-truncate">{{ presenterName }}</div>
       </template>
