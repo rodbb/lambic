@@ -5,6 +5,11 @@ jobs:
       - image: circleci/node:10.15.3
     steps:
       - checkout
+
+      - run:
+          name: Install Headless Chrome dependencies
+          command: sh .circleci/install_puppeteer_dependency.sh
+
       - restore_cache:
           keys:
             - lambic-build-{{ checksum "package.json" }}
@@ -16,12 +21,32 @@ jobs:
           paths:
             - node_modules
           key: lambic-build-{{ checksum "package.json" }}
+
+      - restore_cache:
+          keys:
+            - lambic-build-functions-{{ checksum "functions/package.json" }}
+            - lambic-build-functions-
+      - run:
+          name: Install Project (functions)
+          command: npm install
+          working_directory: functions
+      - save_cache:
+          paths:
+            - functions/node_modules
+          key: lambic-build-functions-{{ checksum "functions/package.json" }}
+
       - run:
           name: Set the active project
-          command: npx firebase use developement
+          command: npx firebase use test --token "${FIREBASE_TOKEN}"
       - run:
           name: Build
           command: npm run build
       - run:
-          name: Run test
+          name: Run unit test
           command: npm run test:unit
+      - run:
+          name: Deploy
+          command: npx firebase deploy --token "${FIREBASE_TOKEN}"
+      - run:
+          name: Run integration test
+          command: npm run test:integration
