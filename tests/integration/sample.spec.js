@@ -10,7 +10,7 @@ describe('sample test', function () {
       console.log('console: ', msg)
     })
 
-    await page.goto('https://lambic-testing.firebaseapp.com')
+    await page.goto('https://rodbb-lambic-test.firebaseapp.com')
     await page.waitForSelector('.application--wrap')
   })
 
