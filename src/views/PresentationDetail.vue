@@ -122,7 +122,7 @@
                 </v-list>
               </v-menu>
             </v-layout>
-            <p class="pre">{{ comment.comment }}</p>
+            <p v-html="convertMD2HTML(comment.comment)"></p>
           </v-card-text>
         </div>
         <v-card-text v-if="comments.length === 0">
@@ -173,15 +173,36 @@
                 <li v-for="(err, i) in errors" :key="i">{{ err }}</li>
               </ul>
             </v-alert>
-            <v-textarea
+            <v-tabs
               v-if="dialog"
-              outline
-              autofocus
-              no-resize
-              name="comment-input"
-              label="input comment"
-              v-model="comment"
-            ></v-textarea>
+              v-model="tab"
+              color="grey lighten-5"
+              grow
+            >
+              <v-tab exact key="tab-write">Write</v-tab>
+              <v-tab key="tab-preview">Preview</v-tab>
+              <v-tab-item key="tab-write">
+                <v-textarea
+                  v-if="dialog"
+                  outline
+                  autofocus
+                  no-resize
+                  name="comment-input"
+                  label="input comment"
+                  v-model="comment"
+                ></v-textarea>
+              </v-tab-item>
+              <v-tab-item key="tab-preview">
+                <v-card
+                  flat
+                  tile
+                  height="159"
+                  class="scroll"
+                >
+                  <v-card-text v-html="convertMD2HTML(comment)"></v-card-text>
+                </v-card>
+              </v-tab-item>
+            </v-tabs>
 
             <!-- 新規投稿のときのみダイレクトコメントを選択可能 -->
             <v-container v-if="this.editingCommentId === null" grid-list-md class="px-0 py-0">
@@ -264,13 +285,18 @@ export default {
     }
   },
   data () {
+    const markdownIt = require('markdown-it')({ html: true })
+      .use(require('markdown-it-emoji'))
+      .use(require('markdown-it-sanitizer'))
     return {
       unsubscribes: [],
       dialog: false,
       comment: '',
       isDirect: false,
       editingCommentId: null,
-      errors: []
+      errors: [],
+      md: markdownIt,
+      tab: 'tab-write'
     }
   },
   async created () {
@@ -409,6 +435,7 @@ export default {
       this.comment = ''
       this.editingCommentId = null
       this.errors = []
+      this.tab='tab-write'
       this.dialog = false
     },
     /**
@@ -439,6 +466,16 @@ export default {
      */
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
+    },
+    convertMD2HTML (comment) {
+      return this.md.render(comment)
+    }
+  },
+  watch: {
+    dialog (val) {
+      if (!val) {
+        this.closeComment()
+      }
     }
   },
   beforeDestroy () {
@@ -451,6 +488,10 @@ export default {
 <style scoped>
 .pre {
   white-space: pre-wrap;
+}
+
+.scroll {
+  overflow-y: auto;
 }
 
 .sticky-top {
