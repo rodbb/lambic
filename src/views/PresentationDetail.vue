@@ -48,7 +48,7 @@
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
           </div>
-          <p class="pre">{{ presentation.description }}</p>
+          <p v-html="convertMD2HTML(presentation.description)">"</p>
         </v-card-text>
       </v-card>
 
@@ -435,7 +435,7 @@ export default {
       this.comment = ''
       this.editingCommentId = null
       this.errors = []
-      this.tab='tab-write'
+      this.tab = 'tab-write'
       this.dialog = false
     },
     /**
@@ -467,8 +467,8 @@ export default {
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
     },
-    convertMD2HTML (comment) {
-      return this.md.render(comment)
+    convertMD2HTML (str) {
+      return this.md.render(str)
     }
   },
   watch: {
@@ -486,10 +486,6 @@ export default {
 </script>
 
 <style scoped>
-.pre {
-  white-space: pre-wrap;
-}
-
 .scroll {
   overflow-y: auto;
 }
