@@ -38,6 +38,14 @@
 
             <v-layout row class="py-2">
               <v-flex xs12 md7>
+            <v-tabs
+              v-model="tab"
+              color="grey lighten-5"
+              grow
+            >
+              <v-tab exact key="tab-write">Write</v-tab>
+              <v-tab key="tab-preview">Preview</v-tab>
+              <v-tab-item key="tab-write">
                 <v-textarea
                   v-model="description"
                   label="内容"
@@ -46,6 +54,18 @@
                   :rules="descriptionRules"
                 >
                 </v-textarea>
+              </v-tab-item>
+              <v-tab-item key="tab-preview">
+                <v-card
+                  flat
+                  tile
+                  height="159"
+                  class="scroll"
+                >
+                  <v-card-text v-html="convertMD2HTML(description)"></v-card-text>
+                </v-card>
+              </v-tab-item>
+            </v-tabs>
               </v-flex>
             </v-layout>
 
@@ -126,6 +146,9 @@ export default {
     }
   },
   data () {
+    const markdownIt = require('markdown-it')({ html: true })
+      .use(require('markdown-it-emoji'))
+      .use(require('markdown-it-sanitizer'))
     return {
       isNewPresentation: false,
       valid: true,
@@ -143,7 +166,9 @@ export default {
       descriptionRules: [
         // 発表内容入力規則
         v => v.length <= this.descriptionMaxLength || '内容は' + this.descriptionMaxLength + '文字以内にしてください。'
-      ]
+      ],
+      md: markdownIt,
+      tab: 'tab-write'
     }
   },
   created () {
@@ -230,7 +255,16 @@ export default {
         // 編集の場合は発表詳細画面へ戻る
         this.$router.push({ path: '/presentations/' + this.id })
       }
+    },
+    convertMD2HTML (str) {
+      return this.md.render(str)
     }
   }
 }
 </script>
+
+<style scoped>
+.scroll {
+  overflow-y: auto;
+}
+</style>
