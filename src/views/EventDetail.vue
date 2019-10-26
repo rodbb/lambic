@@ -14,10 +14,10 @@
         </v-card-text>
       </v-card>
 
-      <v-card v-if="event.presentations != 0">
+      <v-card v-if="presentations != 0">
 
         <v-list two-line>
-          <template v-for="(presentation, index) in event.presentations">
+          <template v-for="(presentation, index) in presentations">
 
             <v-list-tile :key="presentation.id" :to="{ path: '/presentations/' + presentation.id }">
 
@@ -34,7 +34,7 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <v-divider v-if="index+1 < event.presentations.length"
+            <v-divider v-if="index+1 < presentations.length"
               :key="presentation.id + '_divider'"
               class="mx-2 my-2">
             </v-divider>
@@ -44,7 +44,7 @@
 
       </v-card>
 
-      <v-card v-else :indeterminate="event.presentations == 0">
+      <v-card v-else :indeterminate="presentations == 0">
         <v-card-text>
           まだ発表はありません。
         </v-card-text>
@@ -100,6 +100,9 @@
 
 <script>
 import moment from 'moment'
+import { collectionData, doc } from 'rxfire/firestore'
+import { map } from 'rxjs/operators'
+import { db } from '../firebase.js'
 export default {
   name: 'eventDetail',
   props: {
@@ -111,13 +114,29 @@ export default {
   data () {
     return {
       show: false,
-      dialog: false
+      dialog: false,
+      event: null,
+      presentations: []
     }
   },
-  computed: {
-    event () {
-      return this.$store.getters.event(this.id)
-    }
+  beforeCreate () {
+    const eventId = this.$route.params.id
+
+    const eventDoc = db.doc('events/' + eventId)
+    doc(eventDoc).subscribe(snapshot => {
+      this.$data.event = snapshot.data()
+    })
+
+    const presentationsRef = db.collection('presentations').where('eventId', '==', eventId)
+    collectionData(presentationsRef, 'id')
+      .pipe(
+        map(presentations => presentations.map((p) => {
+          return {
+            ...p,
+            id: p.id
+          }
+        })))
+      .subscribe(presentations => { this.$data.presentations = presentations })
   },
   filters: {
     toDateString (date) {
