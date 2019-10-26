@@ -9,11 +9,13 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "firebase": "^6.6.1",
+    "firebase": "^6.6.2",
     "firebaseui-ja": "^1.0.0",
     "material-design-icons-iconfont": "^5.0.1",
     "moment": "^2.24.0",
     "register-service-worker": "^1.6.2",
+    "rxfire": "^3.8.7",
+    "rxjs": "^6.5.3",
     "vue": "^2.6.10",
     "vue-qriously": "^1.1.1",
     "vue-router": "^3.1.3",

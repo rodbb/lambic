@@ -40,23 +40,32 @@
 </template>
 <script>
 import moment from 'moment'
+import { collectionData } from 'rxfire/firestore'
+import { map } from 'rxjs/operators'
+import { db } from '../firebase.js'
 export default {
   name: 'events',
-  computed: {
-    /*
-     * イベント一覧取得
-     */
-    events () {
-      const nowDate = new Date()
-      return this.$store.getters.events
-        .map((ev) => {
+  data () {
+    return {
+      events: []
+    }
+  },
+  beforeCreate () {
+    const nowDate = new Date()
+    const eventsRef = db.collection('events')
+    collectionData(eventsRef, 'id')
+      .pipe(
+        map(events => events.map((ev) => {
+          const evDate = ev.date.toDate()
           return {
             ...ev,
-            isFinished: moment(ev.date).isBefore(nowDate, 'day'),
-            isToday: moment(ev.date).isSame(nowDate, 'day')
+            id: ev.id,
+            date: evDate,
+            isFinished: moment(evDate).isBefore(nowDate, 'day'),
+            isToday: moment(evDate).isSame(nowDate, 'day')
           }
-        })
-    }
+        })))
+      .subscribe(events => { this.$data.events = events })
   },
   filters: {
     toDateString (date) {
