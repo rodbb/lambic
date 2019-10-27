@@ -48,7 +48,7 @@
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
           </div>
-          <p v-html="convertMD2HTML(presentation.description)">"</p>
+          <p class="markdown" v-html="convertMD2HTML(presentation.description)">"</p>
         </v-card-text>
       </v-card>
 
@@ -122,7 +122,7 @@
                 </v-list>
               </v-menu>
             </v-layout>
-            <p v-html="convertMD2HTML(comment.comment)"></p>
+            <p class="markdown" v-html="convertMD2HTML(comment.comment)"></p>
           </v-card-text>
         </div>
         <v-card-text v-if="comments.length === 0">
@@ -181,7 +181,7 @@
             >
               <v-tab exact key="tab-write">Write</v-tab>
               <v-tab key="tab-preview">Preview</v-tab>
-              <v-tab-item key="tab-write">
+              <v-tab-item key="tab-write" class="mgt-2">
                 <v-textarea
                   v-if="dialog"
                   outline
@@ -192,14 +192,14 @@
                   v-model="comment"
                 ></v-textarea>
               </v-tab-item>
-              <v-tab-item key="tab-preview">
+              <v-tab-item key="tab-preview" class="mgt-2">
                 <v-card
                   flat
                   tile
                   height="159"
                   class="scroll"
                 >
-                  <v-card-text v-html="convertMD2HTML(comment)"></v-card-text>
+                  <v-card-text class="markdown"  v-html="convertMD2HTML(comment)"></v-card-text>
                 </v-card>
               </v-tab-item>
             </v-tabs>
@@ -275,6 +275,7 @@
 
 <script>
 import moment from 'moment'
+import markdownIt from '../markdownIt'
 
 export default {
   name: 'presentation',
@@ -285,9 +286,6 @@ export default {
     }
   },
   data () {
-    const markdownIt = require('markdown-it')({ html: true })
-      .use(require('markdown-it-emoji'))
-      .use(require('markdown-it-sanitizer'))
     return {
       unsubscribes: [],
       dialog: false,
@@ -494,6 +492,15 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.markdown >>> img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.mgt-2 {
+  margin-top: 2px;
 }
 
 .top-56 {

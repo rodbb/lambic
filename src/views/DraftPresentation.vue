@@ -45,7 +45,7 @@
             >
               <v-tab exact key="tab-write">Write</v-tab>
               <v-tab key="tab-preview">Preview</v-tab>
-              <v-tab-item key="tab-write">
+              <v-tab-item key="tab-write" class="mgt-2">
                 <v-textarea
                   v-model="description"
                   label="内容"
@@ -55,14 +55,14 @@
                 >
                 </v-textarea>
               </v-tab-item>
-              <v-tab-item key="tab-preview">
+              <v-tab-item key="tab-preview" class="mgt-2">
                 <v-card
                   flat
                   tile
                   height="159"
                   class="scroll"
                 >
-                  <v-card-text v-html="convertMD2HTML(description)"></v-card-text>
+                  <v-card-text class="markdown"  v-html="convertMD2HTML(description)"></v-card-text>
                 </v-card>
               </v-tab-item>
             </v-tabs>
@@ -132,6 +132,7 @@
 </template>
 <script>
 import moment from 'moment'
+import markdownIt from '../markdownIt'
 const NEW_PRESENTATION_KEYWORD = 'new'
 export default {
   name: 'draftPresentation',
@@ -146,9 +147,6 @@ export default {
     }
   },
   data () {
-    const markdownIt = require('markdown-it')({ html: true })
-      .use(require('markdown-it-emoji'))
-      .use(require('markdown-it-sanitizer'))
     return {
       isNewPresentation: false,
       valid: true,
@@ -266,5 +264,14 @@ export default {
 <style scoped>
 .scroll {
   overflow-y: auto;
+}
+
+.markdown >>> img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.mgt-2 {
+  margin-top: 2px;
 }
 </style>
