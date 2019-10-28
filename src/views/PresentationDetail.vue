@@ -48,7 +48,7 @@
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
           </div>
-          <p class="markdown" v-html="convertMd2Html(presentation.description)">"</p>
+          <p class="markdown__preview" v-html="convertMd2Html(presentation.description)">"</p>
         </v-card-text>
       </v-card>
 
@@ -122,7 +122,7 @@
                 </v-list>
               </v-menu>
             </v-layout>
-            <p class="markdown" v-html="convertMd2Html(comment.comment)"></p>
+            <p class="markdown__preview" v-html="convertMd2Html(comment.comment)"></p>
           </v-card-text>
         </div>
         <v-card-text v-if="comments.length === 0">
