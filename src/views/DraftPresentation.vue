@@ -22,7 +22,7 @@
           v-model="valid"
           lazy-validation
         >
-          <v-container fluid class="py-1">
+          <v-container fluid class="py-1 markdown__container">
 
             <v-layout row class="py-2">
               <v-flex xs12 md7>
@@ -38,34 +38,37 @@
 
             <v-layout row class="py-2">
               <v-flex xs12 md7>
-            <v-tabs
-              v-model="tab"
-              color="grey lighten-5"
-              grow
-            >
-              <v-tab exact key="tab-write">Write</v-tab>
-              <v-tab key="tab-preview">Preview</v-tab>
-              <v-tab-item key="tab-write" class="mgt-2">
-                <v-textarea
-                  v-model="description"
-                  label="内容"
-                  outline
-                  :counter="descriptionMaxLength"
-                  :rules="descriptionRules"
+                <v-tabs
+                  v-model="tab"
+                  color="grey lighten-5"
+                  grow
+                  class="markdown__tabs"
                 >
-                </v-textarea>
-              </v-tab-item>
-              <v-tab-item key="tab-preview" class="mgt-2">
-                <v-card
-                  flat
-                  tile
-                  height="159"
-                  class="scroll"
-                >
-                  <v-card-text class="markdown"  v-html="convertMD2HTML(description)"></v-card-text>
-                </v-card>
-              </v-tab-item>
-            </v-tabs>
+                  <v-tab>Write</v-tab>
+                  <v-tab>Preview</v-tab>
+                </v-tabs>
+                <v-tabs-items v-model="tab">
+                  <v-tab-item>
+                    <v-textarea
+                      v-model="description"
+                      label="内容"
+                      outline
+                      :counter="descriptionMaxLength"
+                      :rules="descriptionRules"
+                    >
+                    </v-textarea>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-card
+                      flat
+                      tile
+                      height="159"
+                      class="scroll"
+                    >
+                      <v-card-text class="markdown__preview"  v-html="convertMd2Html(description)"></v-card-text>
+                    </v-card>
+                  </v-tab-item>
+                </v-tabs-items>
               </v-flex>
             </v-layout>
 
@@ -132,7 +135,7 @@
 </template>
 <script>
 import moment from 'moment'
-import markdownIt from '../markdownIt'
+import markdownIt from '@/markdownIt'
 const NEW_PRESENTATION_KEYWORD = 'new'
 export default {
   name: 'draftPresentation',
@@ -165,8 +168,7 @@ export default {
         // 発表内容入力規則
         v => v.length <= this.descriptionMaxLength || '内容は' + this.descriptionMaxLength + '文字以内にしてください。'
       ],
-      md: markdownIt,
-      tab: 'tab-write'
+      tab: 0
     }
   },
   created () {
@@ -254,8 +256,8 @@ export default {
         this.$router.push({ path: '/presentations/' + this.id })
       }
     },
-    convertMD2HTML (str) {
-      return this.md.render(str)
+    convertMd2Html (str) {
+      return markdownIt.render(str)
     }
   }
 }
@@ -266,12 +268,12 @@ export default {
   overflow-y: auto;
 }
 
-.markdown >>> img {
+.markdown__preview >>> img {
   max-width: 100%;
   max-height: 100%;
 }
 
-.mgt-2 {
-  margin-top: 2px;
+.markdown__container >>> .markdown__tabs {
+  margin-bottom: 2px;
 }
 </style>
