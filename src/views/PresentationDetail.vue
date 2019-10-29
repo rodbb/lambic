@@ -48,7 +48,7 @@
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
           </div>
-          <p class="pre">{{ presentation.description }}</p>
+          <p class="markdown__preview" v-html="convertMd2Html(presentation.description)">"</p>
         </v-card-text>
       </v-card>
 
@@ -122,7 +122,7 @@
                 </v-list>
               </v-menu>
             </v-layout>
-            <p class="pre">{{ comment.comment }}</p>
+            <p class="markdown__preview" v-html="convertMd2Html(comment.comment)"></p>
           </v-card-text>
         </div>
         <v-card-text v-if="comments.length === 0">
@@ -162,7 +162,7 @@
           <v-icon>create</v-icon>
         </v-btn>
 
-        <v-card v-if="user">
+        <v-card v-if="user" class="markdown__container">
           <v-card-text class="pb-1">
             <v-alert
               outline
@@ -173,15 +173,42 @@
                 <li v-for="(err, i) in errors" :key="i">{{ err }}</li>
               </ul>
             </v-alert>
-            <v-textarea
+            <v-tabs
               v-if="dialog"
-              outline
-              autofocus
-              no-resize
-              name="comment-input"
-              label="input comment"
-              v-model="comment"
-            ></v-textarea>
+              v-model="tab"
+              color="grey lighten-5"
+              grow
+              class="markdown__tabs"
+            >
+              <v-tab>Write</v-tab>
+              <v-tab>Preview</v-tab>
+            </v-tabs>
+            <v-tabs-items
+              v-if="dialog"
+              v-model="tab"
+            >
+              <v-tab-item>
+                <v-textarea
+                  v-if="dialog"
+                  outline
+                  autofocus
+                  no-resize
+                  name="comment-input"
+                  label="input comment"
+                  v-model="comment"
+                ></v-textarea>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card
+                  flat
+                  tile
+                  height="159"
+                  class="scroll"
+                >
+                  <v-card-text class="markdown__preview"  v-html="convertMd2Html(comment)"></v-card-text>
+                </v-card>
+              </v-tab-item>
+            </v-tabs-items>
 
             <!-- 新規投稿のときのみダイレクトコメントを選択可能 -->
             <v-container v-if="this.editingCommentId === null" grid-list-md class="px-0 py-0">
@@ -254,6 +281,7 @@
 
 <script>
 import moment from 'moment'
+import markdownIt from '@/markdownIt'
 
 export default {
   name: 'presentation',
@@ -270,7 +298,8 @@ export default {
       comment: '',
       isDirect: false,
       editingCommentId: null,
-      errors: []
+      errors: [],
+      tab: 0
     }
   },
   async created () {
@@ -409,6 +438,7 @@ export default {
       this.comment = ''
       this.editingCommentId = null
       this.errors = []
+      this.tab = 0
       this.dialog = false
     },
     /**
@@ -439,6 +469,16 @@ export default {
      */
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
+    },
+    convertMd2Html (str) {
+      return markdownIt.render(str)
+    }
+  },
+  watch: {
+    dialog (val) {
+      if (!val) {
+        this.closeComment()
+      }
     }
   },
   beforeDestroy () {
@@ -449,14 +489,23 @@ export default {
 </script>
 
 <style scoped>
-.pre {
-  white-space: pre-wrap;
+.scroll {
+  overflow-y: auto;
 }
 
 .sticky-top {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.markdown__preview >>> img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.markdown__container >>> .markdown__tabs {
+  margin-bottom: 2px;
 }
 
 .top-56 {
