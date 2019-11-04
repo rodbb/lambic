@@ -41,6 +41,10 @@ jobs:
       - run:
           name: Build
           command: npm run build
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - .
       - run:
           name: Run unit test
           command: npm run test:unit
@@ -50,3 +54,39 @@ jobs:
       - run:
           name: Run integration test
           command: npm run test:integration
+
+  deploy:
+    docker:
+      - image: circleci/node:10.15.3
+    steps:
+      - checkout
+      - attach_workspace:
+          at: dist
+
+      - restore_cache:
+          keys:
+            - lambic-build-{{ checksum "package.json" }}
+            - lambic-build-
+      - restore_cache:
+          keys:
+            - lambic-build-functions-{{ checksum "functions/package.json" }}
+            - lambic-build-functions-
+
+      - run:
+          name: Set the active project
+          command: npx firebase use production --token "${FIREBASE_TOKEN}"
+      - run:
+          name: Deploy
+          command: npx firebase deploy --token "${FIREBASE_TOKEN}"
+
+workflows:
+    version: 2
+    build-test-and-deploy:
+      jobs:
+        - build
+        - deploy:
+            requires:
+                - build
+            filters:
+              branches:
+                only: master
