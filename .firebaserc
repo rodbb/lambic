@@ -1,6 +1,7 @@
 {
   "projects": {
     "production": "rodbb-lambic",
-    "developement": "rodbb-lambic-dev"
+    "developement": "rodbb-lambic-dev",
+    "test": "rodbb-lambic-test"
   }
 }

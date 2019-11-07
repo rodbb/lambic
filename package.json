@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "test:integration": "mocha tests/integration/bootstrap.js --recursive tests/integration --timeout 0",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
@@ -35,10 +36,12 @@
     "@vue/eslint-config-standard": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-eslint": "^10.0.3",
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "eslint": "^6.4.0",
     "eslint-plugin-vue": "^5.2.3",
     "firebase-tools": "^7.3.2",
+    "mocha": "^6.2.2",
+    "puppeteer": "^1.20.0",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
