@@ -23,7 +23,7 @@
             </v-list-tile-avatar>
           </button>
           <v-list-tile-content>
-            <v-list-tile-title @click="goMyPage">
+            <v-list-tile-title @click="goMyPage" id="userName">
               <button type="button">{{ user.name }}</button>
             </v-list-tile-title>
             <v-list-tile-sub-title>
@@ -37,7 +37,7 @@
             <v-icon x-large color="light-green">account_circle</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>ゲストユーザ</v-list-tile-title>
+            <v-list-tile-title id="userName">ゲストユーザ</v-list-tile-title>
             <v-list-tile-sub-title>
               <button type="button" @click="goLogin">ログイン</button>
             </v-list-tile-sub-title>
