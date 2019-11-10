@@ -136,6 +136,8 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
+import { docData } from 'rxfire/firestore'
+import { db } from '@/firebase'
 const NEW_PRESENTATION_KEYWORD = 'new'
 export default {
   name: 'draftPresentation',
@@ -152,6 +154,8 @@ export default {
   data () {
     return {
       isNewPresentation: false,
+      event: null,
+      presentation: null,
       valid: true,
       title: '', // 入力する発表タイトル
       titleMaxLength: 50, // 発表タイトル最大文字数
@@ -168,36 +172,40 @@ export default {
         // 発表内容入力規則
         v => v.length <= this.descriptionMaxLength || '内容は' + this.descriptionMaxLength + '文字以内にしてください。'
       ],
-      tab: 0
+      tab: 0,
+      userSubscription: null,
+      subscriptions: []
     }
   },
   created () {
     this.isNewPresentation = this.id === NEW_PRESENTATION_KEYWORD
-    const presentation = this.isNewPresentation ? null : this.$store.getters.presentation(this.id)
-    if (presentation) {
-      // 編集の場合、対象の発表データをセットする
-      this.title = presentation.title
-      this.description = presentation.description
-      this.isAllowComment = presentation.isAllowComment
+
+    this.subscriptions.push(docData(db.doc('events/' + this.eventId), 'id')
+      .subscribe((event) => {
+        event.date = event.date.toDate()
+        this.event = event
+      }))
+    if (this.isNewPresentation) {
+      this.presentation = null
+    } else {
+      let presentationRef = db.doc('presentations/' + this.id)
+      this.subscriptions.push(docData(presentationRef, 'id')
+        .subscribe((presentation) => {
+          if (this.userSubscription) {
+            this.userSubscription.unsubscribe()
+            this.userSubscription = null
+          }
+          docData(db.doc('users/' + presentation.presenter.id), 'id')
+            .subscribe((user) => { presentation.presenter = user })
+          this.presentation = presentation
+          // 編集の場合、対象の発表データをセットする
+          this.title = presentation.title
+          this.description = presentation.description
+          this.isAllowComment = presentation.isAllowComment
+        }))
     }
   },
   computed: {
-    /*
-     * イベントの取得
-     */
-    event () {
-      return this.$store.getters.event(this.eventId)
-    },
-    /*
-     * プレゼンテーションの取得
-     */
-    presentation () {
-      if (!this.isNewPresentation) {
-        // 新規作成でない場合
-        return this.$store.getters.presentation(this.id)
-      }
-      return null
-    },
     /*
      * ユーザ情報取得
      */
@@ -259,6 +267,10 @@ export default {
     convertMd2Html (str) {
       return markdownIt.render(str)
     }
+  },
+  beforeDestroy () {
+    this.subscriptions.forEach((s) => s.unsubscribe())
+    this.userSubscription.unsubscribe()
   }
 }
 </script>

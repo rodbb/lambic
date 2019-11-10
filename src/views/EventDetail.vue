@@ -19,7 +19,7 @@
         <v-list two-line>
           <template v-for="(presentation, index) in presentations">
 
-            <v-list-tile :key="presentation.id" :to="{ path: '/presentations/' + presentation.id }">
+            <v-list-tile :key="presentation.id" :to="{ path: '/events/' + id + '/presentations/' + presentation.id }">
 
               <v-list-tile-content>
                 <v-list-tile-title class="title">
@@ -100,9 +100,8 @@
 
 <script>
 import moment from 'moment'
-import { collectionData, doc } from 'rxfire/firestore'
-import { map } from 'rxjs/operators'
-import { db } from '../firebase.js'
+import { collectionData, docData } from 'rxfire/firestore'
+import { db } from '@/firebase'
 export default {
   name: 'eventDetail',
   props: {
@@ -116,27 +115,27 @@ export default {
       show: false,
       dialog: false,
       event: null,
-      presentations: []
+      presentations: [],
+      subscriptions: []
     }
   },
-  beforeCreate () {
-    const eventId = this.$route.params.id
+  created () {
+    // イベントのリスナを作成
+    const eventDoc = db.doc('events/' + this.id)
+    this.subscriptions.push(docData(eventDoc, 'id')
+      .subscribe((event) => { this.event = event }))
 
-    const eventDoc = db.doc('events/' + eventId)
-    doc(eventDoc).subscribe(snapshot => {
-      this.$data.event = snapshot.data()
-    })
-
-    const presentationsRef = db.collection('presentations').where('eventId', '==', eventId)
-    collectionData(presentationsRef, 'id')
-      .pipe(
-        map(presentations => presentations.map((p) => {
-          return {
-            ...p,
-            id: p.id
-          }
-        })))
-      .subscribe(presentations => { this.$data.presentations = presentations })
+    // イベントに紐づく全発表のリスナを作成
+    const presentationsRef = db.collection('presentations').where('eventId', '==', this.id)
+    this.subscriptions.push(collectionData(presentationsRef, 'id')
+      .subscribe((presentations) => {
+        presentations.forEach((p) => {
+          // 発表者
+          this.subscriptions.push(docData(db.doc('users/' + p.presenter.id), 'id')
+            .subscribe((user) => { p.presenter = user }))
+        })
+        this.presentations = presentations
+      }))
   },
   filters: {
     toDateString (date) {
@@ -150,12 +149,15 @@ export default {
     goAddPlesentation () {
       if (this.$store.getters.user) {
         // ログインしている場合は発表追加画面へ
-        this.$router.push({ path: '/' + this.id + '/draftPresentations/' + 'new' })
+        this.$router.push({ path: '/events/' + this.id + '/draftPresentations/' + 'new' })
       } else {
         // 未ログインの場合はログインを促すダイアログを表示
         this.dialog = true
       }
     }
+  },
+  beforeDestroy () {
+    this.subscriptions.forEach((s) => s.unsubscribe())
   }
 }
 </script>

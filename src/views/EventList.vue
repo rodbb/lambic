@@ -42,20 +42,21 @@
 import moment from 'moment'
 import { collectionData } from 'rxfire/firestore'
 import { map } from 'rxjs/operators'
-import { db } from '../firebase.js'
+import { db } from '@/firebase'
 export default {
   name: 'events',
   data () {
     return {
-      events: []
+      events: [],
+      subscriptions: []
     }
   },
-  beforeCreate () {
+  created () {
     const nowDate = new Date()
-    const eventsRef = db.collection('events')
-    collectionData(eventsRef, 'id')
+    // 全イベントのリスナを作成
+    this.subscriptions.push(collectionData(db.collection('events'), 'id')
       .pipe(
-        map(events => events.map((ev) => {
+        map((events) => events.map((ev) => {
           const evDate = ev.date.toDate()
           return {
             ...ev,
@@ -65,12 +66,15 @@ export default {
             isToday: moment(evDate).isSame(nowDate, 'day')
           }
         })))
-      .subscribe(events => { this.$data.events = events })
+      .subscribe((events) => { this.events = events }))
   },
   filters: {
     toDateString (date) {
       return moment(date).format('YYYY/MM/DD（ddd）')
     }
+  },
+  beforeDestroy () {
+    this.subscriptions.forEach((s) => s.unsubscribe())
   }
 }
 </script>

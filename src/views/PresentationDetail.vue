@@ -4,7 +4,7 @@
 
       <v-card>
         <v-card-text>
-          <v-layout align-center mb-2 class="grey--text">
+          <v-layout v-if="event" align-center mb-2 class="grey--text">
             <span class="text-truncate">{{ event.title }}</span>
             <v-spacer></v-spacer>
             <span>{{ event.date | toDateString }}</span>
@@ -282,10 +282,17 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
+import { sortedChanges, collectionData, docData } from 'rxfire/firestore'
+import { combineLatest } from 'rxjs/operators'
+import { db } from '@/firebase'
 
 export default {
   name: 'presentation',
   props: {
+    eventId: {
+      type: String,
+      required: true
+    },
     id: {
       type: String,
       required: true
@@ -293,61 +300,106 @@ export default {
   },
   data () {
     return {
-      unsubscribes: [],
+      event: null,
+      presentation: null,
+      counts: [],
+      comments: [],
       dialog: false,
       comment: '',
       isDirect: false,
       editingCommentId: null,
       errors: [],
-      tab: 0
+      tab: 0,
+      eventSubscription: null,
+      subscriptions: []
     }
   },
-  async created () {
-    this.unsubscribes = await this.$store.dispatch('watchStampCount', { presentationId: this.id })
-  },
-  computed: {
-    presentation () {
-      return this.$store.getters.presentation(this.id)
-    },
-    event () {
-      return this.$store.getters.event(this.presentation.eventId)
-    },
-    /**
-     * 情報を補完したコメントリスト
-     * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
-     * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
-     * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
-     * canShow：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
-     */
-    comments () {
-      return this.presentation.comments
-        .map((cm) => {
-          const userRef = cm.userRef || {
-            photoURL: null,
-            name: null
-          }
+  created () {
+    collectionData(db.collection('stampCounts').where('presentationId', '==', this.id), 'id')
+      .subscribe((stampCounts) => {
+        stampCounts.forEach((stampCount) => {
+          // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
+          const stampCountRef = db.doc('stampCounts/' + stampCount.id)
+          sortedChanges(stampCountRef.collection('shards'), ['added', 'modified'])
+            .subscribe((shardChanges) => {
+              let totalCount = 0
+              shardChanges.forEach((shardChange) => {
+                totalCount += shardChange.doc.data().count
+              })
+              const countObj = {
+                stampId: stampCount.stampId,
+                count: totalCount
+              }
+              const idx = this.counts.findIndex((c) => c.stampId === countObj.stampId)
+              if (idx !== -1) {
+                this.counts.splice(idx, 1, countObj)
+              } else {
+                this.counts.push(countObj)
+              }
+            })
+        })
+      })
+
+    this.subscriptions.push(docData(db.doc('events/' + this.eventId), 'id')
+      .subscribe((event) => {
+        event.date = event.date.toDate()
+        this.event = event
+      }))
+
+    let presentationRef = db.doc('presentations/' + this.id)
+    let commentsRef = db.collection('comments').where('presentationId', '==', this.id)
+    let stampsRef = db.collection('stamps')
+    this.subscriptions.push(collectionData(db.collection('users'), 'id')
+      .pipe(combineLatest(docData(presentationRef, 'id'), collectionData(commentsRef, 'id'), collectionData(stampsRef, 'id')))
+      .subscribe(([users, presentation, comments, stamps]) => {
+        /**
+         * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
+         * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
+         * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
+         * canShow：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
+         */
+        comments = comments.map((cm) => {
+          const userRef = cm.userRef
+            ? users.find((u) => u.id === cm.userRef.id)
+            : {
+              photoURL: null,
+              name: null
+            }
           const loginUser = this.user || {
             id: null,
             isAdmin: false
           }
           const isCommentedUser = userRef.id === loginUser.id
-          const presentations = this.$store.getters.presentation(this.id)
           return {
             ...cm,
             userRef,
+            postedAt: cm.postedAt.toDate(),
             isEditable: isCommentedUser,
             isDeletable: loginUser.isAdmin || isCommentedUser,
             canShow: !cm.isDirect || loginUser.isAdmin ||
-              isCommentedUser || presentations.presenter.id === loginUser.id
+              isCommentedUser || presentation.presenter.id === loginUser.id
           }
         })
-        .filter((cm) => cm.canShow)
-    },
+          .filter((cm) => cm.canShow)
+          .sort((a, b) => {
+            // 投稿日時の昇順にソート
+            return !moment(a.postedAt).isSame(b.postedAt)
+              ? (moment(a.postedAt).isAfter(b.postedAt) ? -1 : 1)
+              : 0
+          })
+        this.comments = comments
+        presentation.comments = comments
+        presentation.stamps = stamps.sort((a, b) => a.order - b.order)
+        presentation.presenter = users.find((u) => u.id === presentation.presenter.id)
+        this.presentation = presentation
+      }))
+  },
+  computed: {
     prevLink () {
       return {
         name: 'eventDetail',
         params: {
-          id: this.presentation.eventId
+          id: this.eventId
         }
       }
     },
@@ -365,17 +417,12 @@ export default {
   },
   methods: {
     editPresentation () {
-      this.$router.push({
-        path: '/' +
-        this.presentation.eventId +
-        '/draftPresentations/' +
-        this.id
-      })
+      this.$router.push({ path: '/events/' + this.eventId + '/draftPresentations/' + this.id })
     },
     deletePresentation () {
       if (confirm('この発表を削除します。よろしいですか？')) {
         this.$store.dispatch('deletePresentation', this.id)
-        this.$router.push({ path: '/events/' + this.presentation.eventId })
+        this.$router.push({ path: '/events/' + this.eventId })
       }
     },
     /**
@@ -460,7 +507,7 @@ export default {
      * @returns {number}
      */
     getStampCount (stampId) {
-      const countObj = this.$store.getters.count(stampId)
+      const countObj = this.counts.find((c) => c.stampId === stampId)
       return countObj ? countObj.count : ''
     },
     /**
@@ -482,7 +529,7 @@ export default {
     }
   },
   beforeDestroy () {
-    this.unsubscribes.forEach((u) => u())
+    this.subscriptions.forEach((s) => s.unsubscribe())
     this.$store.dispatch('clearCounts')
   }
 }

@@ -134,6 +134,8 @@
   </v-layout>
 </template>
 <script>
+import { collectionData, docData } from 'rxfire/firestore'
+import { db } from '@/firebase'
 export default {
   name: 'adminScreenSetting',
   props: {
@@ -144,22 +146,54 @@ export default {
   },
   data () {
     return {
-      selectedEvent: null
+      screen: null,
+      events: [],
+      selectedEvent: null,
+      screenSubscriptions: [],
+      subscriptions: []
     }
   },
-  computed: {
-    /*
-     * スクリーン情報取得
-     */
-    screen () {
-      return this.$store.getters.screen(this.id)
-    },
-    /*
-     * イベント情報取得
-     */
-    events () {
-      return this.$store.getters.events
-    }
+  created () {
+    // スクリーンのリスナを作成
+    const screenDoc = db.doc('screens/' + this.id)
+    this.subscriptions.push(docData(screenDoc, 'id')
+      .subscribe((screen) => {
+        // 表示する発表を更新するときのため、前のリスナを破棄
+        this.screenSubscriptions.forEach((s) => s.unsubscribe())
+        this.screenSubscriptions = []
+
+        // スクリーンに紐づく情報のリスナを作成
+        // 表示する発表
+        const presentationDoc = db.doc('presentations/' + screen.displayPresentationRef.id)
+        this.screenSubscriptions.push(docData(presentationDoc, 'id')
+          .subscribe(presentation => {
+            // 発表者
+            this.screenSubscriptions.push(docData(db.doc('users/' + presentation.presenter.id), 'id')
+              .subscribe((user) => { presentation.presenter = user }))
+            screen.displayPresentationRef = presentation
+          }))
+        this.screen = screen
+      }))
+
+    // 全イベント・全発表のリスナを作成
+    this.subscriptions.push(collectionData(db.collection('events'), 'id')
+      .subscribe(events => {
+        // イベントに紐づく情報のリスナを作成
+        events.forEach((event) => {
+          // 発表
+          const presentationsRef = db.collection('presentations').where('eventId', '==', event.id)
+          this.subscriptions.push(collectionData(presentationsRef, 'id')
+            .subscribe((presentations) => {
+              presentations.forEach((p) => {
+                // 発表者
+                this.subscriptions.push(docData(db.doc('users/' + p.presenter.id), 'id')
+                  .subscribe((user) => { p.presenter = user }))
+              })
+              event.presentations = presentations
+            }))
+        })
+        this.events = events
+      }))
   },
   methods: {
     /*
@@ -169,7 +203,7 @@ export default {
       if (!eventId) {
         this.selectedEvent = {}
       } else {
-        this.selectedEvent = this.$store.getters.event(eventId)
+        this.selectedEvent = this.events.find((e) => e.id === eventId)
       }
     },
     /*
@@ -191,7 +225,7 @@ export default {
      * イベント名を取得
      */
     getEventTitle (eventId) {
-      const targetEvent = this.$store.getters.event(eventId)
+      const targetEvent = this.events.find((e) => e.id === eventId)
       if (targetEvent) {
         return targetEvent.title
       } else {
@@ -206,6 +240,10 @@ export default {
         this.$store.dispatch('unsetScreenPresentation', this.id)
       }
     }
+  },
+  beforeDestroy () {
+    this.screenSubscriptions.forEach((s) => s.unsubscribe())
+    this.subscriptions.forEach((s) => s.unsubscribe())
   }
 }
 </script>

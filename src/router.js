@@ -42,13 +42,13 @@ const router = new Router({
       component: EventList
     },
     {
-      path: '/presentations/:id',
+      path: '/events/:eventId/presentations/:id',
       name: 'presentationDetail',
       component: PresentationDetail,
       props: true
     },
     {
-      path: '/:eventId/draftPresentations/:id',
+      path: '/events/:eventId/draftPresentations/:id',
       name: 'draftPresentation',
       component: DraftPresentation,
       props: true
