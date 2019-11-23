@@ -177,7 +177,7 @@ export default {
 
     // 全イベント・全発表のリスナを作成
     this.subscriptions.push(collectionData(db.collection('events'), 'id')
-      .subscribe(events => {
+      .subscribe((events) => {
         // イベントに紐づく情報のリスナを作成
         events.forEach((event) => {
           // 発表
@@ -215,9 +215,8 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
-        this.$store.dispatch('updateScreenPresentation', {
-          screenId: this.id,
-          presentationId: targetPresentation.id
+        db.doc('screens/' + this.id).update({
+          displayPresentationRef: db.doc('presentations/' + targetPresentation.id)
         })
       }
     },
@@ -226,18 +225,16 @@ export default {
      */
     getEventTitle (eventId) {
       const targetEvent = this.events.find((e) => e.id === eventId)
-      if (targetEvent) {
-        return targetEvent.title
-      } else {
-        return ''
-      }
+      return targetEvent ? targetEvent.title : ''
     },
     /*
      * スクリーンを初期化する
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
-        this.$store.dispatch('unsetScreenPresentation', this.id)
+        db.doc('screens/' + this.id).update({
+          displayPresentationRef: null
+        })
       }
     }
   },

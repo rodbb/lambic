@@ -47,12 +47,23 @@
   </v-layout>
 </template>
 <script>
+import { collectionData } from 'rxfire/firestore'
+import { db } from '@/firebase'
 export default {
   name: 'adminScreenList',
-  computed: {
-    screens () {
-      return this.$store.getters.screens
+  data () {
+    return {
+      screens: [],
+      subscription: null
     }
+  },
+  created () {
+    // 全スクリーンのリスナを作成
+    this.subscription = collectionData(db.collection('screens'), 'id')
+      .subscribe((screens) => { this.screens = screens })
+  },
+  beforeDestroy () {
+    this.subscription.unsubscribe()
   }
 }
 </script>

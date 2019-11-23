@@ -285,6 +285,7 @@ import markdownIt from '@/markdownIt'
 import { sortedChanges, collectionData, docData } from 'rxfire/firestore'
 import { combineLatest } from 'rxjs/operators'
 import { db } from '@/firebase'
+import firebase from 'firebase/app'
 
 export default {
   name: 'presentation',
@@ -327,6 +328,7 @@ export default {
                 totalCount += shardChange.doc.data().count
               })
               const countObj = {
+                id: stampCount.id,
                 stampId: stampCount.stampId,
                 count: totalCount
               }
@@ -421,7 +423,34 @@ export default {
     },
     deletePresentation () {
       if (confirm('この発表を削除します。よろしいですか？')) {
-        this.$store.dispatch('deletePresentation', this.id)
+        const batch = db.batch()
+        // スタンプカウント削除
+        db.collection('stampCounts').where('presentationId', '==', this.id)
+          .get()
+          .then((stampCountSnapshotList) => {
+            stampCountSnapshotList.forEach((stampCountSnapshot) => {
+              // shardsサブコレクション内ドキュメント削除
+              stampCountSnapshot.ref.get().then((stampCount) => {
+                const shardNum = stampCount.data().shardNum
+                for (let idx = 0; idx < shardNum; idx++) {
+                  batch.delete(stampCountSnapshot.ref.collection('shards').doc(idx.toString()))
+                }
+              })
+              // スタンプカウントドキュメント削除
+              batch.delete(stampCountSnapshot.ref)
+            })
+            // コメント削除
+            db.collection('comments').where('presentationId', '==', this.id)
+              .get()
+              .then((commentSnapshotList) => {
+                commentSnapshotList.forEach((commentSnapshot) => {
+                  batch.delete(commentSnapshot.ref)
+                })
+                // 発表削除
+                batch.delete(db.doc('presentations/' + this.id))
+                batch.commit()
+              })
+          })
         this.$router.push({ path: '/events/' + this.eventId })
       }
     },
@@ -455,20 +484,21 @@ export default {
       const res = this.validateComment(com)
       if (Object.values(res).every((v) => v)) {
         if (this.editingCommentId == null) {
-          this.$store.dispatch('appendComment', {
+          db.collection('comments').add({
             comment: com,
+            postedAt: firebase.firestore.Timestamp.fromDate(new Date()),
             presentationId: this.id,
-            isDirect: this.isDirect
+            isDirect: this.isDirect,
+            userRef: db.doc('users/' + this.user.id)
           })
         } else {
           const target = this.comments.find((c) => c.id === this.editingCommentId)
           if (target == null || !target.isEditable) {
             return
           }
-          this.$store.dispatch('updateComment', {
+          db.doc('comments/' + this.editingCommentId).update({
             comment: com,
-            isDirect: this.isDirect,
-            commentId: this.editingCommentId
+            isDirect: this.isDirect
           })
         }
         this.closeComment()
@@ -498,7 +528,7 @@ export default {
         return alert('そのコメントは削除できません！')
       }
       if (confirm('このコメントを削除します。よろしいですか？')) {
-        this.$store.dispatch('deleteComment', { commentId })
+        db.doc('comments/' + commentId).delete()
       }
     },
     /**
@@ -515,7 +545,20 @@ export default {
      * @param stampId
      */
     countUpStamp (stampId) {
-      this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
+      const stampCount = this.counts.find((e) => e.stampId === stampId)
+      if (stampCount) {
+        const stampCountDoc = db.doc('stampCounts/' + stampCount.id)
+        stampCountDoc
+          .get()
+          .then((scSnap) => {
+            // 1回/秒の更新制限を回避するため
+            // shardNum個あるshardsのうち、ランダムな1個のカウントをインクリメント
+            const shardIdx = Math.floor(Math.random() * scSnap.data().shardNum).toString()
+            stampCountDoc.collection('shards').doc(shardIdx).update({
+              count: firebase.firestore.FieldValue.increment(1)
+            })
+          })
+      }
     },
     convertMd2Html (str) {
       return markdownIt.render(str)
@@ -530,7 +573,6 @@ export default {
   },
   beforeDestroy () {
     this.subscriptions.forEach((s) => s.unsubscribe())
-    this.$store.dispatch('clearCounts')
   }
 }
 </script>

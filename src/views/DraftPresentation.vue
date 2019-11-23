@@ -195,7 +195,7 @@ export default {
             this.userSubscription.unsubscribe()
             this.userSubscription = null
           }
-          docData(db.doc('users/' + presentation.presenter.id), 'id')
+          this.userSubscription = docData(db.doc('users/' + presentation.presenter.id), 'id')
             .subscribe((user) => { presentation.presenter = user })
           this.presentation = presentation
           // 編集の場合、対象の発表データをセットする
@@ -232,22 +232,54 @@ export default {
       }
       if (this.isNewPresentation && confirm('発表を申し込みます。よろしいですか？')) {
         // 発表登録処理
-        this.$store.dispatch('addPresentation', {
-          eventId: this.eventId,
-          title: this.title,
-          description: this.description,
-          isAllowComment: this.isAllowComment
-        })
-        this.$router.push({ path: '/events/' + this.eventId })
-      } else if (!this.isNewPresentation && confirm('発表内容を更新します。よろしいですか？')) {
-        this.$store.dispatch('updatePresentation', {
-          presentationId: this.id,
-          presentationInfo: {
+        new Promise((resolve) => {
+          const batch = db.batch()
+          // 発表を追加する ///////////////////////////////////////////////////
+          const newPresentationDoc = db.collection('presentations').doc()
+          batch.set(newPresentationDoc, {
             eventId: this.eventId,
             title: this.title,
             description: this.description,
-            isAllowComment: this.isAllowComment
-          }
+            isAllowComment: this.isAllowComment,
+            presenter: db.doc('users/' + this.user.id)
+          })
+
+          // スタンプカウントを追加する ////////////////////////////////////////
+          // 有効なスタンプの数だけ追加
+          db.collection('stamps').where('canUse', '==', true)
+            .get() // 現在有効なスタンプを取得
+            .then((canUseStamps) => {
+              canUseStamps.forEach((stampDoc) => {
+                const stampCountDoc = db.collection('stampCounts').doc()
+                batch.set(stampCountDoc, {
+                  presentationId: newPresentationDoc.id,
+                  stampId: stampDoc.id,
+                  shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
+                })
+
+                // スタンプカウントにshardsサブコレクションを追加する ////////////////
+                const stampCountShards = stampCountDoc.collection('shards')
+                for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
+                  batch.set(stampCountShards.doc(idx.toString()), {
+                    count: 0
+                  })
+                }
+              }) // End forEach
+              resolve(batch)
+            })
+        })
+          .then((batch) => {
+            batch.commit()
+          })
+        this.$router.push({ path: '/events/' + this.eventId })
+      } else if (!this.isNewPresentation && confirm('発表内容を更新します。よろしいですか？')) {
+        // 発表更新処理
+        db.doc('presentations/' + this.id).update({
+          eventId: this.eventId,
+          title: this.title,
+          description: this.description,
+          isAllowComment: this.isAllowComment,
+          presenter: db.doc('users/' + this.user.id)
         })
         this.$router.push({ path: '/presentations/' + this.id })
       }
@@ -270,7 +302,9 @@ export default {
   },
   beforeDestroy () {
     this.subscriptions.forEach((s) => s.unsubscribe())
-    this.userSubscription.unsubscribe()
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe()
+    }
   }
 }
 </script>
