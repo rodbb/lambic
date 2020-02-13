@@ -26,14 +26,14 @@ Lambic
 $ git clone git@github.com:rodbb/lambic.git
 
 $ cd lambic
-$ npm install
+$ npm ci
 
 # 使用するFirebaseプロジェクトの設定
 $ npx firebase login
 $ npx firebase use ${プロジェクトID}
 
 $ cd functions
-$ npm install
+$ npm ci
 
 ```
 
