@@ -26,36 +26,25 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+import ScreenRepository from '@/ScreenRepository'
 
 export default {
   name: 'select-subscreen',
   data () {
     return {
       isLoadong: true,
-      screens: []
+      screens: [],
+      subscription: null
     }
   },
   created () {
-    const firestore = firebase.firestore()
-    const screensRef = firestore.collection('screens')
-    screensRef
-      .get()
-      .then((querySnapshot) => {
-        const screens = []
-        querySnapshot.forEach((doc) => {
-          const d = doc.data()
-          screens.push({
-            id: doc.id,
-            ...d
-          })
-        })
-        this.screens = screens
-        this.isLoadong = false
-      }).catch((error) => {
-        console.log('Error getting collection:', error)
-      })
+    this.subscription = ScreenRepository.getAll().subscribe((screens) => {
+      this.screens = screens
+      this.isLoadong = false
+    })
+  },
+  beforeDestroy () {
+    this.subscription.unsubscribe()
   }
 }
 </script>

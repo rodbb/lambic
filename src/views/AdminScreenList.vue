@@ -47,8 +47,7 @@
   </v-layout>
 </template>
 <script>
-import { collectionData } from 'rxfire/firestore'
-import { db } from '@/firebase'
+import ScreenRepository from '@/ScreenRepository'
 export default {
   name: 'adminScreenList',
   data () {
@@ -59,8 +58,7 @@ export default {
   },
   created () {
     // 全スクリーンのリスナを作成
-    this.subscription = collectionData(db.collection('screens'), 'id')
-      .subscribe((screens) => { this.screens = screens })
+    this.subscription = ScreenRepository.getAll().subscribe((screens) => { this.screens = screens })
   },
   beforeDestroy () {
     this.subscription.unsubscribe()

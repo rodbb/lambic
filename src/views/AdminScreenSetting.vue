@@ -134,8 +134,10 @@
   </v-layout>
 </template>
 <script>
-import { collectionData, docData } from 'rxfire/firestore'
-import { db } from '@/firebase'
+import EventRepository from '@/EventRepository'
+import PresentationRepository from '@/PresentationRepository'
+import ScreenRepository from '@/ScreenRepository'
+import UserRepository from '@/UserRepository'
 export default {
   name: 'adminScreenSetting',
   props: {
@@ -155,8 +157,7 @@ export default {
   },
   created () {
     // スクリーンのリスナを作成
-    const screenDoc = db.doc('screens/' + this.id)
-    this.subscriptions.push(docData(screenDoc, 'id')
+    this.subscriptions.push(ScreenRepository.get(this.id)
       .subscribe((screen) => {
         // 表示する発表を更新するときのため、前のリスナを破棄
         this.screenSubscriptions.forEach((s) => s.unsubscribe())
@@ -164,11 +165,10 @@ export default {
 
         // スクリーンに紐づく情報のリスナを作成
         // 表示する発表
-        const presentationDoc = db.doc('presentations/' + screen.displayPresentationRef.id)
-        this.screenSubscriptions.push(docData(presentationDoc, 'id')
+        this.screenSubscriptions.push(PresentationRepository.get(screen.displayPresentationRef.id)
           .subscribe(presentation => {
             // 発表者
-            this.screenSubscriptions.push(docData(db.doc('users/' + presentation.presenter.id), 'id')
+            this.screenSubscriptions.push(UserRepository.get(presentation.presenter.id)
               .subscribe((user) => { presentation.presenter = user }))
             screen.displayPresentationRef = presentation
           }))
@@ -176,18 +176,16 @@ export default {
       }))
 
     // 全イベント・全発表のリスナを作成
-    this.subscriptions.push(collectionData(db.collection('events'), 'id')
+    this.subscriptions.push(EventRepository.getAll()
       .subscribe((events) => {
         // イベントに紐づく情報のリスナを作成
         events.forEach((event) => {
           // 発表
-          const presentationsRef = db.collection('presentations').where('eventId', '==', event.id)
-          this.subscriptions.push(collectionData(presentationsRef, 'id')
+          this.subscriptions.push(PresentationRepository.getAll(event.id)
             .subscribe((presentations) => {
               presentations.forEach((p) => {
                 // 発表者
-                this.subscriptions.push(docData(db.doc('users/' + p.presenter.id), 'id')
-                  .subscribe((user) => { p.presenter = user }))
+                this.subscriptions.push(UserRepository.get(p.presenter.id).subscribe((user) => { p.presenter = user }))
               })
               event.presentations = presentations
             }))
@@ -215,8 +213,8 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
-        db.doc('screens/' + this.id).update({
-          displayPresentationRef: db.doc('presentations/' + targetPresentation.id)
+        ScreenRepository.update(this.id, {
+          displayPresentationRef: PresentationRepository.getRef(targetPresentation.id)
         })
       }
     },
@@ -232,7 +230,7 @@ export default {
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
-        db.doc('screens/' + this.id).update({
+        ScreenRepository.update(this.id, {
           displayPresentationRef: null
         })
       }

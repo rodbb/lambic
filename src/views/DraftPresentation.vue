@@ -136,8 +136,9 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
-import { docData } from 'rxfire/firestore'
-import { db } from '@/firebase'
+import EventRepository from '@/EventRepository'
+import PresentationRepository from '@/PresentationRepository'
+import UserRepository from '@/UserRepository'
 const NEW_PRESENTATION_KEYWORD = 'new'
 export default {
   name: 'draftPresentation',
@@ -180,23 +181,17 @@ export default {
   created () {
     this.isNewPresentation = this.id === NEW_PRESENTATION_KEYWORD
 
-    this.subscriptions.push(docData(db.doc('events/' + this.eventId), 'id')
-      .subscribe((event) => {
-        event.date = event.date.toDate()
-        this.event = event
-      }))
+    this.subscriptions.push(EventRepository.get(this.eventId).subscribe((event) => { this.event = event }))
     if (this.isNewPresentation) {
       this.presentation = null
     } else {
-      let presentationRef = db.doc('presentations/' + this.id)
-      this.subscriptions.push(docData(presentationRef, 'id')
+      this.subscriptions.push(PresentationRepository.get(this.id)
         .subscribe((presentation) => {
           if (this.userSubscription) {
             this.userSubscription.unsubscribe()
             this.userSubscription = null
           }
-          this.userSubscription = docData(db.doc('users/' + presentation.presenter.id), 'id')
-            .subscribe((user) => { presentation.presenter = user })
+          this.userSubscription = UserRepository.get(presentation.presenter.id).subscribe((user) => { presentation.presenter = user })
           this.presentation = presentation
           // 編集の場合、対象の発表データをセットする
           this.title = presentation.title
@@ -232,56 +227,24 @@ export default {
       }
       if (this.isNewPresentation && confirm('発表を申し込みます。よろしいですか？')) {
         // 発表登録処理
-        new Promise((resolve) => {
-          const batch = db.batch()
-          // 発表を追加する ///////////////////////////////////////////////////
-          const newPresentationDoc = db.collection('presentations').doc()
-          batch.set(newPresentationDoc, {
-            eventId: this.eventId,
-            title: this.title,
-            description: this.description,
-            isAllowComment: this.isAllowComment,
-            presenter: db.doc('users/' + this.user.id)
-          })
-
-          // スタンプカウントを追加する ////////////////////////////////////////
-          // 有効なスタンプの数だけ追加
-          db.collection('stamps').where('canUse', '==', true)
-            .get() // 現在有効なスタンプを取得
-            .then((canUseStamps) => {
-              canUseStamps.forEach((stampDoc) => {
-                const stampCountDoc = db.collection('stampCounts').doc()
-                batch.set(stampCountDoc, {
-                  presentationId: newPresentationDoc.id,
-                  stampId: stampDoc.id,
-                  shardNum: process.env.VUE_APP_STAMP_COUNT_SHARD_NUM
-                })
-
-                // スタンプカウントにshardsサブコレクションを追加する ////////////////
-                const stampCountShards = stampCountDoc.collection('shards')
-                for (let idx = 0; idx < process.env.VUE_APP_STAMP_COUNT_SHARD_NUM; idx++) {
-                  batch.set(stampCountShards.doc(idx.toString()), {
-                    count: 0
-                  })
-                }
-              }) // End forEach
-              resolve(batch)
-            })
-        })
-          .then((batch) => {
-            batch.commit()
-          })
-        this.$router.push({ path: '/events/' + this.eventId })
-      } else if (!this.isNewPresentation && confirm('発表内容を更新します。よろしいですか？')) {
-        // 発表更新処理
-        db.doc('presentations/' + this.id).update({
+        PresentationRepository.create({
           eventId: this.eventId,
           title: this.title,
           description: this.description,
           isAllowComment: this.isAllowComment,
-          presenter: db.doc('users/' + this.user.id)
+          presenter: UserRepository.getRef(this.user.id)
         })
-        this.$router.push({ path: '/presentations/' + this.id })
+        this.$router.push({ path: '/events/' + this.eventId })
+      } else if (!this.isNewPresentation && confirm('発表内容を更新します。よろしいですか？')) {
+        // 発表更新処理
+        PresentationRepository.update(this.id, {
+          eventId: this.eventId,
+          title: this.title,
+          description: this.description,
+          isAllowComment: this.isAllowComment,
+          presenter: UserRepository.getRef(this.user.id)
+        })
+        this.$router.push({ path: '/events/' + this.eventId + '/presentations/' + this.id })
       }
     },
     /*
@@ -293,7 +256,7 @@ export default {
         this.$router.push({ path: '/events/' + this.eventId })
       } else {
         // 編集の場合は発表詳細画面へ戻る
-        this.$router.push({ path: '/presentations/' + this.id })
+        this.$router.push({ path: '/events/' + this.eventId + '/presentations/' + this.id })
       }
     },
     convertMd2Html (str) {

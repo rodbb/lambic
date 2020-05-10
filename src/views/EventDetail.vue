@@ -100,8 +100,9 @@
 
 <script>
 import moment from 'moment'
-import { collectionData, docData } from 'rxfire/firestore'
-import { db } from '@/firebase'
+import EventRepository from '@/EventRepository'
+import PresentationRepository from '@/PresentationRepository'
+import UserRepository from '@/UserRepository'
 export default {
   name: 'eventDetail',
   props: {
@@ -121,18 +122,14 @@ export default {
   },
   created () {
     // イベントのリスナを作成
-    const eventDoc = db.doc('events/' + this.id)
-    this.subscriptions.push(docData(eventDoc, 'id')
-      .subscribe((event) => { this.event = event }))
+    this.subscriptions.push(EventRepository.get(this.id).subscribe((event) => { this.event = event }))
 
     // イベントに紐づく全発表のリスナを作成
-    const presentationsRef = db.collection('presentations').where('eventId', '==', this.id)
-    this.subscriptions.push(collectionData(presentationsRef, 'id')
+    this.subscriptions.push(PresentationRepository.getAll(this.id)
       .subscribe((presentations) => {
         presentations.forEach((p) => {
           // 発表者
-          this.subscriptions.push(docData(db.doc('users/' + p.presenter.id), 'id')
-            .subscribe((user) => { p.presenter = user }))
+          this.subscriptions.push(UserRepository.get(p.presenter.id).subscribe((user) => { p.presenter = user }))
         })
         this.presentations = presentations
       }))

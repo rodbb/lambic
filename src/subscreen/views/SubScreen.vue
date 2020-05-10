@@ -3,7 +3,7 @@
     <v-toolbar height="80" extended>
       <v-toolbar-title class="display-3">{{ presentationTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <qriously id="qrcode" class="pt-1 pb-0" :value="qrUrl" size="140"/>
+      <qriously id="qrcode" class="pt-1 pb-0" :value="qrUrl" :size="140"/>
       <template v-slot:extension>
         <div class="display-2 text-truncate">{{ presenterName }}</div>
       </template>
@@ -46,8 +46,11 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+import PresentationRepository from '@/PresentationRepository'
+import ScreenRepository from '@/ScreenRepository'
+import StampCountRepository from '@/StampCountRepository'
+import StampRepository from '@/StampRepository'
+import UserRepository from '@/UserRepository'
 
 export default {
   name: 'subscreen',
@@ -131,104 +134,84 @@ export default {
   },
   created () {
     // 各ドキュメントの変更を監視するリスナを設定
-    const firestore = firebase.firestore()
     // screenのリスナを設定
-    this.unsubscribe.screenInfo =
-      firestore.collection('screens')
-        .doc(this.id)
-        .onSnapshot((screenDoc) => {
-          // 表示する発表が切り替わった時の初期化処理
-          if (this.unsubscribe.presentation != null) {
-            this.unsubscribe.presentation()
-            this.presentation = null
-          }
-          if (this.unsubscribe.stampCounts !== []) {
-            this.unsubscribe.stampCounts.forEach((u) => u())
-            this.stampCounts = []
-          }
-          // 表示する発表が取得できない場合は後続のリスナの設定不要
-          if (!screenDoc.exists) {
-            this.isLoadong = false
-            return
-          }
-          this.screenInfo = screenDoc.data()
-          if (this.screenInfo.displayPresentationRef == null) {
-            this.isLoadong = false
-            return
-          }
-          // presentationのリスナを設定
-          this.unsubscribe.presentation =
-            this.screenInfo.displayPresentationRef
-              .onSnapshot(async (doc) => {
-                if (doc.exists) {
-                  const presentation = doc.data()
-                  const presenter = await presentation.presenter.get()
-                  this.presentation = {
-                    ...presentation,
-                    presenter: presenter.exists ? presenter.data() : null
-                  }
-                } else {
-                  console.log('No such document!')
+    this.unsubscribe.screenInfo = ScreenRepository.get(this.id)
+      .subscribe((screen) => {
+        // 表示する発表が切り替わった時の初期化処理
+        if (this.unsubscribe.presentation != null) {
+          this.unsubscribe.presentation.unsubscribe()
+          this.presentation = null
+        }
+        if (this.unsubscribe.stampCounts !== []) {
+          this.unsubscribe.stampCounts.forEach((s) => s.unsubscribe())
+          this.stampCounts = []
+        }
+        // 表示する発表が取得できない場合は後続のリスナの設定不要
+        this.screenInfo = screen
+        if (this.screenInfo.displayPresentationRef == null) {
+          this.isLoadong = false
+          return
+        }
+        // presentationのリスナを設定
+        this.unsubscribe.presentation = PresentationRepository.get(this.screenInfo.displayPresentationRef.id)
+          .subscribe((presentation) => {
+            UserRepository.get(presentation.presenter.id)
+              .subscribe((user) => {
+                this.presentation = {
+                  ...presentation,
+                  presenter: user
                 }
                 this.isLoadong = false
               })
-          // shardsのリスナを設定
-          const stampCounts = firestore.collection('stampCounts')
-          stampCounts
-            .where('presentationId', '==', this.screenInfo.displayPresentationRef.id)
-            .get()
-            .then((query) => {
-              query.docs.forEach((stampCountSnap) => {
-                this.unsubscribe.stampCounts.push(stampCounts.doc(stampCountSnap.id).collection('shards').onSnapshot(() => {
-                  stampCounts.doc(stampCountSnap.id).collection('shards').get().then((snap) => {
-                    let totalCount = 0
-                    snap.forEach((doc) => {
-                      totalCount += doc.data().count
-                    })
-                    const stampId = stampCountSnap.data().stampId
-                    const data = { stampId: stampId, count: totalCount }
-                    // cloneした配列に対して変更し、元配列を上書きする
-                    // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
-                    let stampCounts = []
-                    this.stampCounts.forEach((stampCount) => {
-                      stampCounts.push(JSON.parse(JSON.stringify(stampCount)))
-                    })
-                    const idx = stampCounts.findIndex((c) => c.stampId === stampId)
-                    if (idx !== -1) {
-                      stampCounts.splice(idx, 1, data)
-                    } else {
-                      stampCounts.push(data)
-                    }
-                    this.stampCounts = stampCounts
+          })
+        // shardsのリスナを設定
+        this.unsubscribe.stampCounts = StampCountRepository.getAll(this.screenInfo.displayPresentationRef.id)
+          .subscribe((stampCounts) => {
+            const stampIds = []
+            stampCounts.forEach((stampCount) => {
+              stampIds.push(stampCount.stampId)
+              // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
+              this.unsubscribe.shards = StampCountRepository.getChange(stampCount.id)
+                .subscribe((shardChanges) => {
+                  let totalCount = 0
+                  shardChanges.forEach((shardChange) => {
+                    totalCount += shardChange.doc.data().count
                   })
-                }))
-              })
-            }, (error) => {
-              console.log('Error getting collection:', error)
+                  const countObj = {
+                    stampId: stampCount.stampId,
+                    count: totalCount
+                  }
+                  // cloneした配列に対して変更し、元配列を上書きする
+                  // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
+                  let stampCounts = []
+                  this.stampCounts.forEach((stampCount) => {
+                    stampCounts.push(JSON.parse(JSON.stringify(stampCount)))
+                  })
+                  const idx = stampCounts.findIndex((c) => c.stampId === stampCount.stampId)
+                  if (idx !== -1) {
+                    stampCounts.splice(idx, 1, countObj)
+                  } else {
+                    stampCounts.push(countObj)
+                  }
+                  this.stampCounts = stampCounts
+                })
             })
-        }, (error) => {
-          console.log('Error getting document:', error)
-        })
+          })
+      })
     // stampsのリスナを設定
-    this.unsubscribe.stamps =
-      firestore.collection('stamps')
-        .orderBy('order')
-        .onSnapshot((querySnapshot) => {
-          const stamps = []
-          querySnapshot
-            .forEach((doc) => {
-              const d = doc.data()
-              stamps.push({
-                id: doc.id,
-                blink: false,
-                timer: null,
-                ...d
-              })
-            })
-          this.stamps = stamps
-        }, (error) => {
-          console.log('Error getting collection:', error)
+    this.unsubscribe.stamps = StampRepository.getAll()
+      .subscribe((stamps) => {
+        const convertedStamps = []
+        stamps.forEach((stamp) => {
+          convertedStamps.push({
+            id: stamp.id,
+            blink: false,
+            timer: null,
+            ...stamp
+          })
         })
+        this.stamps = convertedStamps
+      })
   },
   beforeDestroy () {
     // 各リスナのデタッチ
@@ -236,9 +219,9 @@ export default {
       .filter((e) => e != null)
       .forEach((unsubscribe) => {
         if (Array.isArray(unsubscribe)) {
-          unsubscribe.forEach((u) => u())
+          unsubscribe.forEach((s) => unsubscribe())
         } else {
-          unsubscribe()
+          unsubscribe.unsubscribe()
         }
       })
   }

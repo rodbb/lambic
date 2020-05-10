@@ -16,13 +16,13 @@ const opts = {
 }
 
 /* call the before for puppeteer for execute this code before start testing */
-before (async () => {
+before(async () => {
   global.expect = expect
   global.browser = await puppeteer.launch(opts)
 })
 
 /* call the function after puppeteer done testing */
-after (() => {
+after(() => {
   browser.close()
   global.browser = globalVariables.browser
   global.expect = globalVariables.expect

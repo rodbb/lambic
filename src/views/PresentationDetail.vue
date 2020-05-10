@@ -282,10 +282,13 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
-import { sortedChanges, collectionData, docData } from 'rxfire/firestore'
 import { combineLatest } from 'rxjs/operators'
-import { db } from '@/firebase'
-import firebase from 'firebase/app'
+import CommentRepository from '@/CommentRepository'
+import EventRepository from '@/EventRepository'
+import PresentationRepository from '@/PresentationRepository'
+import StampCountRepository from '@/StampCountRepository'
+import StampRepository from '@/StampRepository'
+import UserRepository from '@/UserRepository'
 
 export default {
   name: 'presentation',
@@ -316,12 +319,11 @@ export default {
     }
   },
   created () {
-    collectionData(db.collection('stampCounts').where('presentationId', '==', this.id), 'id')
+    StampCountRepository.getAll(this.id)
       .subscribe((stampCounts) => {
         stampCounts.forEach((stampCount) => {
           // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
-          const stampCountRef = db.doc('stampCounts/' + stampCount.id)
-          sortedChanges(stampCountRef.collection('shards'), ['added', 'modified'])
+          StampCountRepository.getChange(stampCount.id)
             .subscribe((shardChanges) => {
               let totalCount = 0
               shardChanges.forEach((shardChange) => {
@@ -342,17 +344,10 @@ export default {
         })
       })
 
-    this.subscriptions.push(docData(db.doc('events/' + this.eventId), 'id')
-      .subscribe((event) => {
-        event.date = event.date.toDate()
-        this.event = event
-      }))
+    this.subscriptions.push(EventRepository.get(this.eventId).subscribe((event) => { this.event = event }))
 
-    let presentationRef = db.doc('presentations/' + this.id)
-    let commentsRef = db.collection('comments').where('presentationId', '==', this.id)
-    let stampsRef = db.collection('stamps')
-    this.subscriptions.push(collectionData(db.collection('users'), 'id')
-      .pipe(combineLatest(docData(presentationRef, 'id'), collectionData(commentsRef, 'id'), collectionData(stampsRef, 'id')))
+    this.subscriptions.push(UserRepository.getAll()
+      .pipe(combineLatest(PresentationRepository.get(this.id), CommentRepository.getAll(this.id), StampRepository.getAll()))
       .subscribe(([users, presentation, comments, stamps]) => {
         /**
          * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
@@ -423,34 +418,7 @@ export default {
     },
     deletePresentation () {
       if (confirm('この発表を削除します。よろしいですか？')) {
-        const batch = db.batch()
-        // スタンプカウント削除
-        db.collection('stampCounts').where('presentationId', '==', this.id)
-          .get()
-          .then((stampCountSnapshotList) => {
-            stampCountSnapshotList.forEach((stampCountSnapshot) => {
-              // shardsサブコレクション内ドキュメント削除
-              stampCountSnapshot.ref.get().then((stampCount) => {
-                const shardNum = stampCount.data().shardNum
-                for (let idx = 0; idx < shardNum; idx++) {
-                  batch.delete(stampCountSnapshot.ref.collection('shards').doc(idx.toString()))
-                }
-              })
-              // スタンプカウントドキュメント削除
-              batch.delete(stampCountSnapshot.ref)
-            })
-            // コメント削除
-            db.collection('comments').where('presentationId', '==', this.id)
-              .get()
-              .then((commentSnapshotList) => {
-                commentSnapshotList.forEach((commentSnapshot) => {
-                  batch.delete(commentSnapshot.ref)
-                })
-                // 発表削除
-                batch.delete(db.doc('presentations/' + this.id))
-                batch.commit()
-              })
-          })
+        PresentationRepository.delete(this.id)
         this.$router.push({ path: '/events/' + this.eventId })
       }
     },
@@ -484,19 +452,18 @@ export default {
       const res = this.validateComment(com)
       if (Object.values(res).every((v) => v)) {
         if (this.editingCommentId == null) {
-          db.collection('comments').add({
+          CommentRepository.create({
             comment: com,
-            postedAt: firebase.firestore.Timestamp.fromDate(new Date()),
             presentationId: this.id,
             isDirect: this.isDirect,
-            userRef: db.doc('users/' + this.user.id)
+            userRef: UserRepository.getRef(this.user.id)
           })
         } else {
           const target = this.comments.find((c) => c.id === this.editingCommentId)
           if (target == null || !target.isEditable) {
             return
           }
-          db.doc('comments/' + this.editingCommentId).update({
+          CommentRepository.update({
             comment: com,
             isDirect: this.isDirect
           })
@@ -528,7 +495,7 @@ export default {
         return alert('そのコメントは削除できません！')
       }
       if (confirm('このコメントを削除します。よろしいですか？')) {
-        db.doc('comments/' + commentId).delete()
+        CommentRepository.delete(commentId)
       }
     },
     /**
@@ -547,17 +514,7 @@ export default {
     countUpStamp (stampId) {
       const stampCount = this.counts.find((e) => e.stampId === stampId)
       if (stampCount) {
-        const stampCountDoc = db.doc('stampCounts/' + stampCount.id)
-        stampCountDoc
-          .get()
-          .then((scSnap) => {
-            // 1回/秒の更新制限を回避するため
-            // shardNum個あるshardsのうち、ランダムな1個のカウントをインクリメント
-            const shardIdx = Math.floor(Math.random() * scSnap.data().shardNum).toString()
-            stampCountDoc.collection('shards').doc(shardIdx).update({
-              count: firebase.firestore.FieldValue.increment(1)
-            })
-          })
+        StampCountRepository.updateCount(stampCount.id)
       }
     },
     convertMd2Html (str) {

@@ -40,9 +40,7 @@
 </template>
 <script>
 import moment from 'moment'
-import { collectionData } from 'rxfire/firestore'
-import { map } from 'rxjs/operators'
-import { db } from '@/firebase'
+import EventRepository from '@/EventRepository'
 export default {
   name: 'events',
   data () {
@@ -52,21 +50,8 @@ export default {
     }
   },
   created () {
-    const nowDate = new Date()
     // 全イベントのリスナを作成
-    this.subscriptions.push(collectionData(db.collection('events'), 'id')
-      .pipe(
-        map((events) => events.map((ev) => {
-          const evDate = ev.date.toDate()
-          return {
-            ...ev,
-            id: ev.id,
-            date: evDate,
-            isFinished: moment(evDate).isBefore(nowDate, 'day'),
-            isToday: moment(evDate).isSame(nowDate, 'day')
-          }
-        })))
-      .subscribe((events) => { this.events = events }))
+    this.subscriptions.push(EventRepository.getAll().subscribe((events) => { this.events = events }))
   },
   filters: {
     toDateString (date) {

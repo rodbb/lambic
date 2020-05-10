@@ -6,10 +6,6 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
 import VueQriously from 'vue-qriously'
 // import './registerServiceWorker'
-import firebase from 'firebase/app'
-import FirebaseConfig from '@/../firebase-config.json'
-
-firebase.initializeApp(FirebaseConfig)
 
 Vue.use(Vuetify)
 Vue.use(VueQriously)
