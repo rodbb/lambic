@@ -2,8 +2,8 @@ import moment from 'moment'
 import { collectionData, docData } from 'rxfire/firestore'
 import { combineLatest, map, mergeMap } from 'rxjs/operators'
 import { db } from '@/firebase'
-import PresentationRepository from '@/PresentationRepository'
-import UserRepository from '@/UserRepository'
+import PresentationRepository from '@/repositories/PresentationRepository'
+import UserRepository from '@/repositories/UserRepository'
 
 export default {
   get (id) {

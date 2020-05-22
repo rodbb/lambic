@@ -1,10 +1,10 @@
 import { collectionData, docData } from 'rxfire/firestore'
 import { combineLatest, map, mergeMap } from 'rxjs/operators'
 import { db } from '@/firebase'
-import CommentRepository from '@/CommentRepository'
-import StampCountRepository from '@/StampCountRepository'
-import StampRepository from '@/StampRepository'
-import UserRepository from '@/UserRepository'
+import CommentRepository from '@/repositories/CommentRepository'
+import StampCountRepository from '@/repositories/StampCountRepository'
+import StampRepository from '@/repositories/StampRepository'
+import UserRepository from '@/repositories/UserRepository'
 
 export default {
   get (id) {

@@ -134,9 +134,9 @@
   </v-layout>
 </template>
 <script>
-import EventRepository from '@/EventRepository'
-import PresentationRepository from '@/PresentationRepository'
-import ScreenRepository from '@/ScreenRepository'
+import EventRepository from '@/repositories/EventRepository'
+import PresentationRepository from '@/repositories/PresentationRepository'
+import ScreenRepository from '@/repositories/ScreenRepository'
 export default {
   name: 'adminScreenSetting',
   props: {

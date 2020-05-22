@@ -136,9 +136,9 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
-import EventRepository from '@/EventRepository'
-import PresentationRepository from '@/PresentationRepository'
-import UserRepository from '@/UserRepository'
+import EventRepository from '@/repositories/EventRepository'
+import PresentationRepository from '@/repositories/PresentationRepository'
+import UserRepository from '@/repositories/UserRepository'
 const NEW_PRESENTATION_KEYWORD = 'new'
 export default {
   name: 'draftPresentation',

@@ -2,7 +2,7 @@ import { collectionData, docData } from 'rxfire/firestore'
 import { map, mergeMap } from 'rxjs/operators'
 import { of } from 'rxjs'
 import { db } from '@/firebase'
-import PresentationRepository from '@/PresentationRepository'
+import PresentationRepository from '@/repositories/PresentationRepository'
 
 export default {
   get (id) {

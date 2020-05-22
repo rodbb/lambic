@@ -282,11 +282,11 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
-import CommentRepository from '@/CommentRepository'
-import EventRepository from '@/EventRepository'
-import PresentationRepository from '@/PresentationRepository'
-import StampCountRepository from '@/StampCountRepository'
-import UserRepository from '@/UserRepository'
+import CommentRepository from '@/repositories/CommentRepository'
+import EventRepository from '@/repositories/EventRepository'
+import PresentationRepository from '@/repositories/PresentationRepository'
+import StampCountRepository from '@/repositories/StampCountRepository'
+import UserRepository from '@/repositories/UserRepository'
 
 export default {
   name: 'presentation',

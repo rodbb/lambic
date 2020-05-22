@@ -47,7 +47,7 @@
   </v-layout>
 </template>
 <script>
-import ScreenRepository from '@/ScreenRepository'
+import ScreenRepository from '@/repositories/ScreenRepository'
 export default {
   name: 'adminScreenList',
   data () {

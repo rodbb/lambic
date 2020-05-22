@@ -46,10 +46,10 @@
 </template>
 
 <script>
-import PresentationRepository from '@/PresentationRepository'
-import ScreenRepository from '@/ScreenRepository'
-import StampCountRepository from '@/StampCountRepository'
-import StampRepository from '@/StampRepository'
+import PresentationRepository from '@/repositories/PresentationRepository'
+import ScreenRepository from '@/repositories/ScreenRepository'
+import StampCountRepository from '@/repositories/StampCountRepository'
+import StampRepository from '@/repositories/StampRepository'
 
 export default {
   name: 'subscreen',

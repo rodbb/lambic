@@ -100,7 +100,7 @@
 
 <script>
 import moment from 'moment'
-import EventRepository from '@/EventRepository'
+import EventRepository from '@/repositories/EventRepository'
 
 export default {
   name: 'eventDetail',
