@@ -41,10 +41,7 @@ jobs:
       - run:
           name: Build
           command: npm run build
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - .
+
       - run:
           name: Run unit test
           command: npm run test:unit
@@ -60,8 +57,6 @@ jobs:
       - image: circleci/node:10.15.3
     steps:
       - checkout
-      - attach_workspace:
-          at: dist
 
       - restore_cache:
           keys:
@@ -75,6 +70,9 @@ jobs:
       - run:
           name: Set the active project
           command: npx firebase use production --token "${FIREBASE_TOKEN}"
+      - run:
+          name: Build
+          command: npm run build
       - run:
           name: Deploy
           command: npx firebase deploy --token "${FIREBASE_TOKEN}"
