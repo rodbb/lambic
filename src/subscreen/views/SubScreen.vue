@@ -50,7 +50,6 @@ import PresentationRepository from '@/PresentationRepository'
 import ScreenRepository from '@/ScreenRepository'
 import StampCountRepository from '@/StampCountRepository'
 import StampRepository from '@/StampRepository'
-import UserRepository from '@/UserRepository'
 
 export default {
   name: 'subscreen',
@@ -152,49 +151,39 @@ export default {
           this.isLoadong = false
           return
         }
+        const presentationId = this.screenInfo.displayPresentationRef.id
         // presentationのリスナを設定
-        this.unsubscribe.presentation = PresentationRepository.get(this.screenInfo.displayPresentationRef.id)
+        this.unsubscribe.presentation = PresentationRepository.getWithUser(presentationId)
           .subscribe((presentation) => {
-            UserRepository.get(presentation.presenter.id)
-              .subscribe((user) => {
-                this.presentation = {
-                  ...presentation,
-                  presenter: user
-                }
-                this.isLoadong = false
-              })
+            this.presentation = presentation
+            this.isLoadong = false
           })
         // shardsのリスナを設定
-        this.unsubscribe.stampCounts = StampCountRepository.getAll(this.screenInfo.displayPresentationRef.id)
+        this.unsubscribe.stampCounts = StampCountRepository.getChanges(presentationId)
           .subscribe((stampCounts) => {
-            const stampIds = []
             stampCounts.forEach((stampCount) => {
-              stampIds.push(stampCount.stampId)
-              // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
-              this.unsubscribe.shards = StampCountRepository.getChange(stampCount.id)
-                .subscribe((shardChanges) => {
-                  let totalCount = 0
-                  shardChanges.forEach((shardChange) => {
-                    totalCount += shardChange.doc.data().count
-                  })
-                  const countObj = {
-                    stampId: stampCount.stampId,
-                    count: totalCount
-                  }
-                  // cloneした配列に対して変更し、元配列を上書きする
-                  // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
-                  let stampCounts = []
-                  this.stampCounts.forEach((stampCount) => {
-                    stampCounts.push(JSON.parse(JSON.stringify(stampCount)))
-                  })
-                  const idx = stampCounts.findIndex((c) => c.stampId === stampCount.stampId)
-                  if (idx !== -1) {
-                    stampCounts.splice(idx, 1, countObj)
-                  } else {
-                    stampCounts.push(countObj)
-                  }
-                  this.stampCounts = stampCounts
-                })
+              // サブコレクション`shards`を監視し、変更があれば再計算の上反映する
+              let totalCount = 0
+              stampCount.shardChanges.forEach((shardChange) => {
+                totalCount += shardChange.doc.data().count
+              })
+              const countObj = {
+                stampId: stampCount.stampId,
+                count: totalCount
+              }
+              // cloneした配列に対して変更し、元配列を上書きする
+              // 単純に元配列を変更すると、更新前後で同じオブジェクトを参照し、差分が取れないため
+              let tmpStampCounts = []
+              this.stampCounts.forEach((stampCount) => {
+                tmpStampCounts.push(JSON.parse(JSON.stringify(stampCount)))
+              })
+              const idx = tmpStampCounts.findIndex((c) => c.stampId === stampCount.stampId)
+              if (idx !== -1) {
+                tmpStampCounts.splice(idx, 1, countObj)
+              } else {
+                tmpStampCounts.push(countObj)
+              }
+              this.stampCounts = tmpStampCounts
             })
           })
       })

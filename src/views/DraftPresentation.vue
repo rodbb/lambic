@@ -174,7 +174,6 @@ export default {
         v => v.length <= this.descriptionMaxLength || '内容は' + this.descriptionMaxLength + '文字以内にしてください。'
       ],
       tab: 0,
-      userSubscription: null,
       subscriptions: []
     }
   },
@@ -185,13 +184,8 @@ export default {
     if (this.isNewPresentation) {
       this.presentation = null
     } else {
-      this.subscriptions.push(PresentationRepository.get(this.id)
+      this.subscriptions.push(PresentationRepository.getWithUser(this.id)
         .subscribe((presentation) => {
-          if (this.userSubscription) {
-            this.userSubscription.unsubscribe()
-            this.userSubscription = null
-          }
-          this.userSubscription = UserRepository.get(presentation.presenter.id).subscribe((user) => { presentation.presenter = user })
           this.presentation = presentation
           // 編集の場合、対象の発表データをセットする
           this.title = presentation.title
@@ -265,9 +259,6 @@ export default {
   },
   beforeDestroy () {
     this.subscriptions.forEach((s) => s.unsubscribe())
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe()
-    }
   }
 }
 </script>

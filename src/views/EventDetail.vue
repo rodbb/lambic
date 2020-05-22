@@ -101,8 +101,7 @@
 <script>
 import moment from 'moment'
 import EventRepository from '@/EventRepository'
-import PresentationRepository from '@/PresentationRepository'
-import UserRepository from '@/UserRepository'
+
 export default {
   name: 'eventDetail',
   props: {
@@ -122,17 +121,10 @@ export default {
   },
   created () {
     // イベントのリスナを作成
-    this.subscriptions.push(EventRepository.get(this.id).subscribe((event) => { this.event = event }))
-
-    // イベントに紐づく全発表のリスナを作成
-    this.subscriptions.push(PresentationRepository.getAll(this.id)
-      .subscribe((presentations) => {
-        presentations.forEach((p) => {
-          // 発表者
-          this.subscriptions.push(UserRepository.get(p.presenter.id).subscribe((user) => { p.presenter = user }))
-        })
-        this.presentations = presentations
-      }))
+    this.subscriptions.push(EventRepository.getWithPresentation(this.id).subscribe((event) => {
+      this.event = event
+      this.presentations = event.presentations
+    }))
   },
   filters: {
     toDateString (date) {

@@ -282,12 +282,10 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
-import { combineLatest } from 'rxjs/operators'
 import CommentRepository from '@/CommentRepository'
 import EventRepository from '@/EventRepository'
 import PresentationRepository from '@/PresentationRepository'
 import StampCountRepository from '@/StampCountRepository'
-import StampRepository from '@/StampRepository'
 import UserRepository from '@/UserRepository'
 
 export default {
@@ -319,36 +317,32 @@ export default {
     }
   },
   created () {
-    StampCountRepository.getAll(this.id)
+    this.subscriptions.push(StampCountRepository.getChanges(this.id)
       .subscribe((stampCounts) => {
         stampCounts.forEach((stampCount) => {
-          // サブコレクション`shards`を監視し、変更があれば再計算の上stateに反映する
-          StampCountRepository.getChange(stampCount.id)
-            .subscribe((shardChanges) => {
-              let totalCount = 0
-              shardChanges.forEach((shardChange) => {
-                totalCount += shardChange.doc.data().count
-              })
-              const countObj = {
-                id: stampCount.id,
-                stampId: stampCount.stampId,
-                count: totalCount
-              }
-              const idx = this.counts.findIndex((c) => c.stampId === countObj.stampId)
-              if (idx !== -1) {
-                this.counts.splice(idx, 1, countObj)
-              } else {
-                this.counts.push(countObj)
-              }
-            })
+          // サブコレクション`shards`を監視し、変更があれば再計算の上反映する
+          let totalCount = 0
+          stampCount.shardChanges.forEach((shardChange) => {
+            totalCount += shardChange.doc.data().count
+          })
+          const countObj = {
+            id: stampCount.id,
+            stampId: stampCount.stampId,
+            count: totalCount
+          }
+          const idx = this.counts.findIndex((c) => c.stampId === countObj.stampId)
+          if (idx !== -1) {
+            this.counts.splice(idx, 1, countObj)
+          } else {
+            this.counts.push(countObj)
+          }
         })
-      })
+      }))
 
     this.subscriptions.push(EventRepository.get(this.eventId).subscribe((event) => { this.event = event }))
 
-    this.subscriptions.push(UserRepository.getAll()
-      .pipe(combineLatest(PresentationRepository.get(this.id), CommentRepository.getAll(this.id), StampRepository.getAll()))
-      .subscribe(([users, presentation, comments, stamps]) => {
+    this.subscriptions.push(PresentationRepository.getWithAllData(this.id)
+      .subscribe(([presentation, users, comments, stamps]) => {
         /**
          * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
          * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）

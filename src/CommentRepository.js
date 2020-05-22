@@ -3,20 +3,20 @@ import { collectionData } from 'rxfire/firestore'
 import { db } from '@/firebase'
 
 export default {
-  getAll: function (presentationId) {
+  getAll (presentationId) {
     return collectionData(db.collection('comments').where('presentationId', '==', presentationId), 'id')
   },
-  create: function (comment) {
+  create (comment) {
     comment.postedAt = firebase.firestore.Timestamp.fromDate(new Date())
     db.collection('comments').add(comment)
   },
-  update: function (id, comment) {
+  update (id, comment) {
     db.doc('comments/' + id).update(comment)
   },
-  delete: function (id) {
+  delete (id) {
     db.doc('comments/' + id).delete()
   },
-  deleteAll: function (batch, presentationId) {
+  deleteAll (batch, presentationId) {
     this.getAll(presentationId).subscribe((commentSnapshotList) => {
       commentSnapshotList.forEach((commentSnapshot) => {
         batch.delete(commentSnapshot.ref)

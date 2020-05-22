@@ -137,7 +137,6 @@
 import EventRepository from '@/EventRepository'
 import PresentationRepository from '@/PresentationRepository'
 import ScreenRepository from '@/ScreenRepository'
-import UserRepository from '@/UserRepository'
 export default {
   name: 'adminScreenSetting',
   props: {
@@ -157,38 +156,17 @@ export default {
   },
   created () {
     // スクリーンのリスナを作成
-    this.subscriptions.push(ScreenRepository.get(this.id)
-      .subscribe((screen) => {
-        // 表示する発表を更新するときのため、前のリスナを破棄
-        this.screenSubscriptions.forEach((s) => s.unsubscribe())
-        this.screenSubscriptions = []
-
-        // スクリーンに紐づく情報のリスナを作成
-        // 表示する発表
-        this.screenSubscriptions.push(PresentationRepository.get(screen.displayPresentationRef.id)
-          .subscribe(presentation => {
-            // 発表者
-            this.screenSubscriptions.push(UserRepository.get(presentation.presenter.id)
-              .subscribe((user) => { presentation.presenter = user }))
-            screen.displayPresentationRef = presentation
-          }))
-        this.screen = screen
-      }))
+    this.subscriptions.push(ScreenRepository.getWithPresentation(this.id)
+      .subscribe((screen) => { this.screen = screen }))
 
     // 全イベント・全発表のリスナを作成
-    this.subscriptions.push(EventRepository.getAll()
-      .subscribe((events) => {
-        // イベントに紐づく情報のリスナを作成
+    this.subscriptions.push(EventRepository.getAllWithPresentation()
+      .subscribe(([events, presentations, users]) => {
+        presentations.forEach((presentation) => {
+          presentation.presenter = users.find(user => user.id === presentation.presenter.id)
+        })
         events.forEach((event) => {
-          // 発表
-          this.subscriptions.push(PresentationRepository.getAll(event.id)
-            .subscribe((presentations) => {
-              presentations.forEach((p) => {
-                // 発表者
-                this.subscriptions.push(UserRepository.get(p.presenter.id).subscribe((user) => { p.presenter = user }))
-              })
-              event.presentations = presentations
-            }))
+          event.presentations = presentations.filter(presentation => presentation.eventId === event.id)
         })
         this.events = events
       }))
@@ -233,6 +211,7 @@ export default {
         ScreenRepository.update(this.id, {
           displayPresentationRef: null
         })
+        this.screen.displayPresentationRef = null
       }
     }
   },

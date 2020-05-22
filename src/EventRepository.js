@@ -1,15 +1,29 @@
 import moment from 'moment'
 import { collectionData, docData } from 'rxfire/firestore'
-import { map } from 'rxjs/operators'
+import { combineLatest, map, mergeMap } from 'rxjs/operators'
 import { db } from '@/firebase'
+import PresentationRepository from '@/PresentationRepository'
+import UserRepository from '@/UserRepository'
 
 export default {
-  get: function (id) {
+  get (id) {
     return docData(db.doc('events/' + id), 'id').pipe(map(convertEvent))
   },
-  getAll: function () {
-    // 全イベントのリスナを作成
-    return collectionData(db.collection('events'), 'id').pipe(map((events) => events.map((ev) => convertEvent(ev))))
+  getAll () {
+    return collectionData(db.collection('events').orderBy('date', 'desc'), 'id')
+      .pipe(map((events) => events.map((ev) => convertEvent(ev))))
+  },
+  getWithPresentation (id) {
+    return this.get(id).pipe(mergeMap((event) => {
+      return PresentationRepository.getListByEventIdWithUser(id)
+        .pipe(map((presentations) => {
+          event.presentations = presentations
+          return event
+        }))
+    }))
+  },
+  getAllWithPresentation () {
+    return this.getAll().pipe(combineLatest(PresentationRepository.getAll(), UserRepository.getAll()))
   }
 }
 

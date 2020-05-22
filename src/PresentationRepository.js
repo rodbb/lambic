@@ -1,20 +1,25 @@
 import { collectionData, docData } from 'rxfire/firestore'
+import { combineLatest, map, mergeMap } from 'rxjs/operators'
 import { db } from '@/firebase'
 import CommentRepository from '@/CommentRepository'
 import StampCountRepository from '@/StampCountRepository'
 import StampRepository from '@/StampRepository'
+import UserRepository from '@/UserRepository'
 
 export default {
-  get: function (id) {
+  get (id) {
     return docData(db.doc('presentations/' + id), 'id')
   },
-  getRef: function (id) {
+  getRef (id) {
     return db.doc('presentations/' + id)
   },
-  getAll: function (eventId) {
+  getAll () {
+    return collectionData(db.collection('presentations'), 'id')
+  },
+  getListById (eventId) {
     return collectionData(db.collection('presentations').where('eventId', '==', eventId), 'id')
   },
-  create: function (presentation) {
+  create (presentation) {
     new Promise((resolve) => {
       const batch = db.batch()
       // 発表を追加する ///////////////////////////////////////////////////
@@ -38,10 +43,10 @@ export default {
         batch.commit()
       })
   },
-  update: function (id, presentation) {
+  update (id, presentation) {
     db.doc('presentations/' + id).update(presentation)
   },
-  delete: function (id) {
+  delete (id) {
     new Promise((resolve) => {
       const batch = db.batch()
       // スタンプカウント削除
@@ -55,5 +60,30 @@ export default {
       .then((batch) => {
         batch.commit()
       })
+  },
+  getWithUser (id) {
+    return this.get(id).pipe(mergeMap((presentation) => {
+      return UserRepository.get(presentation.presenter.id)
+        .pipe(map((user) => {
+          presentation.presenter = user
+          return presentation
+        }))
+    }))
+  },
+  getListByEventIdWithUser (eventId) {
+    return this.getListById(eventId).pipe(mergeMap((presentations) => {
+      const userIds = presentations.map(presentation => presentation.presenter.id)
+      return UserRepository.getListByIds(userIds)
+        .pipe(map((users) => {
+          presentations.forEach((presentation) => {
+            presentation.presenter = users.find(user => user.id === presentation.presenter.id)
+          })
+          return presentations
+        }))
+    }))
+  },
+  getWithAllData (id) {
+    return this.get(id)
+      .pipe(combineLatest(UserRepository.getAll(), CommentRepository.getAll(id), StampRepository.getAll()))
   }
 }

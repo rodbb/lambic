@@ -1,15 +1,30 @@
 import firebase from 'firebase/app'
 import { sortedChanges, collectionData } from 'rxfire/firestore'
+import { map, mergeMap } from 'rxjs/operators'
+import { combineLatest } from 'rxjs'
 import { db } from '@/firebase'
 
 export default {
-  getChange: function (id) {
+  getChanges (presentationId) {
+    return this.getAll(presentationId).pipe(mergeMap((stampCounts) => {
+      const changes = stampCounts.map(stampCount => {
+        return this.getChange(stampCount.id).pipe(map((shardChanges) => {
+          return {
+            shardChanges: shardChanges,
+            ...stampCount
+          }
+        }))
+      })
+      return combineLatest(changes)
+    }))
+  },
+  getChange (id) {
     return sortedChanges(db.doc('stampCounts/' + id).collection('shards'), ['added', 'modified'])
   },
-  getAll: function (presentationId) {
+  getAll (presentationId) {
     return collectionData(db.collection('stampCounts').where('presentationId', '==', presentationId), 'id')
   },
-  create: function (batch, stampCount) {
+  create (batch, stampCount) {
     const stampCountDoc = db.collection('stampCounts').doc()
     batch.set(stampCountDoc, stampCount)
 
@@ -22,7 +37,7 @@ export default {
     }
     return batch
   },
-  updateCount: function (id) {
+  updateCount (id) {
     const stampCountDoc = db.doc('stampCounts/' + id)
     stampCountDoc
       .get()
@@ -35,7 +50,7 @@ export default {
         })
       })
   },
-  deleteAll: function (batch, presentationId) {
+  deleteAll (batch, presentationId) {
     // スタンプカウント削除
     this.getAll(presentationId).subscribe((stampCountSnapshotList) => {
       stampCountSnapshotList.forEach((stampCountSnapshot) => {
