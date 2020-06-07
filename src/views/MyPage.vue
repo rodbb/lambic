@@ -27,13 +27,14 @@
               <v-text-field
                 v-model="name"
                 placeholder="ユーザ名を入力してください"
+                data-e2e-label="userName"
                 single-line
               ></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row>
             <v-flex xs12 md6>
-              <v-btn @click="updateUserInfo" color="green" class="white--text">
+              <v-btn @click="updateUserInfo" color="green" class="white--text e2e-submit-button">
                 更新する
               </v-btn>
             </v-flex>

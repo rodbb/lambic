@@ -17,7 +17,7 @@
       <v-list dense class="pt-0">
 
         <v-list-tile v-if="user" class="my-2">
-          <button type="button" @click="goMyPage">
+          <button type="button" class="e2e-go-mypage" @click="goMyPage">
             <v-list-tile-avatar>
               <img v-bind:src="user.photoURL">
             </v-list-tile-avatar>
@@ -88,7 +88,7 @@
 
       <qriously id="qrcode" class="pb-4" :value="href.here" :size="150"/>
     </v-navigation-drawer>
-    <v-toolbar app color="light-green">
+    <v-toolbar app color="light-green" class="e2e-left-menu">
       <v-toolbar-side-icon @click="permanent = !permanent"></v-toolbar-side-icon>
     </v-toolbar>
     <v-content>
