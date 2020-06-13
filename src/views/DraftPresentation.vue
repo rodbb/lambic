@@ -28,10 +28,11 @@
               <v-flex xs12 md7>
                 <v-text-field
                   v-model="title"
+                  :rules="titleRules"
                   label="タイトル"
                   outline
-                  :rules="titleRules"
                   required
+                  data-e2e-label="タイトル"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -51,10 +52,11 @@
                   <v-tab-item>
                     <v-textarea
                       v-model="description"
-                      label="内容"
-                      outline
                       :counter="descriptionMaxLength"
                       :rules="descriptionRules"
+                      label="内容"
+                      outline
+                      data-e2e-label="内容"
                     >
                     </v-textarea>
                   </v-tab-item>
@@ -94,7 +96,7 @@
                   required
                 >
                   <template v-slot:label>
-                    <span class="black--text">
+                    <span class="black--text e2e-checkbox-label">
                       上記登録内容に、社外へ公開不可な情報は含まれていません。
                     </span>
                   </template>
@@ -112,7 +114,7 @@
         color="orange"
         block
         large
-        class="my-2 white--text"
+        class="my-2 white--text e2e-submit-button"
       >
         登録内容を確定する
       </v-btn>

@@ -21,7 +21,7 @@
             left
           >
             <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on" class="mx-0 my-0">
+              <v-btn icon v-on="on" class="mx-0 my-0 e2e-menu-button">
                 <v-icon color="gray">more_vert</v-icon>
               </v-btn>
             </template>

@@ -21,7 +21,7 @@
 
             <v-list-tile :key="presentation.id" :to="{ path: '/presentations/' + presentation.id }">
 
-              <v-list-tile-content>
+              <v-list-tile-content class="e2e-list-title">
                 <v-list-tile-title class="title">
                   {{ presentation.title }}
                 </v-list-tile-title>
@@ -45,7 +45,7 @@
       </v-card>
 
       <v-card v-else :indeterminate="event.presentations == 0">
-        <v-card-text>
+        <v-card-text class="e2e-nodata-text">
           まだ発表はありません。
         </v-card-text>
       </v-card>
@@ -55,7 +55,7 @@
         color="green"
         block
         large
-        class="my-2 white--text"
+        class="my-2 white--text e2e-submit-button"
       >
         <v-icon color="white">add</v-icon>
         発表を申し込む
