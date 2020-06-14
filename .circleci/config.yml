@@ -50,7 +50,7 @@ jobs:
           command: npx firebase deploy --token "${FIREBASE_TOKEN}"
       - run:
           name: Run integration test
-          command: npm run test:integration
+          command: npm run test:e2e
 
   deploy:
     docker:
