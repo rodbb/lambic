@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:e2e": "mocha tests/e2e/bootstrap.js --recursive tests/e2e --timeout 0",
+    "test:e2e": "mocha tests/e2e/bootstrap.js --recursive tests/e2e --timeout 30000",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
