@@ -1,9 +1,8 @@
 import moment from 'moment'
 import { collectionData, docData } from 'rxfire/firestore'
-import { combineLatest, map, mergeMap } from 'rxjs/operators'
+import { map, mergeMap } from 'rxjs/operators'
 import { db } from '@/firebase'
 import PresentationRepository from '@/repositories/PresentationRepository'
-import UserRepository from '@/repositories/UserRepository'
 
 export default {
   get (id) {
@@ -21,9 +20,6 @@ export default {
           return event
         }))
     }))
-  },
-  getAllWithPresentation () {
-    return this.getAll().pipe(combineLatest(PresentationRepository.getAll(), UserRepository.getAll()))
   }
 }
 

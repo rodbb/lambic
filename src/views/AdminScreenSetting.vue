@@ -134,9 +134,11 @@
   </v-layout>
 </template>
 <script>
+import EventQueryService from '@/services/admin/screen/setting/EventQueryService'
+import ScreenQueryService from '@/services/admin/screen/setting/ScreenQueryService'
+import ScreenUpdateService from '@/services/admin/screen/setting/ScreenUpdateService'
 import EventRepository from '@/repositories/EventRepository'
-import PresentationRepository from '@/repositories/PresentationRepository'
-import ScreenRepository from '@/repositories/ScreenRepository'
+
 export default {
   name: 'adminScreenSetting',
   props: {
@@ -150,26 +152,19 @@ export default {
       screen: null,
       events: [],
       selectedEvent: null,
-      screenSubscriptions: [],
-      subscriptions: []
+      subscriptions: {
+        events: null,
+        screen: null,
+        selectedEvent: null
+      }
     }
   },
   created () {
-    // スクリーンのリスナを作成
-    this.subscriptions.push(ScreenRepository.getWithPresentation(this.id)
-      .subscribe((screen) => { this.screen = screen }))
+    // 全イベントのリスナを作成
+    this.subscriptions.events = EventRepository.getAll().subscribe((events) => { this.events = events })
 
-    // 全イベント・全発表のリスナを作成
-    this.subscriptions.push(EventRepository.getAllWithPresentation()
-      .subscribe(([events, presentations, users]) => {
-        presentations.forEach((presentation) => {
-          presentation.presenter = users.find(user => user.id === presentation.presenter.id)
-        })
-        events.forEach((event) => {
-          event.presentations = presentations.filter(presentation => presentation.eventId === event.id)
-        })
-        this.events = events
-      }))
+    // スクリーンのリスナを作成
+    this.subscriptions.screen = ScreenQueryService.get(this.id).subscribe((screen) => { this.screen = screen })
   },
   methods: {
     /*
@@ -179,7 +174,10 @@ export default {
       if (!eventId) {
         this.selectedEvent = {}
       } else {
-        this.selectedEvent = this.events.find((e) => e.id === eventId)
+        if (this.subscriptions.selectedEvent) {
+          this.subscriptions.selectedEvent.unsubscribe()
+        }
+        this.subscriptions.selectedEvent = EventQueryService.get().subscribe((event) => { this.selectedEvent = event })
       }
     },
     /*
@@ -191,9 +189,7 @@ export default {
         '」の情報に変更します。\n' +
         'よろしいですか？'
       if (confirm(msg)) {
-        ScreenRepository.update(this.id, {
-          displayPresentationRef: PresentationRepository.getRef(targetPresentation.id)
-        })
+        ScreenUpdateService.update(this.id, targetPresentation.id)
       }
     },
     /*
@@ -208,15 +204,12 @@ export default {
      */
     initializeScreen () {
       if (confirm('スクリーンの表示をリセットします。よろしいですか？')) {
-        ScreenRepository.update(this.id, {
-          displayPresentationRef: null
-        })
+        ScreenUpdateService.update(this.id, null)
         this.screen.displayPresentationRef = null
       }
     }
   },
   beforeDestroy () {
-    this.screenSubscriptions.forEach((s) => s.unsubscribe())
     this.subscriptions.forEach((s) => s.unsubscribe())
   }
 }

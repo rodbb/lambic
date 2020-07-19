@@ -63,7 +63,7 @@ export default {
   },
   getWithUser (id) {
     return this.get(id).pipe(mergeMap((presentation) => {
-      return UserRepository.get(presentation.presenter.id)
+      return docData(db.doc('users/' + id), 'id')
         .pipe(map((user) => {
           presentation.presenter = user
           return presentation
@@ -73,7 +73,7 @@ export default {
   getListByEventIdWithUser (eventId) {
     return this.getListById(eventId).pipe(mergeMap((presentations) => {
       const userIds = presentations.map(presentation => presentation.presenter.id)
-      return UserRepository.getListByIds(userIds)
+      return collectionData(db.collection('users').where('id', 'in', userIds), 'id')
         .pipe(map((users) => {
           presentations.forEach((presentation) => {
             presentation.presenter = users.find(user => user.id === presentation.presenter.id)
