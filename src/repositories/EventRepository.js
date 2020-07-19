@@ -1,8 +1,7 @@
 import moment from 'moment'
 import { collectionData, docData } from 'rxfire/firestore'
-import { map, mergeMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { db } from '@/firebase'
-import PresentationRepository from '@/repositories/PresentationRepository'
 
 export default {
   get (id) {
@@ -11,15 +10,6 @@ export default {
   getAll () {
     return collectionData(db.collection('events').orderBy('date', 'desc'), 'id')
       .pipe(map((events) => events.map((ev) => convertEvent(ev))))
-  },
-  getWithPresentation (id) {
-    return this.get(id).pipe(mergeMap((event) => {
-      return PresentationRepository.getListByEventIdWithUser(id)
-        .pipe(map((presentations) => {
-          event.presentations = presentations
-          return event
-        }))
-    }))
   }
 }
 

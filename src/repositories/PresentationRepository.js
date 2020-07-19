@@ -73,7 +73,6 @@ export default {
   },
   getListByEventIdWithUser (eventId) {
     return this.getListById(eventId).pipe(mergeMap((presentations) => {
-      console.log(presentations)
       if (presentations.length === 0) {
         return of([])
       }

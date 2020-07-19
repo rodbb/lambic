@@ -100,7 +100,7 @@
 
 <script>
 import moment from 'moment'
-import EventRepository from '@/repositories/EventRepository'
+import EventDetailQueryService from '@/services/event/EventDetailQueryService'
 
 export default {
   name: 'eventDetail',
@@ -116,15 +116,15 @@ export default {
       dialog: false,
       event: null,
       presentations: [],
-      subscriptions: []
+      subscription: null
     }
   },
   created () {
     // イベントのリスナを作成
-    this.subscriptions.push(EventRepository.getWithPresentation(this.id).subscribe((event) => {
+    this.subscription = EventDetailQueryService.get(this.id).subscribe((event) => {
       this.event = event
       this.presentations = event.presentations
-    }))
+    })
   },
   filters: {
     toDateString (date) {
@@ -146,7 +146,7 @@ export default {
     }
   },
   beforeDestroy () {
-    this.subscriptions.forEach((s) => s.unsubscribe())
+    this.subscription.unsubscribe()
   }
 }
 </script>
