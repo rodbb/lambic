@@ -9,7 +9,7 @@ export default {
   },
   getAll () {
     return collectionData(db.collection('events').orderBy('date', 'desc'), 'id')
-      .pipe(map((events) => events.map((ev) => convertEvent(ev))))
+      .pipe(map((events) => events.map(convertEvent)))
   }
 }
 
