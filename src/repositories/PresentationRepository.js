@@ -1,11 +1,10 @@
 import { collectionData, docData } from 'rxfire/firestore'
-import { combineLatest, map, mergeMap } from 'rxjs/operators'
+import { map, mergeMap } from 'rxjs/operators'
 import { of } from 'rxjs'
 import { db } from '@/firebase'
 import CommentRepository from '@/repositories/CommentRepository'
 import StampCountRepository from '@/repositories/StampCountRepository'
 import StampRepository from '@/repositories/StampRepository'
-import UserRepository from '@/repositories/UserRepository'
 
 export default {
   get (id) {
@@ -85,9 +84,5 @@ export default {
           return presentations
         }))
     }))
-  },
-  getWithAllData (id) {
-    return this.get(id)
-      .pipe(combineLatest(UserRepository.getAll(), CommentRepository.getAll(id), StampRepository.getAll()))
   }
 }

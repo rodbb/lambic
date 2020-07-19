@@ -53,7 +53,7 @@
       </v-card>
 
       <v-card  class="py-3 mb-2 sticky-top top-56">
-        <template v-for="(stamp, index) in presentation.stamps">
+        <template v-for="(stamp, index) in stamps">
           <v-chip
             v-if="getStampCount(stamp.id) || getStampCount(stamp.id) === 0"
             :key="index"
@@ -282,6 +282,8 @@
 <script>
 import moment from 'moment'
 import markdownIt from '@/markdownIt'
+import PresentationDetailQueryService from '@/services/presentation/PresentationDetailQueryService'
+import StampCountQueryService from '@/services/presentation/StampCountQueryService'
 import CommentRepository from '@/repositories/CommentRepository'
 import EventRepository from '@/repositories/EventRepository'
 import PresentationRepository from '@/repositories/PresentationRepository'
@@ -304,6 +306,7 @@ export default {
     return {
       event: null,
       presentation: null,
+      stamps: [],
       counts: [],
       comments: [],
       dialog: false,
@@ -317,71 +320,23 @@ export default {
     }
   },
   created () {
-    this.subscriptions.push(StampCountRepository.getChanges(this.id)
+    this.subscriptions.push(StampCountQueryService.get(this.id)
       .subscribe((stampCounts) => {
         stampCounts.forEach((stampCount) => {
-          // サブコレクション`shards`を監視し、変更があれば再計算の上反映する
-          let totalCount = 0
-          stampCount.shardChanges.forEach((shardChange) => {
-            totalCount += shardChange.doc.data().count
-          })
-          const countObj = {
-            id: stampCount.id,
-            stampId: stampCount.stampId,
-            count: totalCount
-          }
-          const idx = this.counts.findIndex((c) => c.stampId === countObj.stampId)
+          const idx = this.counts.findIndex((c) => c.stampId === stampCount.stampId)
           if (idx !== -1) {
-            this.counts.splice(idx, 1, countObj)
+            this.counts.splice(idx, 1, stampCount)
           } else {
-            this.counts.push(countObj)
+            this.counts.push(stampCount)
           }
         })
       }))
 
     this.subscriptions.push(EventRepository.get(this.eventId).subscribe((event) => { this.event = event }))
-
-    this.subscriptions.push(PresentationRepository.getWithAllData(this.id)
-      .subscribe(([presentation, users, comments, stamps]) => {
-        /**
-         * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
-         * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
-         * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
-         * canShow：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
-         */
-        comments = comments.map((cm) => {
-          const userRef = cm.userRef
-            ? users.find((u) => u.id === cm.userRef.id)
-            : {
-              photoURL: null,
-              name: null
-            }
-          const loginUser = this.user || {
-            id: null,
-            isAdmin: false
-          }
-          const isCommentedUser = userRef.id === loginUser.id
-          return {
-            ...cm,
-            userRef,
-            postedAt: cm.postedAt.toDate(),
-            isEditable: isCommentedUser,
-            isDeletable: loginUser.isAdmin || isCommentedUser,
-            canShow: !cm.isDirect || loginUser.isAdmin ||
-              isCommentedUser || presentation.presenter.id === loginUser.id
-          }
-        })
-          .filter((cm) => cm.canShow)
-          .sort((a, b) => {
-            // 投稿日時の昇順にソート
-            return !moment(a.postedAt).isSame(b.postedAt)
-              ? (moment(a.postedAt).isAfter(b.postedAt) ? -1 : 1)
-              : 0
-          })
+    this.subscriptions.push(PresentationDetailQueryService.get(this.id, this.user)
+      .subscribe(([presentation, comments, stamps]) => {
         this.comments = comments
-        presentation.comments = comments
-        presentation.stamps = stamps.sort((a, b) => a.order - b.order)
-        presentation.presenter = users.find((u) => u.id === presentation.presenter.id)
+        this.stamps = stamps
         this.presentation = presentation
       }))
   },
@@ -395,7 +350,7 @@ export default {
       }
     },
     user () {
-      return this.$store.getters.user
+      return this.$store.getters.user || { id: null, isAdmin: false }
     }
   },
   filters: {
