@@ -1,5 +1,6 @@
 import { collectionData, docData } from 'rxfire/firestore'
 import { combineLatest, map, mergeMap } from 'rxjs/operators'
+import { of } from 'rxjs'
 import { db } from '@/firebase'
 import CommentRepository from '@/repositories/CommentRepository'
 import StampCountRepository from '@/repositories/StampCountRepository'
@@ -63,7 +64,7 @@ export default {
   },
   getWithUser (id) {
     return this.get(id).pipe(mergeMap((presentation) => {
-      return docData(db.doc('users/' + id), 'id')
+      return docData(db.doc('users/' + presentation.presenter.id), 'id')
         .pipe(map((user) => {
           presentation.presenter = user
           return presentation
@@ -72,6 +73,10 @@ export default {
   },
   getListByEventIdWithUser (eventId) {
     return this.getListById(eventId).pipe(mergeMap((presentations) => {
+      console.log(presentations)
+      if (presentations.length === 0) {
+        return of([])
+      }
       const userIds = presentations.map(presentation => presentation.presenter.id)
       return collectionData(db.collection('users').where('id', 'in', userIds), 'id')
         .pipe(map((users) => {

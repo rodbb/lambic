@@ -177,7 +177,7 @@ export default {
         if (this.subscriptions.selectedEvent) {
           this.subscriptions.selectedEvent.unsubscribe()
         }
-        this.subscriptions.selectedEvent = EventQueryService.get().subscribe((event) => { this.selectedEvent = event })
+        this.subscriptions.selectedEvent = EventQueryService.get(eventId).subscribe((event) => { this.selectedEvent = event })
       }
     },
     /*
@@ -210,7 +210,7 @@ export default {
     }
   },
   beforeDestroy () {
-    this.subscriptions.forEach((s) => s.unsubscribe())
+    Object.values(this.subscriptions).forEach((s) => s && s.unsubscribe())
   }
 }
 </script>
