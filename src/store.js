@@ -76,7 +76,7 @@ export default new Vuex.Store({
         .sort((a, b) => {
           // 投稿日時の昇順にソート
           return !moment(a.postedAt).isSame(b.postedAt)
-            ? (moment(a.postedAt).isAfter(b.postedAt) ? 1 : -1)
+            ? (moment(a.postedAt).isAfter(b.postedAt) ? -1 : 1)
             : 0
         })
     },
@@ -306,21 +306,23 @@ export default new Vuex.Store({
     /*
      * コメントを登録する
      */
-    appendComment ({ state }, { comment, presentationId }) {
+    appendComment ({ state }, { comment, presentationId, isDirect }) {
       comments.add({
         comment,
         postedAt: firebase.firestore.Timestamp.fromDate(new Date()),
         presentationId,
+        isDirect,
         userRef: users.doc(state.user.id)
       })
     },
     /*
      * コメントを編集する
      */
-    updateComment ({ state }, { comment, commentId }) {
+    updateComment ({ state }, { comment, isDirect, commentId }) {
       comments.doc(commentId)
         .update({
-          comment
+          comment,
+          isDirect
         })
     },
     /*
