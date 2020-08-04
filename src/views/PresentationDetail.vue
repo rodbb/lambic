@@ -48,7 +48,7 @@
           <div  v-else class="grey--text mb-3">
             （発表者情報は削除されています）
           </div>
-          <p class="pre">{{ presentation.description }}</p>
+          <p class="markdown__preview" v-html="convertMd2Html(presentation.description)">"</p>
         </v-card-text>
       </v-card>
 
@@ -80,10 +80,17 @@
         <v-card-title>
           <h3>コメント一覧</h3>
         </v-card-title>
-        <template v-for="comment in comments">
-          <v-divider :key="comment.id + '-divider'"></v-divider>
-          <v-card-text :key="comment.id">
-            <v-layout align-center mb-3>
+        <div
+          v-for="comment in comments"
+          :class="{ 'yellow': comment.isDirect, 'lighten-4': comment.isDirect }"
+          :key="comment.id + '-div'"
+        >
+          <v-divider></v-divider>
+          <v-card-text class="py-2">
+            <v-layout v-if="comment.isDirect">
+              <small class="grey--text">ダイレクトコメント</small>
+            </v-layout>
+            <v-layout align-center mb-1>
               <v-avatar
                 v-if="comment.userRef.photoURL"
                 size="28"
@@ -115,9 +122,9 @@
                 </v-list>
               </v-menu>
             </v-layout>
-            <p class="pre">{{ comment.comment }}</p>
+            <p class="markdown__preview" v-html="convertMd2Html(comment.comment)"></p>
           </v-card-text>
-        </template>
+        </div>
         <v-card-text v-if="comments.length === 0">
           <p>まだコメントはありません。</p>
         </v-card-text>
@@ -155,8 +162,8 @@
           <v-icon>create</v-icon>
         </v-btn>
 
-        <v-card v-if="user">
-          <v-card-text>
+        <v-card v-if="user" class="markdown__container">
+          <v-card-text class="pb-1">
             <v-alert
               outline
               :value="errors.length > 0"
@@ -166,15 +173,70 @@
                 <li v-for="(err, i) in errors" :key="i">{{ err }}</li>
               </ul>
             </v-alert>
-            <v-textarea
+            <v-tabs
               v-if="dialog"
-              outline
-              autofocus
-              no-resize
-              name="comment-input"
-              label="input comment"
-              v-model="comment"
-            ></v-textarea>
+              v-model="tab"
+              color="grey lighten-5"
+              grow
+              class="markdown__tabs"
+            >
+              <v-tab>Write</v-tab>
+              <v-tab>Preview</v-tab>
+            </v-tabs>
+            <v-tabs-items
+              v-if="dialog"
+              v-model="tab"
+            >
+              <v-tab-item>
+                <v-textarea
+                  v-if="dialog"
+                  outline
+                  autofocus
+                  no-resize
+                  name="comment-input"
+                  label="input comment"
+                  v-model="comment"
+                ></v-textarea>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card
+                  flat
+                  tile
+                  height="159"
+                  class="scroll"
+                >
+                  <v-card-text class="markdown__preview"  v-html="convertMd2Html(comment)"></v-card-text>
+                </v-card>
+              </v-tab-item>
+            </v-tabs-items>
+
+            <!-- 新規投稿のときのみダイレクトコメントを選択可能 -->
+            <v-container v-if="this.editingCommentId === null" grid-list-md class="px-0 py-0">
+              <v-layout wrap row>
+                <v-flex shrink>
+                  <v-checkbox
+                    v-model="isDirect"
+                    color="primary"
+                    class="my-0 py-0"
+                  >
+                    <template v-slot:label>
+                      <span class="black--text">
+                        ダイレクトコメントにする
+                      </span>
+                    </template>
+                  </v-checkbox>
+                </v-flex>
+                <v-flex>
+                  <v-tooltip right>
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="primary" v-on="on">help</v-icon>
+                    </template>
+                    <span><strong>ダイレクトコメント</strong>：<br>発表者と投稿者のみが<br>閲覧できるコメント</span>
+                  </v-tooltip>
+                </v-flex>
+              </v-layout>
+            </v-container>
+
           </v-card-text>
           <v-divider></v-divider>
           <v-card-actions>
@@ -219,6 +281,7 @@
 
 <script>
 import moment from 'moment'
+import markdownIt from '@/markdownIt'
 
 export default {
   name: 'presentation',
@@ -233,8 +296,10 @@ export default {
       unsubscribes: [],
       dialog: false,
       comment: '',
+      isDirect: false,
       editingCommentId: null,
-      errors: []
+      errors: [],
+      tab: 0
     }
   },
   async created () {
@@ -252,6 +317,7 @@ export default {
      * userRef：削除されたユーザーの場合でもオブジェクトで参照できるようにデフォルト値を設定
      * isEditable：ログインユーザーがそのコメントを編集できるかどうか（投稿者のみが編集可能）
      * isDeletable：ログインユーザーがそのコメントを削除できるかどうか（管理者または投稿者が削除可能）
+     * canShow：ログインユーザがそのコメントを閲覧できるかどうか（ダイレクトコメント投稿者、発表者、管理者のみ閲覧可能）
      */
     comments () {
       return this.presentation.comments
@@ -264,13 +330,18 @@ export default {
             id: null,
             isAdmin: false
           }
+          const isCommentedUser = userRef.id === loginUser.id
+          const presentations = this.$store.getters.presentation(this.id)
           return {
             ...cm,
             userRef,
-            isEditable: userRef.id === loginUser.id,
-            isDeletable: loginUser.isAdmin || userRef.id === loginUser.id
+            isEditable: isCommentedUser,
+            isDeletable: loginUser.isAdmin || isCommentedUser,
+            canShow: !cm.isDirect || loginUser.isAdmin ||
+              isCommentedUser || presentations.presenter.id === loginUser.id
           }
         })
+        .filter((cm) => cm.canShow)
     },
     prevLink () {
       return {
@@ -318,6 +389,7 @@ export default {
       }
       this.editingCommentId = commentId
       this.comment = target.comment
+      this.isDirect = target.isDirect
       this.dialog = true
     },
     validateComment (c) {
@@ -336,15 +408,24 @@ export default {
       const res = this.validateComment(com)
       if (Object.values(res).every((v) => v)) {
         if (this.editingCommentId == null) {
-          this.$store.dispatch('appendComment', { comment: com, presentationId: this.id })
+          this.$store.dispatch('appendComment', {
+            comment: com,
+            presentationId: this.id,
+            isDirect: this.isDirect
+          })
         } else {
           const target = this.comments.find((c) => c.id === this.editingCommentId)
           if (target == null || !target.isEditable) {
             return
           }
-          this.$store.dispatch('updateComment', { comment: com, commentId: this.editingCommentId })
+          this.$store.dispatch('updateComment', {
+            comment: com,
+            isDirect: this.isDirect,
+            commentId: this.editingCommentId
+          })
         }
         this.closeComment()
+        this.isDirect = false
       } else {
         this.errors = [
           !res.length ? 'コメントは1000文字までです' : null,
@@ -357,6 +438,7 @@ export default {
       this.comment = ''
       this.editingCommentId = null
       this.errors = []
+      this.tab = 0
       this.dialog = false
     },
     /**
@@ -387,6 +469,16 @@ export default {
      */
     countUpStamp (stampId) {
       this.$store.dispatch('countUpStamp', { presentationId: this.id, stampId: stampId })
+    },
+    convertMd2Html (str) {
+      return markdownIt.render(str)
+    }
+  },
+  watch: {
+    dialog (val) {
+      if (!val) {
+        this.closeComment()
+      }
     }
   },
   beforeDestroy () {
@@ -397,14 +489,23 @@ export default {
 </script>
 
 <style scoped>
-.pre {
-  white-space: pre-wrap;
+.scroll {
+  overflow-y: auto;
 }
 
 .sticky-top {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.markdown__preview >>> img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.markdown__container >>> .markdown__tabs {
+  margin-bottom: 2px;
 }
 
 .top-56 {

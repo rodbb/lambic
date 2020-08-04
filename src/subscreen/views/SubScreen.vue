@@ -2,6 +2,8 @@
   <v-app>
     <v-toolbar height="80" extended>
       <v-toolbar-title class="display-3">{{ presentationTitle }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <qriously id="qrcode" class="pt-1 pb-0" :value="qrUrl" size="140"/>
       <template v-slot:extension>
         <div class="display-2 text-truncate">{{ presenterName }}</div>
       </template>
@@ -85,6 +87,11 @@ export default {
       return (this.screenInfo !== null && this.screenInfo.name)
         ? this.screenInfo.name
         : '（名称未設定の会場）'
+    },
+    qrUrl () {
+      return (this.screenInfo !== null && this.screenInfo.displayPresentationRef !== null)
+        ? `${window.location.origin}/#/presentations/${this.screenInfo.displayPresentationRef.id}`
+        : window.location.origin
     }
   },
   watch: {
@@ -241,6 +248,9 @@ export default {
 </script>
 
 <style scoped>
+#qrcode {
+    height: 100%;
+}
 .blinking{
     animation:blink 0.2s ease-in-out infinite alternate;
 }

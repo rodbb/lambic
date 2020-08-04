@@ -5,6 +5,11 @@ jobs:
       - image: circleci/node:10.15.3
     steps:
       - checkout
+
+      - run:
+          name: Install Headless Chrome dependencies
+          command: sh .circleci/install_puppeteer_dependency.sh
+
       - restore_cache:
           keys:
             - lambic-build-{{ checksum "package.json" }}
@@ -16,12 +21,70 @@ jobs:
           paths:
             - node_modules
           key: lambic-build-{{ checksum "package.json" }}
+
+      - restore_cache:
+          keys:
+            - lambic-build-functions-{{ checksum "functions/package.json" }}
+            - lambic-build-functions-
+      - run:
+          name: Install Project (functions)
+          command: npm install
+          working_directory: functions
+      - save_cache:
+          paths:
+            - functions/node_modules
+          key: lambic-build-functions-{{ checksum "functions/package.json" }}
+
       - run:
           name: Set the active project
-          command: npx firebase use developement
+          command: npx firebase use test --token "${FIREBASE_TOKEN}"
+      - run:
+          name: Build
+          command: npm run build
+
+      - run:
+          name: Run unit test
+          command: npm run test:unit
+      - run:
+          name: Deploy
+          command: npx firebase deploy --token "${FIREBASE_TOKEN}"
+      - run:
+          name: Run integration test
+          command: npm run test:integration
+
+  deploy:
+    docker:
+      - image: circleci/node:10.15.3
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - lambic-build-{{ checksum "package.json" }}
+            - lambic-build-
+      - restore_cache:
+          keys:
+            - lambic-build-functions-{{ checksum "functions/package.json" }}
+            - lambic-build-functions-
+
+      - run:
+          name: Set the active project
+          command: npx firebase use production --token "${FIREBASE_TOKEN}"
       - run:
           name: Build
           command: npm run build
       - run:
-          name: Run test
-          command: npm run test:unit
+          name: Deploy
+          command: npx firebase deploy --token "${FIREBASE_TOKEN}"
+
+workflows:
+    version: 2
+    build-test-and-deploy:
+      jobs:
+        - build
+        - deploy:
+            requires:
+                - build
+            filters:
+              branches:
+                only: master
