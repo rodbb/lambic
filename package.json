@@ -12,7 +12,7 @@
   "dependencies": {
     "firebase": "^6.6.1",
     "firebaseui-ja": "^1.0.0",
-    "markdown-it": "^10.0.0",
+    "markdown-it": "^12.3.2",
     "markdown-it-emoji": "^1.4.0",
     "markdown-it-imsize": "^2.0.1",
     "markdown-it-link-attributes": "^3.0.0",
