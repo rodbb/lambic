@@ -1,6 +1,12 @@
 Lambic
 ==========
 
+**[Deprecated]**
+このリポジトリはもう使わない。もっときれいに作り直すんだ、いっそ新しい設計、新しい言語、新しいリポジトリで…。
+というわけで以降は[brewery](https://github.com/rodbb/brewery)で作っていく。
+
+- - - - -
+
 ビアバッシュを醸すWebアプリ
 
 [![CircleCI](https://circleci.com/gh/rodbb/lambic.svg?style=svg)](https://circleci.com/gh/rodbb/lambic)
